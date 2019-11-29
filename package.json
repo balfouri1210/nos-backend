@@ -1,0 +1,11 @@
+{
+  "name": "nos-backend",
+  "version": "1.0.0",
+  "description": "907degrees backend",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "balfouri1210",
+  "license": "ISC"
+}
