@@ -4,7 +4,7 @@ dotEnv.config();
 
 const app = express();
 app.get('/', (req, res, next) => {
-  res.send('Hello from node server!');
+  res.send('Hello from node server! NOS API DEV is served by EC2 and managed by CODEPIPELINE');
 });
 
 const PORT = process.env.PORT || 3000;
