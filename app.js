@@ -3,10 +3,10 @@ var cors = require('cors');
 const STAGE = process.env.STAGE || 'local';
 const dotEnv = require('dotenv');
 
-dotEnv.config();
-app.use(cors()); // Allow cors
-
 const app = express();
+dotEnv.config();
+
+app.use(cors()); // Allow cors
 app.get('/', (req, res, next) => {
   res.send(`I LOVE 소니`);
 });
