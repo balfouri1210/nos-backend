@@ -1,7 +1,10 @@
 const express = require('express');
+var cors = require('cors');
 const STAGE = process.env.STAGE || 'local';
 const dotEnv = require('dotenv');
+
 dotEnv.config();
+app.use(cors()); // Allow cors
 
 const app = express();
 app.get('/', (req, res, next) => {
