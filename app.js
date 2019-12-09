@@ -8,7 +8,7 @@ dotEnv.config();
 
 app.use(cors()); // Allow cors
 app.get('/', (req, res, next) => {
-  res.send(`I LOVE 소니`);
+  res.send(`Connected 907 api server successfully!`);
 });
 
 const PORT = process.env.PORT || 3000;
