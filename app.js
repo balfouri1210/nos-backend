@@ -8,7 +8,7 @@ dotEnv.config();
 
 app.use(cors()); // Allow cors
 app.get('/', (req, res, next) => {
-  res.send(`Connected 907 api server successfully! FUCKING GOOD!!`);
+  res.send(`단순 Cloudfront 문젠가?`);
 });
 
 const PORT = process.env.PORT || 3000;
