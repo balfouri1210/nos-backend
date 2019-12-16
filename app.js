@@ -10,13 +10,13 @@ app.use(cors()); // Allow cors
 var mysql = require('mysql');
 var connection = mysql.createConnection({
   host: process.env[`DB_URL_${STAGE}`],
-  user: "admin",
-  password: "kjh236874",
-  database: "nos",
+  user: 'admin',
+  password: 'kjh236874',
+  database: 'nos'
 });
 
 app.get('/', (req, res, next) => {
-  connection.query("select * from user", function(err, result, fields) {
+  connection.query('select * from user', function (err, result, fields) {
     if (err) throw err;
     res.send(result);
   });
