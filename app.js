@@ -13,7 +13,7 @@ const db = dbConnection();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/user', require('./routes/userRoutes'));
+app.use('/api/user', require('./routes/user-routes'));
 
 app.get('/', (req, res, next) => {
   db.query('select * from user', function (err, result, fields) {
