@@ -2,7 +2,7 @@ const express = require('express');
 const STAGE = process.env.STAGE || 'local';
 const dotEnv = require('dotenv');
 const cors = require('cors');
-const dbConnection = require('./database/connection');
+const dbConnection = require('./database/db-connection');
 
 const app = express(); // Generate express app
 app.use(cors()); // Allow cors
