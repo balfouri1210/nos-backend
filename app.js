@@ -2,12 +2,10 @@ const express = require('express');
 const STAGE = process.env.STAGE || 'local';
 const dotEnv = require('dotenv');
 const cors = require('cors');
-const dbConnection = require('./database/db-connection');
 
 const app = express(); // Generate express app
 app.use(cors()); // Allow cors
 dotEnv.config(); // Use .env file
-const db = dbConnection();
 
 // Request payload middleware
 app.use(express.json());
@@ -16,10 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/user', require('./routes/user-routes'));
 
 app.get('/', (req, res, next) => {
-  db.query('select * from user', function (err, result, fields) {
-    if (err) throw err;
-    res.send(result);
-  });
+  res.send('Nos api server is running');
 });
 
 const PORT = process.env.PORT || 3000;

@@ -1,3 +1,8 @@
+const db = require('../database/db-connection');
+
 module.exports.createUser = (serviceData) => {
-  return 'user created done~!';
+  db.query('select * from user', function (err, result, fields) {
+    if (err) throw err;
+    return result;
+  });
 };
