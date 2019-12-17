@@ -7,6 +7,10 @@ dotEnv.config(); // Use .env file
 const app = express(); // Generate express app
 app.use(cors()); // Allow cors
 
+// Request payload middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 var mysql = require('mysql');
 var connection = mysql.createConnection({
   host: process.env[`DB_URL_${STAGE}`],
@@ -27,4 +31,13 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
   console.log(process.env[`DB_URL_${STAGE}`]);
+});
+
+// Global error handler
+app.use((err, req, res, next) => {
+  res.status(500).send({
+    status: 500,
+    message: err.message,
+    body: {}
+  });
 });
