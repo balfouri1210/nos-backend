@@ -6,7 +6,7 @@ module.exports.getUser = async (req, res) => {
     const result = await userService.getUser(req.body);
     res.send(result);
   } catch (err) {
-    defaultServerResponse.message = 'Fail to get user list';
+    defaultServerResponse.message = err.message;
     res.send(defaultServerResponse);
   }
 };
