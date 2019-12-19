@@ -1,8 +1,6 @@
-const db = require('../database/db-connection');
+const pool = require('../database/db-connection');
 
-module.exports.createUser = (serviceData) => {
-  db.query('select * from user', function (err, result, fields) {
-    if (err) throw err;
-    return result;
-  });
+module.exports.getUser = async (serviceData) => {
+  const [rows] = await pool.query('select * from user');
+  return rows;
 };
