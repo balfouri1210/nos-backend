@@ -12,7 +12,6 @@ const mysql = require('mysql');
 // };
 
 module.exports.getUser = (serviceData, callback) => {
-  // const [rows] = await pool.query('select * from user');
   const connection = mysql.createConnection({
     host: process.env[`DB_URL_${process.env.STAGE}`],
     port: 3306,
@@ -21,12 +20,13 @@ module.exports.getUser = (serviceData, callback) => {
     database: 'nos'
   });
 
-  connection.query('SELECT * FROM user', function (err, rows, fields) {
-    if (!err) {
-      callback(rows);
-    } else {
-      err.message = 'Query Failed!!!!';
-      throw err;
-    }
-  });
+  // connection.query('SELECT * FROM user', function (err, rows, fields) {
+  //   if (!err) {
+  //     callback(rows);
+  //   } else {
+  //     err.message = 'Query Failed!!!!';
+  //     throw err;
+  //   }
+  // });
+  callback(connection);
 };

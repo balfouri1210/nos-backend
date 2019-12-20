@@ -14,7 +14,7 @@ const { defaultServerResponse } = require('../constants/index');
 module.exports.getUser = (req, res) => {
   try {
     userService.getUser(req.body, (result) => {
-      res.send(result);
+      res.send(JSON.stringify(result));
     });
   } catch (err) {
     defaultServerResponse.message = err.message;
