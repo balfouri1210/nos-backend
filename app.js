@@ -3,6 +3,17 @@ const STAGE = process.env.STAGE || 'local';
 const dotEnv = require('dotenv');
 const cors = require('cors');
 
+const mysql = require('mysql2/promise');
+
+const pool = mysql.createPool({
+  host: process.env[`DB_URL_${process.env.STAGE}`],
+  port: 3306,
+  user: 'admin',
+  password: 'kjh236874',
+  database: 'nos'
+});
+const getUserResult = pool.query('select * from user');
+
 const app = express(); // Generate express app
 app.use(cors()); // Allow cors
 dotEnv.config(); // Use .env file
@@ -14,7 +25,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/user', require('./routes/user-routes'));
 
 app.get('/', (req, res, next) => {
-  res.send('Nos api server is running');
+  res.send(getUserResult);
 });
 
 const PORT = process.env.PORT || 3000;
