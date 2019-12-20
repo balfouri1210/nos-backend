@@ -12,7 +12,7 @@ const pool = mysql.createConnection({
   password: 'kjh236874',
   database: 'nos'
 });
-const getUserResult = pool.query('select * from user');
+// const getUserResult = pool.query('select * from user');
 
 const app = express(); // Generate express app
 app.use(cors()); // Allow cors
@@ -25,7 +25,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/user', require('./routes/user-routes'));
 
 app.get('/', (req, res, next) => {
-  res.send(getUserResult);
+  pool.query('SELECT * FROM user', function (err, rows, fields) {
+    if (!err) res.send(rows);
+  });
 });
 
 const PORT = process.env.PORT || 3000;
