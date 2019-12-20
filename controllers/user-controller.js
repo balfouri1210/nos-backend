@@ -12,7 +12,12 @@ const { defaultServerResponse } = require('../constants/index');
 // };
 
 module.exports.getUser = (req, res) => {
-  userService.getUser(req.body, (result) => {
-    res.send(result);
-  });
+  try {
+    userService.getUser(req.body, (result) => {
+      res.send(result);
+    });
+  } catch (err) {
+    defaultServerResponse.message = err.message;
+    res.send(defaultServerResponse);
+  }
 };
