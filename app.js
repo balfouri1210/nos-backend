@@ -3,9 +3,9 @@ const STAGE = process.env.STAGE || 'local';
 const dotEnv = require('dotenv');
 const cors = require('cors');
 
-const mysql = require('mysql2/promise');
+const mysql = require('mysql');
 
-const pool = mysql.createPool({
+const pool = mysql.createConnection({
   host: process.env[`DB_URL_${process.env.STAGE}`],
   port: 3306,
   user: 'admin',
