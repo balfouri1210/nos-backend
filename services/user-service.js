@@ -5,7 +5,6 @@ module.exports.getUser = async (serviceData) => {
     const [rows] = await pool.query('select * from user');
     return rows;
   } catch (err) {
-    console.error(err);
     err.message = 'Query failed!';
     return err;
   }
