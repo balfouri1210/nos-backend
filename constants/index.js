@@ -1,7 +1,11 @@
 module.exports = {
   defaultServerResponse: {
-    status: 400,
     message: '',
     body: {}
+  },
+
+  errorMessage: {
+    EMAIL_ALREADY_EXISTS: 'This email already exists',
+    USER_NOT_FOUND: 'User not found'
   }
 };

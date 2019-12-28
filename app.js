@@ -11,7 +11,9 @@ dotEnv.config(); // Use .env file
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use('/api/user', require('./routes/user-routes'));
+// Rouutes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/users', require('./routes/users'));
 
 app.get('/', (req, res, next) => {
   res.send('Nos api server is running');
