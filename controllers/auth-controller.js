@@ -1,14 +1,30 @@
 const authService = require('../services/auth-service');
+const { errors } = require('../constants/index');
 
 module.exports.login = async (req, res) => {
   try {
     const result = await authService.login(req.body);
-    if (result.id) {
-      res.send(result);
-    } else {
-      res.status(400).send({ message: result });
-    }
+    res.send(result);
   } catch (err) {
-    res.status(400).send({ message: err.message });
+    switch (err.message) {
+      case 'u002':
+        res.status(400).send({
+          code: err.message,
+          message: errors.USER_NOT_FOUND.message
+        });
+        break;
+
+      case 'u003':
+        res.status(400).send({
+          code: err.message,
+          message: errors.INVALID_PASSWORD.message
+        });
+        break;
+
+      default :
+        res.status(400).send({
+          message: 'login failed!'
+        });
+    }
   }
 };

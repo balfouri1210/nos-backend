@@ -1,5 +1,6 @@
 const pool = require('../database/db-connection');
-const constants = require('../constants/index');
+const { errors } = require('../constants/index');
+const bcrypt = require('bcrypt');
 
 module.exports.getUser = async (reqData) => {
   try {
@@ -11,20 +12,29 @@ module.exports.getUser = async (reqData) => {
   }
 };
 
-module.exports.signup = async (reqData) => {
+module.exports.signup = async ({ email, password, username, countryId, birth, gender }) => {
   try {
     const connection = await pool.getConnection();
-    const insertSql = 'INSERT INTO users (email, password, username, country_id, birth, gender) VALUES (?, ?, ?, ?, ?, ?)';
-    const params = [reqData.email, reqData.password, reqData.username, reqData.countryId, reqData.birth, reqData.gender];
 
     try {
-      const [row] = await connection.query(`SELECT * FROM users WHERE email='${reqData.email}'`);
-      if (row.length) {
-        throw new Error(constants.errorMessage.EMAIL_ALREADY_EXISTS);
-      } else {
-        const result = await connection.query(insertSql, params);
-        return result;
+      const [existingUser] = await connection.query(`SELECT * FROM users WHERE email='${email}'`);
+      if (existingUser[0]) {
+        throw new Error({
+          code: errors.EMAIL_ALREADY_EXISTS.code,
+          message: errors.EMAIL_ALREADY_EXISTS.message
+        });
       }
+
+      password = await bcrypt.hash(password, 12);
+      console.log(password);
+      const insertSql = 'INSERT INTO users (email, password, username, country_id, birth, gender) VALUES (?, ?, ?, ?, ?, ?)';
+      const params = [email, password, username, countryId, birth, gender];
+
+      const [signedUpUser] = await connection.query(insertSql, params);
+      return {
+        id: signedUpUser.insertId,
+        email: email
+      };
     } finally {
       connection.release();
     }
