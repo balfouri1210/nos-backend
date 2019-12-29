@@ -1,6 +1,6 @@
 const pool = require('../database/db-connection');
 const { errors } = require('../constants/index');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 module.exports.getUser = async (reqData) => {
   try {

@@ -1,6 +1,6 @@
 const pool = require('../database/db-connection');
 const { errors } = require('../constants/index');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 module.exports.login = async ({ email, password }) => {
