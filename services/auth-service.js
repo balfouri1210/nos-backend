@@ -2,6 +2,7 @@ const pool = require('../database/db-connection');
 const { errors } = require('../constants/index');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const moment = require('moment');
 
 module.exports.login = async ({ email, password }) => {
   try {
@@ -10,6 +11,8 @@ module.exports.login = async ({ email, password }) => {
 
     if (!user) {
       throw new Error(errors.USER_NOT_FOUND.code);
+    } else if (user.status !== 'activated') {
+      throw new Error(errors.USER_NOT_ACTIVATED.code);
     }
 
     const isValid = await bcrypt.compare(password, user.password);
@@ -29,6 +32,24 @@ module.exports.login = async ({ email, password }) => {
 
     return { token };
   } catch (err) {
-    throw new Error(err.message);
+    throw new Error(err.message || err);
+  }
+};
+
+module.exports.accountVerification = async ({ verificationCode }) => {
+  try {
+    const [rows] = await pool.query(`SELECT * FROM users WHERE verification_code='${verificationCode}'`);
+    const user = rows[0];
+
+    if (!user) {
+      throw new Error(errors.INVALID_VERIFICATION_CODE.code);
+    } else if (user.status === 'activated') {
+      throw new Error(errors.ALREADY_ACTIVATED_USER.code);
+    }
+
+    const result = await pool.query(`UPDATE users SET status='activated', activated_at='${moment(new Date()).utc().format('YYYY-MM-DD HH:mm:ss')}' WHERE id='${user.id}'`);
+    return result;
+  } catch (err) {
+    throw new Error(err.message || err);
   }
 };

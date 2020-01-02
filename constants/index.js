@@ -16,6 +16,20 @@ module.exports = {
     INVALID_PASSWORD: {
       code: 'u003',
       message: 'Invalid password'
+    },
+
+    INVALID_VERIFICATION_CODE: {
+      code: 'u004',
+      message: 'Invalid verification code'
+    },
+    ALREADY_ACTIVATED_USER: {
+      code: 'u005',
+      message: 'Already activated user'
+    },
+
+    USER_NOT_ACTIVATED: {
+      code: 'u006',
+      message: 'User not activated'
     }
   }
 };

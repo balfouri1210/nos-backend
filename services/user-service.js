@@ -1,6 +1,8 @@
 const pool = require('../database/db-connection');
 const { errors } = require('../constants/index');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
+const { sendSignupEmail } = require('./email-service');
 
 module.exports.getUser = async (reqData) => {
   try {
@@ -25,12 +27,22 @@ module.exports.signup = async ({ email, password, username, countryId, birth, ge
         });
       }
 
+      // Encrypt password
       password = await bcrypt.hash(password, 12);
-      console.log(password);
-      const insertSql = 'INSERT INTO users (email, password, username, country_id, birth, gender) VALUES (?, ?, ?, ?, ?, ?)';
-      const params = [email, password, username, countryId, birth, gender];
 
+      // Make verification code
+      const keyOne = crypto.randomBytes(256).toString('hex').substr(100, 10);
+      const keyTwo = crypto.randomBytes(256).toString('base64').substr(50, 10);
+      const verificationCode = keyOne + keyTwo;
+
+      // Query
+      const insertSql = 'INSERT INTO users (email, password, username, country_id, birth, gender, verification_code) VALUES (?, ?, ?, ?, ?, ?, ?)';
+      const params = [email, password, username, countryId, birth, gender, verificationCode];
       const [signedUpUser] = await connection.query(insertSql, params);
+
+      // Send signup email - this function is async but executed without 'await'
+      sendSignupEmail(email, verificationCode);
+
       return {
         id: signedUpUser.insertId,
         email: email
