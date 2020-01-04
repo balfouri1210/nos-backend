@@ -10,14 +10,14 @@ module.exports.login = async ({ email, password }) => {
     const user = rows[0];
 
     if (!user) {
-      throw new Error(errors.USER_NOT_FOUND.code);
+      throw new Error(errors.USER_NOT_FOUND.message);
     } else if (user.status !== 'activated') {
-      throw new Error(errors.USER_NOT_ACTIVATED.code);
+      throw new Error(errors.USER_NOT_ACTIVATED.message);
     }
 
     const isValid = await bcrypt.compare(password, user.password);
     if (!isValid) {
-      throw new Error(errors.INVALID_PASSWORD.code);
+      throw new Error(errors.INVALID_PASSWORD.message);
     }
 
     const token = jwt.sign(
@@ -42,9 +42,9 @@ module.exports.accountVerification = async ({ verificationCode }) => {
     const user = rows[0];
 
     if (!user) {
-      throw new Error(errors.INVALID_VERIFICATION_CODE.code);
+      throw new Error(errors.INVALID_VERIFICATION_CODE.message);
     } else if (user.status === 'activated') {
-      throw new Error(errors.ALREADY_ACTIVATED_USER.code);
+      throw new Error(errors.ALREADY_ACTIVATED_USER.message);
     }
 
     const result = await pool.query(`UPDATE users SET status='activated', activated_at='${moment(new Date()).utc().format('YYYY-MM-DD HH:mm:ss')}' WHERE id='${user.id}'`);

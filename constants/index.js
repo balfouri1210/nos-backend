@@ -1,35 +1,49 @@
 module.exports = {
   defaultServerResponse: {
-    message: '',
+    status: 400,
+    message: 'server error!',
     body: {}
   },
 
   errors: {
+    // Related to User
     EMAIL_ALREADY_EXISTS: {
       code: 'u001',
-      message: 'This email already exists'
+      message: 'EMAIL_ALREADY_EXISTS'
     },
     USER_NOT_FOUND: {
       code: 'u002',
-      message: 'User not found'
+      message: 'USER_NOT_FOUND'
     },
     INVALID_PASSWORD: {
       code: 'u003',
-      message: 'Invalid password'
+      message: 'INVALID_PASSWORD'
     },
 
     INVALID_VERIFICATION_CODE: {
       code: 'u004',
-      message: 'Invalid verification code'
+      message: 'INVALID_VERIFICATION_CODE'
     },
     ALREADY_ACTIVATED_USER: {
       code: 'u005',
-      message: 'Already activated user'
+      message: 'ALREADY_ACTIVATED_USER'
     },
 
     USER_NOT_ACTIVATED: {
       code: 'u006',
-      message: 'User not activated'
+      message: 'USER_NOT_ACTIVATED'
+    },
+
+    // Related to Authentication
+    TOKEN_MISSING: {
+      code: 'a001',
+      message: 'TOKEN_MISSING'
+    },
+
+    // Related to Email
+    EMAIL_FAILED_SIGNUP: {
+      code: 'e001',
+      message: 'EMAIL_FAILED_SIGNUP'
     }
   }
 };

@@ -4,10 +4,11 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { sendSignupEmail } = require('./email-service');
 
-module.exports.getUser = async (reqData) => {
+module.exports.getUserById = async ({ id }) => {
   try {
-    const [rows] = await pool.query('select * from users');
-    return rows;
+    const [rows] = await pool.query(`SELECT * FROM users WHERE id='${id}'`);
+    const user = rows[0];
+    return user;
   } catch (err) {
     err.message = 'select users failed';
     throw new Error(err);
@@ -21,10 +22,7 @@ module.exports.signup = async ({ email, password, username, countryId, birth, ge
     try {
       const [existingUser] = await connection.query(`SELECT * FROM users WHERE email='${email}'`);
       if (existingUser[0]) {
-        throw new Error({
-          code: errors.EMAIL_ALREADY_EXISTS.code,
-          message: errors.EMAIL_ALREADY_EXISTS.message
-        });
+        throw new Error(errors.EMAIL_ALREADY_EXISTS.message);
       }
 
       // Encrypt password
@@ -51,6 +49,6 @@ module.exports.signup = async ({ email, password, username, countryId, birth, ge
       connection.release();
     }
   } catch (err) {
-    throw new Error(err);
+    throw new Error(err.message || err);
   }
 };
