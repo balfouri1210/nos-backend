@@ -39,6 +39,7 @@ module.exports.signup = async ({ email, password, username, countryId, birth, ge
       const [signedUpUser] = await connection.query(insertSql, params);
 
       // Send signup email - this function is async but executed without 'await'
+      // api gateway + lambda process
       sendSignupEmail(email, verificationCode);
 
       return {
