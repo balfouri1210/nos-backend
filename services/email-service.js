@@ -9,10 +9,7 @@ async function signupEmailRequester (email, verificationCode) {
       { email, verificationCode }
     );
   } catch (err) {
-    throw new Error({
-      code: errors.EMAIL_FAILED_SIGNUP.code,
-      message: errors.EMAIL_FAILED_SIGNUP.message
-    });
+    throw new Error(errors.EMAIL_FAILED_SIGNUP.message);
   }
 }
 
@@ -26,17 +23,11 @@ module.exports.sendSignupEmailAgain = async (email) => {
     const user = rows[0];
 
     if (user) {
-      await signupEmailRequester(email, user.verificationCode);
+      await signupEmailRequester(email, user.verification_code);
     } else {
-      throw new Error({
-        code: errors.USER_NOT_FOUND.code,
-        message: errors.USER_NOT_FOUND.message
-      });
+      throw new Error(errors.USER_NOT_FOUND.message);
     }
   } catch (err) {
-    throw new Error({
-      code: errors.USER_NOT_FOUND.code,
-      message: errors.USER_NOT_FOUND.message
-    });
+    throw new Error(errors.USER_NOT_FOUND.message);
   }
 };

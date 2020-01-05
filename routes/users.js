@@ -10,4 +10,6 @@ router.get('/:id',
 
 router.post('/', userController.signup);
 
+router.post('/signup-email', userController.sendSignupEmailAgain);
+
 module.exports = router;

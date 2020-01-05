@@ -16,7 +16,7 @@ module.exports.accountVerification = async (req, res) => {
     const result = await authService.accountVerification(req.body);
     res.send(result);
   } catch (err) {
-    const error = errors[err.message.split(' ')[1]] || defaultServerResponse;
+    const error = errors[err.message] || defaultServerResponse;
     res.status(400).send(error);
   }
 };
