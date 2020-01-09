@@ -5,7 +5,7 @@ module.exports.getPlayerCommentByPlayerId = async ({ playerId }) => {
   try {
     const table = 'player_comments';
     const [rows] = await pool.query(`
-      SELECT ${table}.id, ${table}.user_id, ${table}.created_at, content, vote_up, vote_down, username, child_comment_count FROM ${table}
+      SELECT ${table}.id, ${table}.user_id, ${table}.created_at, content, vote_up, vote_down, username, reply_count FROM ${table}
       LEFT JOIN users ON ${table}.user_id = users.id
       WHERE player_id='${playerId}'
       ORDER BY ${table}.id DESC LIMIT 10`

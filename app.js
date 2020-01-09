@@ -15,7 +15,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/comments', require('./routes/comments'));
-app.use('/api/child-comments', require('./routes/child-comments'));
+app.use('/api/replies', require('./routes/replies'));
 
 app.get('/', (req, res, next) => {
   res.send('Nos api server is running');

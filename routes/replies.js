@@ -1,15 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const childCommentController = require('../controllers/child-comment-controller');
+const replyController = require('../controllers/reply-controller');
 const tokenValidation = require('../middleware/token-validation');
 
 router.get('/player/:parentId',
-  childCommentController.getPlayerChildCommentByParentId
+  replyController.getPlayerReplyByParentId
 );
 
 router.post('/player',
   tokenValidation.validationToken,
-  childCommentController.addPlayerChildComment
+  replyController.addPlayerReply
 );
 
 module.exports = router;
