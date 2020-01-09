@@ -17,7 +17,7 @@ module.exports.sendSignupEmail = async (email, verificationCode) => {
   await signupEmailRequester(email, verificationCode);
 };
 
-module.exports.sendSignupEmailAgain = async (email) => {
+module.exports.sendSignupEmailAgain = async ({ email }) => {
   try {
     const [rows] = await pool.query(`SELECT * FROM users WHERE email='${email}'`);
     const user = rows[0];
@@ -28,6 +28,6 @@ module.exports.sendSignupEmailAgain = async (email) => {
       throw new Error(errors.USER_NOT_FOUND.message);
     }
   } catch (err) {
-    throw new Error(errors.USER_NOT_FOUND.message);
+    throw new Error(errors.EMAIL_FAILED_SIGNUP.message);
   }
 };

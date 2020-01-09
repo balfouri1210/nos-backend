@@ -44,6 +44,16 @@ module.exports = {
     EMAIL_FAILED_SIGNUP: {
       code: 'e001',
       message: 'EMAIL_FAILED_SIGNUP'
+    },
+
+    // Related to Comment
+    GET_COMMENT_FAILED: {
+      code: 'c001',
+      message: 'GET_COMMENT_FAILED'
+    },
+    CREATE_COMMENT_FAILED: {
+      code: 'c002',
+      message: 'CREATE_COMMENT_FAILED'
     }
   }
 };

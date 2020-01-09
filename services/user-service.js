@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const { sendSignupEmail } = require('./email-service');
 
+// TEST API
 module.exports.getUserById = async ({ id }) => {
   try {
     const [rows] = await pool.query(`SELECT * FROM users WHERE id='${id}'`);
@@ -29,8 +30,8 @@ module.exports.signup = async ({ email, password, username, countryId, birth, ge
       password = await bcrypt.hash(password, 12);
 
       // Make verification code
-      const keyOne = crypto.randomBytes(256).toString('hex').substr(100, 10);
-      const keyTwo = crypto.randomBytes(256).toString('base64').substr(50, 10);
+      const keyOne = crypto.randomBytes(256).toString('hex').substr(50, 10);
+      const keyTwo = crypto.randomBytes(256).toString('base64').replace(/\//g, '').substr(50, 10);
       const verificationCode = keyOne + keyTwo;
 
       // Query

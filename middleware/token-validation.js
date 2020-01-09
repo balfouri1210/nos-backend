@@ -10,6 +10,7 @@ module.exports.validationToken = (req, res, next) => {
     }
 
     const token = req.headers.authorization.split('Bearer')[1].trim();
+    // decode 할때 쓰이는 secret key를 암호화해야 할 것 같은데 추가로 알아봐야함 (20200102)
     const decoded = jwt.verify(token, process.env.SECRET_KEY || 'nos-secret-key');
 
     if (decoded) return next();

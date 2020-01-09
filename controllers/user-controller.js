@@ -2,6 +2,7 @@ const userService = require('../services/user-service');
 const emailService = require('../services/email-service');
 const { errors, defaultServerResponse } = require('../constants/index');
 
+// TEST API
 module.exports.getUserById = async (req, res) => {
   try {
     const result = await userService.getUserById(req.params);
@@ -16,17 +17,15 @@ module.exports.signup = async (req, res) => {
     const result = await userService.signup(req.body);
     res.send(result);
   } catch (err) {
-    const error = errors[err.message] || defaultServerResponse;
-    res.status(400).send(error);
+    res.status(400).send(errors[err.message] || defaultServerResponse);
   }
 };
 
 module.exports.sendSignupEmailAgain = async (req, res) => {
   try {
-    const result = await emailService.sendSignupEmailAgain(req.body.email);
+    const result = await emailService.sendSignupEmailAgain(req.body);
     res.send(result);
   } catch (err) {
-    const error = errors[err.message.split(' ')[1]] || defaultServerResponse;
-    res.status(400).send(error);
+    res.status(400).send(errors[err.message] || defaultServerResponse);
   }
 };

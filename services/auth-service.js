@@ -50,6 +50,7 @@ module.exports.accountVerification = async ({ verificationCode }) => {
     const result = await pool.query(`UPDATE users SET status='activated', activated_at='${moment(new Date()).utc().format('YYYY-MM-DD HH:mm:ss')}' WHERE id='${user.id}'`);
     return result;
   } catch (err) {
+    console.error(err);
     throw new Error(err.message || err);
   }
 };

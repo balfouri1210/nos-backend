@@ -6,8 +6,7 @@ module.exports.login = async (req, res) => {
     const result = await authService.login(req.body);
     res.send(result);
   } catch (err) {
-    const error = errors[err.message] || defaultServerResponse;
-    res.status(400).send(error);
+    res.status(400).send(errors[err.message] || defaultServerResponse);
   }
 };
 
@@ -16,7 +15,6 @@ module.exports.accountVerification = async (req, res) => {
     const result = await authService.accountVerification(req.body);
     res.send(result);
   } catch (err) {
-    const error = errors[err.message] || defaultServerResponse;
-    res.status(400).send(error);
+    res.status(400).send(errors[err.message] || defaultServerResponse);
   }
 };
