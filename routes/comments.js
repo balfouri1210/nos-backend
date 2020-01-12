@@ -12,9 +12,4 @@ router.post('/player',
   commentController.addPlayerComment
 );
 
-router.put('/player/vote',
-  tokenValidation.validationToken,
-  commentController.playerCommentVoteAction
-);
-
 module.exports = router;
