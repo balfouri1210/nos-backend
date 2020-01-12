@@ -1,11 +1,11 @@
 const pool = require('../database/db-connection');
 const { errors } = require('../constants/index');
 
-module.exports.getPlayerCommentByPlayerId = async ({ playerId }) => {
+module.exports.getPlayerCommentsByPlayerId = async ({ playerId }) => {
   try {
     const table = 'player_comments';
     const [rows] = await pool.query(`
-      SELECT ${table}.id, ${table}.user_id, ${table}.created_at, content, vote_up, vote_down, username, reply_count FROM ${table}
+      SELECT ${table}.id, ${table}.user_id, ${table}.created_at, content, vote_up_count, vote_down_count, username, reply_count FROM ${table}
       LEFT JOIN users ON ${table}.user_id = users.id
       WHERE player_id='${playerId}'
       ORDER BY ${table}.id DESC LIMIT 10`
@@ -22,7 +22,10 @@ module.exports.addPlayerComment = async ({ userId, playerId, content }) => {
 
     try {
       // Query
-      const insertSql = 'INSERT INTO player_comments (user_id, player_id, content) VALUES (?, ?, ?)';
+      const insertSql = `
+        INSERT INTO player_comments (user_id, player_id, content)
+        VALUES (?, ?, ?)
+      `;
       const params = [userId, playerId, content];
       const [createdComment] = await connection.query(insertSql, params);
 
@@ -37,7 +40,6 @@ module.exports.addPlayerComment = async ({ userId, playerId, content }) => {
       connection.release();
     }
   } catch (err) {
-    console.log(err);
     throw new Error(err.message || err);
   }
 };

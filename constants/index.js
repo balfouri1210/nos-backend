@@ -46,6 +46,12 @@ module.exports = {
       message: 'EMAIL_FAILED_SIGNUP'
     },
 
+    // Related to Opinion
+    UPDATE_OPINION_VOTE_FAILED: {
+      code: 'o001',
+      message: 'UPDATE_OPINION_VOTE_FAILED'
+    },
+
     // Related to Comment
     GET_COMMENT_FAILED: {
       code: 'c001',
@@ -54,6 +60,16 @@ module.exports = {
     CREATE_COMMENT_FAILED: {
       code: 'c002',
       message: 'CREATE_COMMENT_FAILED'
+    },
+
+    // Related to Vote
+    GET_VOTE_HISTORIES_FAILED: {
+      code: 'v001',
+      message: 'GET_VOTE_HISTORIES_FAILED'
+    },
+    REGISTER_VOTE_HISTORY_FAILED: {
+      code: 'v002',
+      message: 'REGISTER_VOTE_HISTORY_FAILED'
     }
   }
 };

@@ -5,7 +5,7 @@ module.exports.getPlayerReplyByParentId = async ({ parentId }) => {
   try {
     const table = 'player_replies';
     const [rows] = await pool.query(`
-      SELECT ${table}.id, ${table}.created_at, content, vote_up, vote_down, username FROM ${table}
+      SELECT ${table}.id, ${table}.created_at, content, vote_up_count, vote_down_count, username FROM ${table}
       LEFT JOIN users ON ${table}.user_id = users.id
       WHERE parent_id='${parentId}'
       ORDER BY ${table}.id DESC LIMIT 10`

@@ -4,12 +4,17 @@ const commentController = require('../controllers/comment-controller');
 const tokenValidation = require('../middleware/token-validation');
 
 router.get('/player/:playerId',
-  commentController.getPlayerCommentByPlayerId
+  commentController.getPlayerCommentsByPlayerId
 );
 
 router.post('/player',
   tokenValidation.validationToken,
   commentController.addPlayerComment
+);
+
+router.put('/player/vote',
+  tokenValidation.validationToken,
+  commentController.playerCommentVoteAction
 );
 
 module.exports = router;
