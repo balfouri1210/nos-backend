@@ -3,7 +3,7 @@ const router = express.Router();
 const commentController = require('../controllers/comment-controller');
 const tokenValidation = require('../middleware/token-validation');
 
-router.get('/player/:playerId',
+router.get('/player/:userId/:playerId',
   commentController.getPlayerCommentsByPlayerId
 );
 

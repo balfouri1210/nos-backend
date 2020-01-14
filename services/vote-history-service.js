@@ -1,15 +1,15 @@
 const pool = require('../database/db-connection');
 const { errors } = require('../constants/index');
 
-module.exports.getVoteHistoriesByUserId = async (targetTable, { userId }) => {
+module.exports.getVoteHistoriesByUserId = async (targetOpinion, userId) => {
   try {
     const connection = await pool.getConnection();
 
     try {
       // Make new vote history
       const getVoteHistoriesSql = `
-        SELECT * FROM ${targetTable}
-        WHERE user_id='${userId}'
+        SELECT * FROM ${targetOpinion}_vote_histories
+        WHERE users_id='${userId}'
         ORDER BY id DESC
       `;
 
@@ -17,7 +17,7 @@ module.exports.getVoteHistoriesByUserId = async (targetTable, { userId }) => {
       if (!voteHistories) throw new Error(errors.GET_VOTE_HISTORIES_FAILED.message);
       const result = voteHistories.map((history) => {
         return {
-          targetId: history.player_comment_id,
+          targetId: history[`${targetOpinion}_id`],
           vote: history.vote
         };
       });
@@ -31,15 +31,15 @@ module.exports.getVoteHistoriesByUserId = async (targetTable, { userId }) => {
   }
 };
 
-module.exports.registerVoteHistory = async (targetTable, userId, targetId, action) => {
+module.exports.registerVoteHistory = async (targetOpinion, userId, targetId, action) => {
   try {
     const connection = await pool.getConnection();
 
     try {
       // Make new vote history
       const registerVoteHistorySql = `
-        INSERT INTO ${targetTable.slice(0, -1)}_vote_histories
-        (user_id, ${targetTable.slice(0, -1)}_id, vote)
+        INSERT INTO ${targetOpinion}_vote_histories
+        (users_id, ${targetOpinion}_id, vote)
         VALUES ('${userId}', '${targetId}', '${action}')
       `;
 
@@ -55,18 +55,16 @@ module.exports.registerVoteHistory = async (targetTable, userId, targetId, actio
   }
 };
 
-module.exports.deleteVoteHistory = async (targetTable, targetId) => {
+module.exports.deleteVoteHistory = async (targetOpinion, targetId) => {
   try {
     const connection = await pool.getConnection();
 
     try {
       // Make new vote history
       const registerVoteHistorySql = `
-        DELETE FROM ${targetTable.slice(0, -1)}_vote_histories
-        WHERE ${targetTable.slice(0, -1)}_id=${targetId}
+        DELETE FROM ${targetOpinion}_vote_histories
+        WHERE ${targetOpinion}_id=${targetId}
       `;
-
-      console.log(registerVoteHistorySql);
 
       const [registeredHistory] = await connection.query(registerVoteHistorySql);
       if (!registeredHistory) throw new Error(errors.REGISTER_VOTE_HISTORY_FAILED.message);

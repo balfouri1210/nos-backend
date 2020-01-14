@@ -1,16 +1,29 @@
 const pool = require('../database/db-connection');
 const { errors } = require('../constants/index');
+const voteHistoryService = require('./vote-history-service');
 
-module.exports.getPlayerReplyByParentId = async ({ parentId }) => {
+module.exports.getPlayerReplyByParentId = async ({ userId, parentId }) => {
   try {
-    const table = 'player_replies';
-    const [rows] = await pool.query(`
-      SELECT ${table}.id, ${table}.created_at, content, vote_up_count, vote_down_count, username FROM ${table}
-      LEFT JOIN users ON ${table}.user_id = users.id
+    const targetOpinion = 'player_replies';
+    const [replies] = await pool.query(`
+      SELECT ${targetOpinion}.id, username, content, parent_id, vote_up_count, vote_down_count, ${targetOpinion}.created_at FROM ${targetOpinion}
+      LEFT JOIN users ON ${targetOpinion}.users_id = users.id
       WHERE parent_id='${parentId}'
-      ORDER BY ${table}.id DESC LIMIT 10`
+      ORDER BY ${targetOpinion}.vote_up_count DESC LIMIT 10`
     );
-    return rows;
+
+    if (userId !== 'null') {
+      const replyVoteHistories = await voteHistoryService.getVoteHistoriesByUserId(`${targetOpinion}`, userId);
+      replies.forEach(reply => {
+        replyVoteHistories.forEach(history => {
+          if (history.targetId === reply.id) {
+            reply.isVoted = history.vote;
+          }
+        });
+      });
+    }
+
+    return replies;
   } catch (err) {
     throw new Error(errors.GET_COMMENT_FAILED.message);
   }
@@ -22,7 +35,7 @@ module.exports.addPlayerReply = async ({ userId, playerId, content, parentId }) 
 
     try {
       // Query
-      const insertSql = 'INSERT INTO player_replies (user_id, player_id, content, parent_id) VALUES (?, ?, ?, ?)';
+      const insertSql = 'INSERT INTO player_replies (users_id, player_id, content, parent_id) VALUES (?, ?, ?, ?)';
       const params = [userId, playerId, content, parentId];
       const [createdComment] = await connection.query(insertSql, params);
 

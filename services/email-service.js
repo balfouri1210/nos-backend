@@ -5,7 +5,7 @@ const { errors } = require('../constants/index');
 async function signupEmailRequester (email, verificationCode) {
   try {
     await axios.post(
-      'https://email-sender.907degrees.com/signup',
+      `${process.env.EMAIL_SENDER_URL}/signup`,
       { email, verificationCode }
     );
   } catch (err) {
