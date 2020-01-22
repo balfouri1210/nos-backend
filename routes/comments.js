@@ -3,13 +3,23 @@ const router = express.Router();
 const commentController = require('../controllers/comment-controller');
 const tokenValidation = require('../middleware/token-validation');
 
-router.get('/player/:userId/:playerId',
+router.get('/player/:playerId',
   commentController.getPlayerCommentsByPlayerId
 );
 
 router.post('/player',
   tokenValidation.validationToken,
   commentController.addPlayerComment
+);
+
+router.put('/player/:commentId',
+  tokenValidation.validationToken,
+  commentController.editPlayerComment
+);
+
+router.delete('/player/:commentId',
+  tokenValidation.validationToken,
+  commentController.editPlayerComment
 );
 
 module.exports = router;

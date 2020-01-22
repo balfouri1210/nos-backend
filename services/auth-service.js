@@ -26,12 +26,14 @@ module.exports.login = async ({ email, password }) => {
         email: user.email,
         username: user.username
       },
+    // JWT 생성할 때 쓰이는 SECRET_KEY도 암호화되어야 할 것 같은데? (20200102)
       process.env.SECRET_KEY || 'nos-secret-key',
       { expiresIn: '3d' }
     );
 
     return { token };
   } catch (err) {
+    console.error(err);
     throw new Error(err.message || err);
   }
 };
@@ -53,4 +55,13 @@ module.exports.accountVerification = async ({ verificationCode }) => {
     console.error(err);
     throw new Error(err.message || err);
   }
+};
+
+module.exports.extractUserIdFromJWT = (authorization) => {
+  const token = authorization.split('Bearer')[1].trim();
+  if (token !== 'null') {
+    const decoded = jwt.verify(token, process.env.SECRET_KEY || 'nos-secret-key');
+    return decoded.id;
+  }
+  return null;
 };

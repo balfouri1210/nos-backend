@@ -19,8 +19,7 @@ module.exports.sendSignupEmail = async (email, verificationCode) => {
 
 module.exports.sendSignupEmailAgain = async ({ email }) => {
   try {
-    const [rows] = await pool.query(`SELECT * FROM users WHERE email='${email}'`);
-    const user = rows[0];
+    const [user] = (await pool.query(`SELECT * FROM users WHERE email='${email}'`))[0];
 
     if (user) {
       await signupEmailRequester(email, user.verification_code);

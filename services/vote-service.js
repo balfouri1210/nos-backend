@@ -1,33 +1,50 @@
 const pool = require('../database/db-connection');
 const { errors } = require('../constants/index');
 const voteHistoryService = require('./vote-history-service');
+const notificationService = require('./notification-service');
 
-module.exports.vote = async ({ targetOpinion, userId, targetId, action }) => {
+module.exports.vote = async ({ targetAuthorId, targetOpinion, targetOpinionId, userId, action }) => {
   try {
     const connection = await pool.getConnection();
 
     try {
       // Update comment vote_count
-      const voteSql = `
+      const [votedResult] = await connection.query(`
         UPDATE ${targetOpinion} SET
         vote_${action}_count=vote_${action}_count+1
-        WHERE id='${targetId}'
-      `;
-
-      const [votedResult] = await connection.query(voteSql);
+        WHERE id='${targetOpinionId}'
+      `);
       if (!votedResult) throw new Error(errors.UPDATE_OPINION_VOTE_FAILED.message);
 
-      const registeredHistory = await voteHistoryService.registerVoteHistory(
+      // Register vote history
+      await voteHistoryService.registerVoteHistory({
         targetOpinion,
+        targetOpinionId,
         userId,
-        targetId,
         action
-      );
-      if (!registeredHistory) throw new Error(errors.REGISTER_VOTE_HISTORY_FAILED.message);
+      });
+
+      // Get voted opinion
+      const [votedOpinion] = (await connection.query(`
+        SELECT * FROM ${targetOpinion}
+        WHERE id='${targetOpinionId}'
+      `))[0];
+      if (!votedOpinion) throw new Error(errors.GET_VOTED_OPINION_FAILED.message);
+
+      // Add new notification if vote_up_count is 20, 40, 60 ...
+      if (votedOpinion.vote_up_count % 20 === 0) {
+        notificationService.addNotification({
+          recipientId: targetAuthorId,
+          senderId: userId,
+          object: targetOpinion.split('_')[0],
+          objectId: targetOpinionId,
+          type: 'vote_up',
+          content: votedOpinion.vote_up_count
+        });
+      }
 
       return {
-        votedResult,
-        registeredHistory
+        votedResult
       };
     } finally {
       connection.release();
@@ -37,25 +54,23 @@ module.exports.vote = async ({ targetOpinion, userId, targetId, action }) => {
   }
 };
 
-module.exports.cancelVote = async ({ targetOpinion, targetId, action }) => {
+module.exports.cancelVote = async ({ targetOpinion, targetOpinionId, action }) => {
   try {
     const connection = await pool.getConnection();
 
     try {
       // Update comment vote_count
-      const voteSql = `
+      const [votedResult] = await connection.query(`
         UPDATE ${targetOpinion} SET
         vote_${action}_count=vote_${action}_count-1
-        WHERE id='${targetId}'
-      `;
-
-      const [votedResult] = await connection.query(voteSql);
+        WHERE id='${targetOpinionId}'
+      `);
       if (!votedResult) throw new Error(errors.UPDATE_OPINION_VOTE_FAILED.message);
 
-      const deletedHistory = await voteHistoryService.deleteVoteHistory(
+      const deletedHistory = await voteHistoryService.deleteVoteHistory({
         targetOpinion,
-        targetId,
-      );
+        targetOpinionId,
+      });
       if (!deletedHistory) throw new Error(errors.REGISTER_VOTE_HISTORY_FAILED.message);
 
       return {

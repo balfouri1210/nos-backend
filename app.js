@@ -18,6 +18,7 @@ app.use('/api/comments', require('./routes/comments'));
 app.use('/api/replies', require('./routes/replies'));
 app.use('/api/vote', require('./routes/vote'));
 app.use('/api/vote-histories', require('./routes/vote-histories'));
+app.use('/api/notifications', require('./routes/notifications'));
 
 app.get('/', (req, res, next) => {
   res.send('Nos api server is running');

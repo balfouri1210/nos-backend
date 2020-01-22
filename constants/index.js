@@ -51,6 +51,10 @@ module.exports = {
       code: 'o001',
       message: 'UPDATE_OPINION_VOTE_FAILED'
     },
+    GET_VOTED_OPINION_FAILED: {
+      code: 'o002',
+      message: 'GET_VOTED_OPINION_FAILED'
+    },
 
     // Related to Comment
     GET_COMMENT_FAILED: {
@@ -61,6 +65,14 @@ module.exports = {
       code: 'c002',
       message: 'CREATE_COMMENT_FAILED'
     },
+    EDIT_COMMENT_FAILED: {
+      code: 'c003',
+      message: 'EDIT_COMMENT_FAILED'
+    },
+    DELETE_COMMENT_FAILED: {
+      code: 'c004',
+      message: 'DELETE_COMMENT_FAILED'
+    },
 
     // Related to Vote
     GET_VOTE_HISTORIES_FAILED: {
@@ -70,6 +82,16 @@ module.exports = {
     REGISTER_VOTE_HISTORY_FAILED: {
       code: 'v002',
       message: 'REGISTER_VOTE_HISTORY_FAILED'
+    },
+
+    // Related to Notification
+    ADD_NOTIFICATION_FAILED: {
+      code: 'n001',
+      message: 'ADD_NOTIFICATION_FAILED'
+    },
+    GET_NOTIFICATION_FAILED: {
+      code: 'n002',
+      messagE: 'GET_NOTIFICATION_FAILED'
     }
   }
 };

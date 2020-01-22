@@ -3,7 +3,10 @@ const { errors, defaultServerResponse } = require('../constants/index');
 
 module.exports.getPlayerCommentsByPlayerId = async (req, res) => {
   try {
-    const result = await commentService.getPlayerCommentsByPlayerId(req.params);
+    const result = await commentService.getPlayerCommentsByPlayerId(
+      req.headers.authorization,
+      req.params
+    );
     res.send(result);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
@@ -13,6 +16,24 @@ module.exports.getPlayerCommentsByPlayerId = async (req, res) => {
 module.exports.addPlayerComment = async (req, res) => {
   try {
     const result = await commentService.addPlayerComment(req.body);
+    res.send(result);
+  } catch (err) {
+    res.status(400).send(errors[err.message] || defaultServerResponse);
+  }
+};
+
+module.exports.editPlayerComment = async (req, res) => {
+  try {
+    const result = await commentService.editPlayerComment(req.params, req.body);
+    res.send(result);
+  } catch (err) {
+    res.status(400).send(errors[err.message] || defaultServerResponse);
+  }
+};
+
+module.exports.deletePlayerComment = async (req, res) => {
+  try {
+    const result = await commentService.deletePlayerComment(req.params);
     res.send(result);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
