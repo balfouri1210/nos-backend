@@ -3,6 +3,10 @@ const router = express.Router();
 const commentController = require('../controllers/comment-controller');
 const tokenValidation = require('../middleware/token-validation');
 
+router.get('/count/player/:playerId',
+  commentController.getPlayerCommentsCountByPlayerId
+);
+
 router.get('/player/:playerId',
   commentController.getPlayerCommentsByPlayerId
 );
@@ -19,7 +23,7 @@ router.put('/player/:commentId',
 
 router.delete('/player/:commentId',
   tokenValidation.validationToken,
-  commentController.editPlayerComment
+  commentController.deletePlayerComment
 );
 
 module.exports = router;

@@ -73,6 +73,28 @@ module.exports = {
       code: 'c004',
       message: 'DELETE_COMMENT_FAILED'
     },
+    GET_COMMENT_COUNT_FAILED: {
+      code: 'c005',
+      message: 'GET_COMMENT_COUNT_FAILED'
+    },
+
+    // Related to Reply
+    GET_REPLY_FAILED: {
+      code: 'r001',
+      message: 'GET_REPLY_FAILED'
+    },
+    CREATE_REPLY_FAILED: {
+      code: 'r002',
+      message: 'CREATE_REPLY_FAILED'
+    },
+    EDIT_REPLY_FAILED: {
+      code: 'r003',
+      message: 'EDIT_REPLY_FAILED'
+    },
+    DELETE_REPLY_FAILED: {
+      code: 'r004',
+      message: 'DELETE_REPLY_FAILED'
+    },
 
     // Related to Vote
     GET_VOTE_HISTORIES_FAILED: {

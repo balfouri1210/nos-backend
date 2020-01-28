@@ -3,15 +3,47 @@ const { errors } = require('../constants/index');
 const voteHistoryService = require('./vote-history-service');
 const { extractUserIdFromJWT } = require('./auth-service');
 
-module.exports.getPlayerCommentsByPlayerId = async (authorization, { playerId }) => {
+module.exports.getPlayerCommentsCountByPlayerId = async ({ playerId }) => {
+  try {
+    const [playerCommentsCount] = await pool.query(`
+      SELECT COUNT(*) AS COUNT FROM player_comments
+      WHERE player_id='${playerId}'
+    `);
+
+    if (!playerCommentsCount.length) {
+      throw new Error(errors.GET_COMMENT_COUNT_FAILED.message);
+    }
+    return {
+      playerCommentsCount: playerCommentsCount[0].COUNT
+    };
+  } catch (err) {
+    throw new Error(err.message || err);
+  }
+};
+
+module.exports.getPlayerCommentsByPlayerId = async (authorization, { playerId }, { sortType, page }) => {
   try {
     const table = 'player_comments';
+    const howManyCommentEachRequest = 10;
+    const commentPage = page || 1;
+    let orderByQuery;
+    switch (sortType) {
+      case 'date' :
+        orderByQuery = `${table}.id`;
+        break;
+
+      case 'like' :
+      default :
+        orderByQuery = `${table}.vote_up_count DESC, ${table}.vote_down_count, ${table}.id`;
+      break;
+    }
+
     const [comments] = await pool.query(`
       SELECT ${table}.id, ${table}.users_id, ${table}.created_at,
       content, vote_up_count, vote_down_count, username, reply_count FROM ${table}
       LEFT JOIN users ON ${table}.users_id = users.id
       WHERE player_id='${playerId}'
-      ORDER BY ${table}.id DESC LIMIT 10`
+      ORDER BY ${orderByQuery} LIMIT ${howManyCommentEachRequest} OFFSET ${howManyCommentEachRequest * (commentPage - 1)}`
     );
 
     const userId = extractUserIdFromJWT(authorization);
@@ -99,7 +131,7 @@ module.exports.editPlayerComment = async ({ commentId }, { newContent }) => {
   }
 };
 
-module.exports.editPlayerComment = async ({ commentId }) => {
+module.exports.deletePlayerComment = async ({ commentId }) => {
   try {
     const connection = await pool.getConnection();
 

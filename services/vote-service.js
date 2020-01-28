@@ -32,7 +32,7 @@ module.exports.vote = async ({ targetAuthorId, targetOpinion, targetOpinionId, u
       if (!votedOpinion) throw new Error(errors.GET_VOTED_OPINION_FAILED.message);
 
       // Add new notification if vote_up_count is 20, 40, 60 ...
-      if (votedOpinion.vote_up_count % 20 === 0) {
+      if (votedOpinion.vote_up_count > 0 && votedOpinion.vote_up_count % 20 === 0) {
         notificationService.addNotification({
           recipientId: targetAuthorId,
           senderId: userId,

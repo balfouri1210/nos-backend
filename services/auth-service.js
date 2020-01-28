@@ -26,7 +26,7 @@ module.exports.login = async ({ email, password }) => {
         email: user.email,
         username: user.username
       },
-    // JWT 생성할 때 쓰이는 SECRET_KEY도 암호화되어야 할 것 같은데? (20200102)
+      // JWT 생성할 때 쓰이는 SECRET_KEY도 암호화되어야 할 것 같은데? (20200102)
       process.env.SECRET_KEY || 'nos-secret-key',
       { expiresIn: '3d' }
     );
