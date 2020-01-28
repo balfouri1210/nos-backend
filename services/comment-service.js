@@ -29,7 +29,7 @@ module.exports.getPlayerCommentsByPlayerId = async (authorization, { playerId },
     let orderByQuery;
     switch (sortType) {
       case 'date' :
-        orderByQuery = `${table}.id`;
+        orderByQuery = `${table}.id DESC`;
         break;
 
       case 'like' :
