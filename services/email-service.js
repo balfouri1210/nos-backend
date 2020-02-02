@@ -40,7 +40,7 @@ module.exports.sendVerificationEmail = async (email, volatileVerificationCode) =
       {
         email,
         volatileVerificationCode,
-        stage: process.env.stage
+        stage: process.env.STAGE
       }
     );
     return;
@@ -70,7 +70,7 @@ module.exports.sendPwdResetEmail = async ({ email }) => {
         {
           email,
           verificationCode: newVerificationCode,
-          stage: process.env.stage
+          stage: process.env.STAGE
         }
       );
     } else {
@@ -92,7 +92,7 @@ async function signupEmailRequester (email, verificationCode) {
       {
         email,
         verificationCode,
-        stage: process.env.stage
+        stage: process.env.STAGE
       }
     );
     return;
