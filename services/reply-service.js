@@ -2,7 +2,7 @@ const pool = require('../database/db-connection');
 const { errors } = require('../constants/index');
 const voteHistoryService = require('./vote-history-service');
 const notificationService = require('./notification-service');
-const { extractUserIdFromJWT } = require('./auth-service');
+const { extractUserInfoFromJWT } = require('./auth-service');
 
 module.exports.getPlayerReplyByParentCommentsId = async (authorization, { parentCommentsId }, { page }) => {
   try {
@@ -17,7 +17,7 @@ module.exports.getPlayerReplyByParentCommentsId = async (authorization, { parent
       LIMIT ${howManyReplyEachRequest} OFFSET ${howManyReplyEachRequest * (replyPage - 1)}
     `);
 
-    const userId = extractUserIdFromJWT(authorization);
+    const { userId } = extractUserInfoFromJWT(authorization);
 
     if (userId !== 'null') {
       const replyVoteHistories = await voteHistoryService.getVoteHistoriesByUserId({

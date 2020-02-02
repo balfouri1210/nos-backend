@@ -1,7 +1,7 @@
 const pool = require('../database/db-connection');
 const { errors } = require('../constants/index');
 const voteHistoryService = require('./vote-history-service');
-const { extractUserIdFromJWT } = require('./auth-service');
+const { extractUserInfoFromJWT } = require('./auth-service');
 
 module.exports.getPlayerCommentsCountByPlayerId = async ({ playerId }) => {
   try {
@@ -28,13 +28,13 @@ module.exports.getPlayerCommentsByPlayerId = async (authorization, { playerId },
     const commentPage = page || 1;
     let orderByQuery;
     switch (sortType) {
-      case 'date' :
-        orderByQuery = `${table}.id DESC`;
-        break;
+    case 'date' :
+      orderByQuery = `${table}.id DESC`;
+      break;
 
-      case 'like' :
-      default :
-        orderByQuery = `${table}.vote_up_count DESC, ${table}.vote_down_count, ${table}.id`;
+    case 'like' :
+    default :
+      orderByQuery = `${table}.vote_up_count DESC, ${table}.vote_down_count, ${table}.id`;
       break;
     }
 
@@ -46,7 +46,7 @@ module.exports.getPlayerCommentsByPlayerId = async (authorization, { playerId },
       ORDER BY ${orderByQuery} LIMIT ${howManyCommentEachRequest} OFFSET ${howManyCommentEachRequest * (commentPage - 1)}`
     );
 
-    const userId = extractUserIdFromJWT(authorization);
+    const { userId } = extractUserInfoFromJWT(authorization);
 
     if (userId) {
       const commentVoteHistories = await voteHistoryService.getVoteHistoriesByUserId({

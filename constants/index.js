@@ -7,31 +7,59 @@ module.exports = {
 
   errors: {
     // Related to User
-    EMAIL_ALREADY_EXISTS: {
+    UNAVAILABLE_EMAIL: {
       code: 'u001',
-      message: 'EMAIL_ALREADY_EXISTS'
+      message: 'UNAVAILABLE_EMAIL'
+    },
+    UNAVAILABLE_USERNAME: {
+      code: 'u002',
+      message: 'UNAVAILABLE_EMAIL'
     },
     USER_NOT_FOUND: {
-      code: 'u002',
+      code: 'u003',
       message: 'USER_NOT_FOUND'
     },
     INVALID_PASSWORD: {
-      code: 'u003',
+      code: 'u004',
       message: 'INVALID_PASSWORD'
+    },
+    SIGNUP_FAILED: {
+      code: 'u005',
+      message: 'SIGNUP_FAILED'
+    },
+    UPDATE_USER_FAILED: {
+      code: 'u006',
+      message: 'UPDATE_USER_FAILED'
+    },
+    ACTIVATION_USER_FAILED: {
+      code: 'u007',
+      message: 'ACTIVATION_USER_FAILED'
+    },
+    LESS_THAN_THIRTY_DAYS: {
+      code: 'u008',
+      message: 'LESS_THAN_THIRTY_DAYS'
     },
 
     INVALID_VERIFICATION_CODE: {
-      code: 'u004',
+      code: 'u009',
       message: 'INVALID_VERIFICATION_CODE'
     },
     ALREADY_ACTIVATED_USER: {
-      code: 'u005',
+      code: 'u010',
       message: 'ALREADY_ACTIVATED_USER'
     },
 
     USER_NOT_ACTIVATED: {
-      code: 'u006',
+      code: 'u011',
       message: 'USER_NOT_ACTIVATED'
+    },
+    GENERATE_VOLATILE_VER_CODE_FAILED: {
+      code: 'u012',
+      message: 'GENERATE_VOLATILE_VER_CODE_FAILED'
+    },
+    DELETE_USER_FAILED: {
+      code: 'u013',
+      message: 'DELETE_USER_FAILED'
     },
 
     // Related to Authentication
@@ -39,11 +67,23 @@ module.exports = {
       code: 'a001',
       message: 'TOKEN_MISSING'
     },
+    INVALID_TOKEN: {
+      code: 'a002',
+      message: 'INVALID_TOKEN'
+    },
 
     // Related to Email
     EMAIL_FAILED_SIGNUP: {
       code: 'e001',
       message: 'EMAIL_FAILED_SIGNUP'
+    },
+    EMAIL_FAILED_VERIFICATION: {
+      code: 'e002',
+      message: 'EMAIL_FAILED_VERIFICATION'
+    },
+    EMAIL_FAILED_PASSWORD_RESET: {
+      code: 'e003',
+      message: 'EMAIL_FAILED_PASSWORD_RESET'
     },
 
     // Related to Opinion
