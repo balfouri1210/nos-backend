@@ -11,7 +11,7 @@ dotEnv.config(); // Use .env file
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Rouutes
+// Routes
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/comments', require('./routes/comments'));
@@ -21,8 +21,10 @@ app.use('/api/vote-histories', require('./routes/vote-histories'));
 app.use('/api/notifications', require('./routes/notifications'));
 
 app.get('/', (req, res, next) => {
-  res.send('Nos api server is running');
+  res.send('NOS api server is running');
 });
+
+// const { makeSortedCommentTableScheduler } = require('./scheduler');
 
 const PORT = process.env.PORT || 3000;
 
