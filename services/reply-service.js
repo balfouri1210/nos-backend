@@ -4,17 +4,21 @@ const voteHistoryService = require('./vote-history-service');
 const notificationService = require('./notification-service');
 const { extractUserInfoFromJWT } = require('./auth-service');
 
-module.exports.getPlayerReplyByParentCommentsId = async (authorization, { parentCommentsId }, { page }) => {
+module.exports.getPlayerReplyByParentCommentsId = async (
+  authorization,
+  { parentCommentsId },
+  { maxId }
+) => {
   try {
     const targetOpinion = 'player_replies';
     const howManyReplyEachRequest = 10;
-    const replyPage = page || 1;
+    maxId = maxId || 0;
     const [replies] = await pool.query(`
       SELECT ${targetOpinion}.id, ${targetOpinion}.users_id, username, content, parent_comments_id, vote_up_count, vote_down_count, ${targetOpinion}.created_at FROM ${targetOpinion}
       LEFT JOIN users ON ${targetOpinion}.users_id = users.id
-      WHERE parent_comments_id='${parentCommentsId}'
-      ORDER BY ${targetOpinion}.vote_up_count DESC, ${targetOpinion}.vote_down_count, ${targetOpinion}.id
-      LIMIT ${howManyReplyEachRequest} OFFSET ${howManyReplyEachRequest * (replyPage - 1)}
+      WHERE parent_comments_id=${parentCommentsId} AND ${targetOpinion}.id>${maxId}
+      ORDER BY ${targetOpinion}.id
+      LIMIT ${howManyReplyEachRequest}
     `);
 
     const { userId } = extractUserInfoFromJWT(authorization);
@@ -24,6 +28,7 @@ module.exports.getPlayerReplyByParentCommentsId = async (authorization, { parent
         targetOpinion,
         userId
       });
+
       replies.forEach(reply => {
         replyVoteHistories.forEach(history => {
           if (history.targetOpinionId === reply.id) {
@@ -35,6 +40,7 @@ module.exports.getPlayerReplyByParentCommentsId = async (authorization, { parent
 
     return replies;
   } catch (err) {
+    console.error(err);
     throw new Error(errors.GET_REPLY_FAILED.message);
   }
 };
