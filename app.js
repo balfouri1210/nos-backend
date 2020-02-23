@@ -24,7 +24,7 @@ app.get('/', (req, res, next) => {
   res.send('NOS api server is running');
 });
 
-// const { makeSortedCommentTableScheduler } = require('./scheduler');
+require('./scheduler').refreshScheduler;
 
 const PORT = process.env.PORT || 3000;
 

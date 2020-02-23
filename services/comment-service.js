@@ -17,38 +17,58 @@ module.exports.getPlayerCommentsCountByPlayerId = async ({ playerId }) => {
       playerCommentsCount: playerCommentsCount[0].COUNT
     };
   } catch (err) {
+    console.error(err);
     throw new Error(err.message || err);
   }
 };
 
-module.exports.getPlayerCommentsByPlayerId = async (authorization, { playerId }, { sortType, page }) => {
+module.exports.getPlayerCommentsByPlayerId = async (
+  authorization,
+  { playerId },
+  { sortType, minId, minPoint, previousCommentsIdList }
+  // minId: date 정렬일 때 페이징 처리를 위한 변수
+  // minPoint : upvote - downvote 정렬일 때 페이징 처리를 위한 변수 
+  // previousCommentIdList : upvote - downvote 정렬일 때 이미 로드된 댓글들의 아이디 목록 (걔네를 제외하고 검색해야 하기 때문)
+) => {
   try {
     const table = 'player_comments';
     const howManyCommentEachRequest = 10;
-    const commentPage = page || 1;
-    let orderByQuery;
+
+    // 최초 로드시 minId가 없으므로 최대값으로 설정하여 가장 큰 id를 가진 comment부터 가져오도록 한다.
+    minId = minId || 2147483647;
+    // 최초 로드시 minPoint기준이 없으므로 최대값으로 설정하여 가장 큰 point를 가진 comment부터 가져오도록 한다.
+    minPoint = minPoint || 2147483647;
+    // 최초 로드시 comment list가 존재하지 않으므로 빈값을 할당한다.
+    previousCommentsIdList = previousCommentsIdList || '""';
+
+    let orderByQuery, whereQuery;
     switch (sortType) {
     case 'date' :
       orderByQuery = `${table}.id DESC`;
+      whereQuery = `player_id='${playerId}' and ${table}.id < ${minId}`;
       break;
 
     case 'like' :
     default :
-      orderByQuery = `${table}.vote_up_count DESC, ${table}.vote_down_count, ${table}.id`;
+      orderByQuery = `(${table}.vote_up_count - ${table}.vote_down_count) DESC, ${table}.id DESC`;
+      whereQuery = `player_id='${playerId}' and ${table}.id NOT IN (${previousCommentsIdList.toString()}) and (${table}.vote_up_count - ${table}.vote_down_count) <= ${minPoint}`;
       break;
     }
 
     const [comments] = await pool.query(`
       SELECT ${table}.id, ${table}.users_id, ${table}.created_at,
-      content, vote_up_count, vote_down_count, username, reply_count FROM ${table}
+      (${table}.vote_up_count - ${table}.vote_down_count) AS point,
+      content, vote_up_count, vote_down_count, username, reply_count
+      FROM ${table}
       LEFT JOIN users ON ${table}.users_id = users.id
-      WHERE player_id='${playerId}'
-      ORDER BY ${orderByQuery} LIMIT ${howManyCommentEachRequest} OFFSET ${howManyCommentEachRequest * (commentPage - 1)}`
+      WHERE ${whereQuery}
+      ORDER BY ${orderByQuery}
+      LIMIT ${howManyCommentEachRequest}`
     );
 
-    const { userId } = extractUserInfoFromJWT(authorization);
+    if (authorization) {
+      const { userId } = extractUserInfoFromJWT(authorization);
 
-    if (userId) {
       const commentVoteHistories = await voteHistoryService.getVoteHistoriesByUserId({
         targetOpinion: table,
         userId
@@ -101,6 +121,7 @@ module.exports.addPlayerComment = async ({ userId, playerId, content }) => {
       connection.release();
     }
   } catch (err) {
+    console.error(err);
     throw new Error(err.message || err);
   }
 };
