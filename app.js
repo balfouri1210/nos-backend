@@ -25,7 +25,8 @@ app.get('/', (req, res, next) => {
   res.send('NOS api server is running');
 });
 
-require('./scheduler').refreshScheduler;
+// Leaderboard Scheduler
+require('./scheduler').leaderBoardScheduler;
 
 const PORT = process.env.PORT || 3000;
 

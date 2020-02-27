@@ -1,6 +1,6 @@
 const schedule = require('node-schedule');
 
-module.exports.refreshScheduler =
+module.exports.leaderBoardScheduler =
 schedule.scheduleJob({
   // Do Something every friday 18:00
   rule: '0 18 * * FRI',

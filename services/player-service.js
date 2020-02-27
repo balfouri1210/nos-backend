@@ -2,19 +2,17 @@ const pool = require('../database/db-connection');
 const { errors } = require('../constants/index');
 
 module.exports.getPlayers = async (
-  authorization,
-  { parentCommentsId },
-  { maxId }
+  { previousPlayerIdList }
 ) => {
   try {
-    const howManyPlayersEachRequest = 10;
-    maxId = maxId || 0;
+    const howManyPlayersEachRequest = 20;
+    previousPlayerIdList = previousPlayerIdList || '""';
     const [players] = await pool.query(`
-      SELECT ${targetOpinion}.id, ${targetOpinion}.users_id, username, content, parent_comments_id, vote_up_count, vote_down_count, ${targetOpinion}.created_at FROM ${targetOpinion}
-      LEFT JOIN users ON ${targetOpinion}.users_id = users.id
-      WHERE parent_comments_id=${parentCommentsId} AND ${targetOpinion}.id>${maxId}
-      ORDER BY ${targetOpinion}.id
-      LIMIT ${howManyReplyEachRequest}
+      SELECT players.*, countries.name as country_name, countries.code as country_code FROM players
+      LEFT JOIN countries ON players.nationality = countries.id
+      WHERE players.id NOT IN (${previousPlayerIdList.toString()})
+      ORDER BY players.id
+      LIMIT ${howManyPlayersEachRequest}
     `);
 
     return players;

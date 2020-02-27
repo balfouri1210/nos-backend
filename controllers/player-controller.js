@@ -4,8 +4,6 @@ const { errors, defaultServerResponse } = require('../constants/index');
 module.exports.getPlayers = async (req, res) => {
   try {
     const result = await playerService.getPlayers(
-      req.headers.authorization,
-      req.params,
       req.query
     );
     res.send(result);

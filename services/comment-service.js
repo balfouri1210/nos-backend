@@ -25,7 +25,7 @@ module.exports.getPlayerCommentsCountByPlayerId = async ({ playerId }) => {
 module.exports.getPlayerCommentsByPlayerId = async (
   authorization,
   { playerId },
-  { sortType, minId, minPoint, previousCommentsIdList }
+  { sortType, minId, previousCommentIdList }
   // minId: date 정렬일 때 페이징 처리를 위한 변수
   // minPoint : upvote - downvote 정렬일 때 페이징 처리를 위한 변수 
   // previousCommentIdList : upvote - downvote 정렬일 때 이미 로드된 댓글들의 아이디 목록 (걔네를 제외하고 검색해야 하기 때문)
@@ -36,10 +36,8 @@ module.exports.getPlayerCommentsByPlayerId = async (
 
     // 최초 로드시 minId가 없으므로 최대값으로 설정하여 가장 큰 id를 가진 comment부터 가져오도록 한다.
     minId = minId || 2147483647;
-    // 최초 로드시 minPoint기준이 없으므로 최대값으로 설정하여 가장 큰 point를 가진 comment부터 가져오도록 한다.
-    minPoint = minPoint || 2147483647;
     // 최초 로드시 comment list가 존재하지 않으므로 빈값을 할당한다.
-    previousCommentsIdList = previousCommentsIdList || '""';
+    previousCommentIdList = previousCommentIdList || '""';
 
     let orderByQuery, whereQuery;
     switch (sortType) {
@@ -51,13 +49,12 @@ module.exports.getPlayerCommentsByPlayerId = async (
     case 'like' :
     default :
       orderByQuery = `(${table}.vote_up_count - ${table}.vote_down_count) DESC, ${table}.id DESC`;
-      whereQuery = `player_id='${playerId}' and ${table}.id NOT IN (${previousCommentsIdList.toString()}) and (${table}.vote_up_count - ${table}.vote_down_count) <= ${minPoint}`;
+      whereQuery = `player_id='${playerId}' and ${table}.id NOT IN (${previousCommentIdList.toString()})`;
       break;
     }
 
     const [comments] = await pool.query(`
       SELECT ${table}.id, ${table}.users_id, ${table}.created_at,
-      (${table}.vote_up_count - ${table}.vote_down_count) AS point,
       content, vote_up_count, vote_down_count, username, reply_count
       FROM ${table}
       LEFT JOIN users ON ${table}.users_id = users.id
