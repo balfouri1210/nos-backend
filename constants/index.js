@@ -62,6 +62,16 @@ module.exports = {
       message: 'DELETE_USER_FAILED'
     },
 
+    // Related to Player
+    GET_PLAYERS_FAILED: {
+      code: 'p001',
+      message: 'GET_PLAYERS_FAILED'
+    },
+    GET_PLAYER_BY_ID_FAILED: {
+      code: 'p002',
+      message: 'GET_PLAYER_BY_ID_FAILED'
+    },
+
     // Related to Authentication
     TOKEN_MISSING: {
       code: 'a001',

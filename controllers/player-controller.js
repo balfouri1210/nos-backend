@@ -11,3 +11,14 @@ module.exports.getPlayers = async (req, res) => {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }
 };
+
+module.exports.getPlayerById = async (req, res) => {
+  try {
+    const result = await playerService.getPlayerByID(
+      req.params
+    );
+    res.send(result);
+  } catch (err) {
+    res.status(400).send(errors[err.message] || defaultServerResponse);
+  }
+};

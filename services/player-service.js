@@ -18,6 +18,28 @@ module.exports.getPlayers = async (
     return players;
   } catch (err) {
     console.error(err);
-    throw new Error(errors.GET_REPLY_FAILED.message);
+    throw new Error(errors.GET_PLAYERS_FAILED.message);
+  }
+};
+
+module.exports.getPlayerByID = async (
+  { playerId }
+) => {
+  try {
+    const [player] = await pool.query(`
+      SELECT players.*, countries.name as country_name, countries.code as country_code,
+      clubs.name as club_name, clubs.image as club_image,
+      leagues.id as league_id
+      FROM players
+      LEFT JOIN countries ON players.nationality = countries.id
+      LEFT JOIN clubs ON players.club_team_id = clubs.id
+      LEFT JOIN leagues ON clubs.leagues_id = leagues.id
+      WHERE players.id = ${playerId}
+    `);
+
+    return player[0];
+  } catch (err) {
+    console.error(err);
+    throw new Error(errors.GET_PLAYER_BY_ID_FAILED.message);
   }
 };

@@ -7,4 +7,8 @@ router.get('/',
   playerController.getPlayers
 );
 
+router.get('/:playerId',
+  playerController.getPlayerById
+);
+
 module.exports = router;
