@@ -3,7 +3,7 @@ const { errors, defaultServerResponse } = require('../constants/index');
 
 module.exports.getPlayerCommentVoteHistories = async (req, res) => {
   try {
-    const result = await voteHistoryService.getVoteHistoriesByUserId({
+    const result = await voteHistoryService.getOpinionVoteHistoriesByUserId({
       targetOpinion: 'player_comments_vote_histories',
       userId: req.params.userId
     });

@@ -24,7 +24,7 @@ module.exports.getPlayerReplyByParentCommentsId = async (
     const { userId } = extractUserInfoFromJWT(authorization);
 
     if (userId !== 'null') {
-      const replyVoteHistories = await voteHistoryService.getVoteHistoriesByUserId({
+      const replyVoteHistories = await voteHistoryService.getOpinionVoteHistoriesByUserId({
         targetOpinion,
         userId
       });

@@ -71,6 +71,22 @@ module.exports = {
       code: 'p002',
       message: 'GET_PLAYER_BY_ID_FAILED'
     },
+    INCREASE_PLAYER_HITS_FAILED: {
+      code: 'p003',
+      message: 'INCREASE_PLAYER_HITS_FAILED'
+    },
+    VOTE_PLAYER_FAILED: {
+      code: 'p004',
+      message: 'VOTE_PLAYER_FAILED'
+    },
+    GET_VOTED_PLAYER_FAILED: {
+      code: 'p005',
+      message: 'GET_VOTED_PLAYER_FAILED'
+    },
+    CANCEL_VOTE_PLAYER_FAILED: {
+      code: 'p066',
+      message: 'CANCEL_VOTE_PLAYER_FAILED'
+    },
 
     // Related to Authentication
     TOKEN_MISSING: {
@@ -146,7 +162,7 @@ module.exports = {
       message: 'DELETE_REPLY_FAILED'
     },
 
-    // Related to Vote
+    // Related to Vote history
     GET_VOTE_HISTORIES_FAILED: {
       code: 'v001',
       message: 'GET_VOTE_HISTORIES_FAILED'
@@ -154,6 +170,10 @@ module.exports = {
     REGISTER_VOTE_HISTORY_FAILED: {
       code: 'v002',
       message: 'REGISTER_VOTE_HISTORY_FAILED'
+    },
+    DELETE_VOTE_HISTORY_FAILED: {
+      code: 'v003',
+      message: 'DELETE_VOTE_HISTORY_FAILED'
     },
 
     // Related to Notification

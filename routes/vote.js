@@ -3,14 +3,25 @@ const router = express.Router();
 const voteController = require('../controllers/vote-controller');
 const tokenValidation = require('../middleware/token-validation');
 
-router.put('/',
+router.put('/opinion',
   tokenValidation.validationToken,
-  voteController.vote
+  voteController.opinionVote
 );
 
-router.put('/cancel',
+router.put('/opinion/cancel',
   tokenValidation.validationToken,
-  voteController.cancelVote
+  voteController.cancelOpinionVote
 );
+
+router.put('/player',
+  tokenValidation.validationToken,
+  voteController.playerVote
+);
+
+router.put('/player/cancel',
+  tokenValidation.validationToken,
+  voteController.cancelPlayerVote
+);
+
 
 module.exports = router;

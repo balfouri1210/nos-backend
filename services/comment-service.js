@@ -1,6 +1,7 @@
 const pool = require('../database/db-connection');
 const { errors } = require('../constants/index');
 const voteHistoryService = require('./vote-history-service');
+const playerService = require('./player-service');
 const { extractUserInfoFromJWT } = require('./auth-service');
 
 module.exports.getPlayerCommentsCountByPlayerId = async ({ playerId }) => {
@@ -66,7 +67,7 @@ module.exports.getPlayerCommentsByPlayerId = async (
     if (authorization) {
       const { userId } = extractUserInfoFromJWT(authorization);
 
-      const commentVoteHistories = await voteHistoryService.getVoteHistoriesByUserId({
+      const commentVoteHistories = await voteHistoryService.getOpinionVoteHistoriesByUserId({
         targetOpinion: table,
         userId
       });
@@ -91,9 +92,11 @@ module.exports.addPlayerComment = async ({ userId, playerId, content }) => {
     const connection = await pool.getConnection();
 
     try {
-      // Query
+      const table = 'player_comments';
+
+      // Add comment
       const [createdResult] = await connection.query(`
-        INSERT INTO player_comments (users_id, player_id, content)
+        INSERT INTO ${table} (users_id, player_id, content)
         VALUES (?, ?, ?)
       `, [userId, playerId, content]);
 
@@ -101,7 +104,7 @@ module.exports.addPlayerComment = async ({ userId, playerId, content }) => {
         throw new Error(errors.CREATE_COMMENT_FAILED.message);
       }
 
-      const table = 'player_comments';
+      // Get added comment to return to frontend
       const [createdComment] = await connection.query(`
         SELECT ${table}.id, ${table}.users_id, ${table}.created_at,
         content, vote_up_count, vote_down_count, username, reply_count FROM ${table}
@@ -112,6 +115,9 @@ module.exports.addPlayerComment = async ({ userId, playerId, content }) => {
       if (!createdComment.length) {
         throw new Error(errors.GET_COMMENT_FAILED.message);
       }
+
+      // Increase player comment count
+      await playerService.increasePlayerCommentsCount(playerId, 'increase');
 
       return createdComment[0];
     } finally {
@@ -149,7 +155,7 @@ module.exports.editPlayerComment = async ({ commentId }, { newContent }) => {
   }
 };
 
-module.exports.deletePlayerComment = async ({ commentId }) => {
+module.exports.deletePlayerComment = async ({ playerId, commentId }) => {
   try {
     const connection = await pool.getConnection();
 
@@ -168,6 +174,9 @@ module.exports.deletePlayerComment = async ({ commentId }) => {
       if (!deletedComment || !deletedReplies) {
         throw new Error(errors.DELETE_COMMENT_FAILED.message);
       }
+
+      // Decrease player comment count
+      await playerService.increasePlayerCommentsCount(playerId, 'decrease');
 
       return deletedComment;
     } finally {

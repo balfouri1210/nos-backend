@@ -21,7 +21,7 @@ router.put('/player/:commentId',
   commentController.editPlayerComment
 );
 
-router.delete('/player/:commentId',
+router.delete('/player/:playerId/:commentId',
   tokenValidation.validationToken,
   commentController.deletePlayerComment
 );

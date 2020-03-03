@@ -11,4 +11,8 @@ router.get('/:playerId',
   playerController.getPlayerById
 );
 
+router.put('/hits/:playerId',
+  playerController.increasePlayerHits
+);
+
 module.exports = router;
