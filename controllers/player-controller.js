@@ -12,10 +12,9 @@ module.exports.getPlayers = async (req, res) => {
   }
 };
 
-module.exports.getPlayerById = async (req, res) => {
+module.exports.getHeavyPlayerById = async (req, res) => {
   try {
-    const result = await playerService.getPlayerByID(
-      req.headers.authorization,
+    const result = await playerService.getHeavyPlayerById(
       req.params
     );
     res.send(result);

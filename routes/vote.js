@@ -8,20 +8,9 @@ router.put('/opinion',
   voteController.opinionVote
 );
 
-router.put('/opinion/cancel',
-  tokenValidation.validationToken,
-  voteController.cancelOpinionVote
-);
-
 router.put('/player',
   tokenValidation.validationToken,
   voteController.playerVote
 );
-
-router.put('/player/cancel',
-  tokenValidation.validationToken,
-  voteController.cancelPlayerVote
-);
-
 
 module.exports = router;

@@ -20,13 +20,15 @@ app.use('/api/replies', require('./routes/replies'));
 app.use('/api/vote', require('./routes/vote'));
 app.use('/api/vote-histories', require('./routes/vote-histories'));
 app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/report', require('./routes/report'));
+app.use('/api/histories', require('./routes/histories'));
 
 app.get('/', (req, res, next) => {
   res.send('NOS api server is running');
 });
 
 // Leaderboard Scheduler
-require('./scheduler').leaderBoardScheduler;
+require('./scheduler').historyScheduler;
 
 const PORT = process.env.PORT || 3000;
 

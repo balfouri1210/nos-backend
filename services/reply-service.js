@@ -45,9 +45,10 @@ module.exports.getPlayerReplyByParentCommentsId = async (
   }
 };
 
-module.exports.addPlayerReply = async ({ userId, playerId, content, parentCommentsId, parentAuthorId }) => {
+module.exports.addPlayerReply = async (authorization, { playerId, content, parentCommentsId, parentAuthorId }) => {
   try {
     const connection = await pool.getConnection();
+    const { userId } = extractUserInfoFromJWT(authorization);
 
     try {
       // Add reply

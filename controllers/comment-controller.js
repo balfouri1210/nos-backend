@@ -27,7 +27,10 @@ module.exports.getPlayerCommentsByPlayerId = async (req, res) => {
 
 module.exports.addPlayerComment = async (req, res) => {
   try {
-    const result = await commentService.addPlayerComment(req.body);
+    const result = await commentService.addPlayerComment(
+      req.headers.authorization,
+      req.body
+    );
     res.send(result);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);

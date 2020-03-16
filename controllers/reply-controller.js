@@ -16,7 +16,10 @@ module.exports.getPlayerReplyByParentCommentsId = async (req, res) => {
 
 module.exports.addPlayerReply = async (req, res) => {
   try {
-    const result = await replyService.addPlayerReply(req.body);
+    const result = await replyService.addPlayerReply(
+      req.headers.authorization,
+      req.body
+    );
     res.send(result);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);

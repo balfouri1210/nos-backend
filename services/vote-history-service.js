@@ -2,6 +2,28 @@ const pool = require('../database/db-connection');
 const { errors } = require('../constants/index');
 
 // OPINION
+module.exports.getOpinionVoteHistory = async ({ targetOpinion, targetOpinionId, userId }) => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      // Make new vote history
+      const [voteHistory] = await connection.query(`
+        SELECT * FROM ${targetOpinion}_vote_histories
+        WHERE ${targetOpinion}_id='${targetOpinionId}' AND users_id='${userId}'
+        ORDER BY id DESC
+      `);
+      if (!voteHistory) throw new Error(errors.GET_VOTE_HISTORIES_FAILED.message);
+
+      return voteHistory[0];
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    throw new Error(err.message || err);
+  }
+};
+
 module.exports.getOpinionVoteHistoriesByUserId = async ({ targetOpinion, userId }) => {
   try {
     const connection = await pool.getConnection();
@@ -30,7 +52,7 @@ module.exports.getOpinionVoteHistoriesByUserId = async ({ targetOpinion, userId 
   }
 };
 
-module.exports.registerOpinionVoteHistory = async ({ targetOpinion, targetOpinionId, userId, action }) => {
+module.exports.registerOpinionVoteHistory = async ({ targetOpinion, targetOpinionId, userId, vote }) => {
   try {
     const connection = await pool.getConnection();
 
@@ -39,7 +61,7 @@ module.exports.registerOpinionVoteHistory = async ({ targetOpinion, targetOpinio
       const [registeredHistory] = await connection.query(`
         INSERT INTO ${targetOpinion}_vote_histories
         (users_id, ${targetOpinion}_id, vote)
-        VALUES ('${userId}', '${targetOpinionId}', '${action}')
+        VALUES ('${userId}', '${targetOpinionId}', '${vote}')
       `);
       if (!registeredHistory) throw new Error(errors.REGISTER_VOTE_HISTORY_FAILED.message);
 
@@ -75,7 +97,7 @@ module.exports.deleteOpinionVoteHistory = async ({ targetOpinion, targetOpinionI
 
 
 // PLAYER
-module.exports.getPlayerVoteHistoriesByUserId = async ({ userId, playerId }) => {
+module.exports.getPlayerVoteHistoryByUserId = async ({ userId, playerId }) => {
   try {
     const connection = await pool.getConnection();
 
@@ -96,7 +118,7 @@ module.exports.getPlayerVoteHistoriesByUserId = async ({ userId, playerId }) => 
   }
 };
 
-module.exports.registerPlayerVoteHistory = async ({ playerId, userId, action }) => {
+module.exports.registerPlayerVoteHistory = async ({ playerId, userId, vote }) => {
   try {
     const connection = await pool.getConnection();
 
@@ -105,7 +127,7 @@ module.exports.registerPlayerVoteHistory = async ({ playerId, userId, action }) 
       const [registeredHistory] = await connection.query(`
         INSERT INTO players_vote_histories
         (users_id, players_id, vote)
-        VALUES ('${userId}', '${playerId}', '${action}')
+        VALUES ('${userId}', '${playerId}', '${vote}')
       `);
       if (!registeredHistory) throw new Error(errors.REGISTER_VOTE_HISTORY_FAILED.message);
 

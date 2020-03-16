@@ -84,8 +84,24 @@ module.exports = {
       message: 'GET_VOTED_PLAYER_FAILED'
     },
     CANCEL_VOTE_PLAYER_FAILED: {
-      code: 'p066',
+      code: 'p006',
       message: 'CANCEL_VOTE_PLAYER_FAILED'
+    },
+    GET_PLAYER_SCORE_FAILED: {
+      code: 'p007',
+      message: 'GET_PLAYER_SCORE_FAILED'
+    },
+    SET_PLAYER_DEGREES_FAILED: {
+      code: 'p008',
+      message: 'SET_PLAYER_DEGREES_FAILED'
+    },
+    COOL_DOWN_PREVIOUS_TOP_PLAYER_FAILED: {
+      code: 'p009',
+      message: 'COOL_DOWN_PREVIOUS_TOP_PLAYER_FAILED'
+    },
+    ALREADY_VOTED_PLAYER: {
+      code: 'p010',
+      message: 'ALREADY_VOTED_PLAYER'
     },
 
     // Related to Authentication
@@ -120,6 +136,10 @@ module.exports = {
     GET_VOTED_OPINION_FAILED: {
       code: 'o002',
       message: 'GET_VOTED_OPINION_FAILED'
+    },
+    ALREADY_VOTED_OPINION: {
+      code: 'o003',
+      message: 'ALREADY_VOTED_OPINION'
     },
 
     // Related to Comment
@@ -184,6 +204,23 @@ module.exports = {
     GET_NOTIFICATION_FAILED: {
       code: 'n002',
       messagE: 'GET_NOTIFICATION_FAILED'
+    },
+
+    // Related to History
+    REGISTER_HISTORY_FAILED: {
+      code: 'h001',
+      message: 'REGISTER_HISTORY_FAILED'
+    },
+    GET_HISTORIES_FAILED: {
+      code: 'h001',
+      message: 'GET_HISTORIES_FAILED'
+    },
+
+    // Related to Report
+    // r001, r002.. 는 reply가 사용중
+    CREATE_REPORT_FAIL: {
+      code: 're001',
+      message: 'CREATE_REPORT_FAIL'
     }
   }
 };

@@ -8,7 +8,7 @@ router.get('/',
 );
 
 router.get('/:playerId',
-  playerController.getPlayerById
+  playerController.getHeavyPlayerById
 );
 
 router.put('/hits/:playerId',

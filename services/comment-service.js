@@ -64,6 +64,7 @@ module.exports.getPlayerCommentsByPlayerId = async (
       LIMIT ${howManyCommentEachRequest}`
     );
 
+    // Vote history mapping
     if (authorization) {
       const { userId } = extractUserInfoFromJWT(authorization);
 
@@ -87,9 +88,10 @@ module.exports.getPlayerCommentsByPlayerId = async (
   }
 };
 
-module.exports.addPlayerComment = async ({ userId, playerId, content }) => {
+module.exports.addPlayerComment = async (authorization, { playerId, content }) => {
   try {
     const connection = await pool.getConnection();
+    const { userId } = extractUserInfoFromJWT(authorization);
 
     try {
       const table = 'player_comments';
@@ -116,9 +118,9 @@ module.exports.addPlayerComment = async ({ userId, playerId, content }) => {
         throw new Error(errors.GET_COMMENT_FAILED.message);
       }
 
-      // Increase player comment count
+      // Increase player comment count & Update player degrees
       await playerService.increasePlayerCommentsCount(playerId, 'increase');
-
+      
       return createdComment[0];
     } finally {
       connection.release();
@@ -160,22 +162,28 @@ module.exports.deletePlayerComment = async ({ playerId, commentId }) => {
     const connection = await pool.getConnection();
 
     try {
-      // Query
-      const [deletedComment] = await connection.query(`
-        DELETE FROM player_comments
-        WHERE id='${commentId}'
-      `);
+      let deleteComment = () => {
+        return connection.query(`
+          DELETE FROM player_comments
+          WHERE id='${commentId}'
+        `);
+      };
 
-      const [deletedReplies] = await connection.query(`
-        DELETE FROM player_replies
-        WHERE parent_comments_id='${commentId}'
-      `);
+      let deleteReplies = () => {
+        return connection.query(`
+          DELETE FROM player_replies
+          WHERE parent_comments_id='${commentId}'
+        `);
+      };
+
+      const [deletedComment, deletedReplies] =
+      await Promise.all([deleteComment(), deleteReplies()]);
 
       if (!deletedComment || !deletedReplies) {
         throw new Error(errors.DELETE_COMMENT_FAILED.message);
       }
 
-      // Decrease player comment count
+      // Decrease player comment count & Update player degrees
       await playerService.increasePlayerCommentsCount(playerId, 'decrease');
 
       return deletedComment;
