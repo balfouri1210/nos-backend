@@ -54,7 +54,7 @@ module.exports.addPlayerReply = async (authorization, { playerId, content, paren
       // Add reply
       const [createdComment] = await connection.query(`
         INSERT INTO player_replies
-        (users_id, player_id, content, parent_comments_id)
+        (users_id, players_id, content, parent_comments_id)
         VALUES (?, ?, ?, ?)
       `, [userId, playerId, content, parentCommentsId]);
 
@@ -148,3 +148,48 @@ module.exports.deletePlayerReply = async ({ replyId }, { parentCommentsId }) => 
   }
 };
 
+
+
+// 프론트엔드와 단절된 함수들
+module.exports.replyMigrationToHistories = async (historyId) => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      // Query
+      await connection.query(`
+        INSERT INTO player_replies_histories 
+        (histories_id, id, users_id, players_id, parent_comments_id, content, vote_up_count, vote_down_count, created_at, updated_at)
+        SELECT ${historyId}, id, users_id, players_id, parent_comments_id, content, vote_up_count, vote_down_count, created_at, updated_at
+        FROM player_replies
+      `);
+
+      return;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};
+
+module.exports.emptyPlayerReplies = async () => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      // Query
+      await connection.query(`
+        DELETE FROM player_replies
+      `);
+
+      return;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};

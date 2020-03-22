@@ -1,5 +1,5 @@
 const pool = require('../database/db-connection');
-const { errors } = require('../constants/index');
+const { constants, errors } = require('../constants/index');
 
 module.exports.getPlayers = async (
   { previousPlayerIdList, size }
@@ -25,6 +25,7 @@ module.exports.getPlayers = async (
   }
 };
 
+// Heavy인 이유 : player와 연결된 모든것들과 조인하기 때문
 module.exports.getHeavyPlayerById = async (
   { playerId }
 ) => {
@@ -83,3 +84,57 @@ module.exports.increasePlayerCommentsCount = async (
 };
 
 
+
+// 프론트엔드와 단절된 함수들
+module.exports.top100PlayersMigrationToHistories = async (historyId) => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      let [top100Players] = await connection.query(`
+        SELECT *
+        FROM players
+        ORDER BY players.hits + players.vote_up_count + players.vote_down_count + players.comment_count DESC, players.id DESC
+        LIMIT ${constants.weeklyPlayerHistoryRange}
+      `);
+
+      top100Players = top100Players.map(player => {
+        return [historyId, player.id, player.hits, player.vote_up_count, player.vote_down_count, player.comment_count];
+      });
+
+      await connection.query(`
+        INSERT INTO players_histories
+        (histories_id, players_id, hits, vote_up_count, vote_down_count, comment_count)
+        VALUES ?
+      `, [top100Players]);
+
+      return;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};
+
+module.exports.initiatePlayers = async () => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      // Initiate players table
+      await connection.query(`
+        UPDATE players
+        SET vote_up_count=0, vote_down_count=0, hits=0, comment_count=0
+      `);
+
+      return;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};

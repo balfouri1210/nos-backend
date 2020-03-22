@@ -3,12 +3,13 @@ const { errors } = require('../constants/index');
 const voteHistoryService = require('./vote-history-service');
 const playerService = require('./player-service');
 const { extractUserInfoFromJWT } = require('./auth-service');
+const moment = require('moment');
 
 module.exports.getPlayerCommentsCountByPlayerId = async ({ playerId }) => {
   try {
     const [playerCommentsCount] = await pool.query(`
       SELECT COUNT(*) AS COUNT FROM player_comments
-      WHERE player_id='${playerId}'
+      WHERE players_id='${playerId}'
     `);
 
     if (!playerCommentsCount.length) {
@@ -44,13 +45,13 @@ module.exports.getPlayerCommentsByPlayerId = async (
     switch (sortType) {
     case 'date' :
       orderByQuery = `${table}.id DESC`;
-      whereQuery = `player_id='${playerId}' and ${table}.id < ${minId}`;
+      whereQuery = `players_id='${playerId}' and ${table}.id < ${minId}`;
       break;
 
     case 'like' :
     default :
       orderByQuery = `(${table}.vote_up_count - ${table}.vote_down_count) DESC, ${table}.id DESC`;
-      whereQuery = `player_id='${playerId}' and ${table}.id NOT IN (${previousCommentIdList.toString()})`;
+      whereQuery = `players_id='${playerId}' and ${table}.id NOT IN (${previousCommentIdList.toString()})`;
       break;
     }
 
@@ -98,7 +99,7 @@ module.exports.addPlayerComment = async (authorization, { playerId, content }) =
 
       // Add comment
       const [createdResult] = await connection.query(`
-        INSERT INTO ${table} (users_id, player_id, content)
+        INSERT INTO ${table} (users_id, players_id, content)
         VALUES (?, ?, ?)
       `, [userId, playerId, content]);
 
@@ -139,7 +140,8 @@ module.exports.editPlayerComment = async ({ commentId }, { newContent }) => {
       // Query
       const [edittedComment] = await connection.query(`
         UPDATE player_comments SET
-        content='${newContent}'
+        content='${newContent}',
+        updated_at='${moment().utc().format('YYYY-MM-DD HH:mm:ss')}'
         WHERE id='${commentId}'
       `);
 
@@ -195,3 +197,49 @@ module.exports.deletePlayerComment = async ({ playerId, commentId }) => {
     throw new Error(err.message || err);
   }
 };
+
+
+
+// 프론트엔드와 단절된 함수들
+module.exports.commentMigrationToHistories = async (historyId) => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      await connection.query(`
+        INSERT INTO player_comments_histories 
+        (histories_id, id, users_id, players_id, content, vote_up_count, vote_down_count, reply_count, created_at, updated_at)
+        SELECT ${historyId}, id, users_id, players_id, content, vote_up_count, vote_down_count, reply_count, created_at, updated_at
+        FROM player_comments
+      `);
+
+      return;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};
+
+module.exports.emptyPlayerComments = async () => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      // Query
+      await connection.query(`
+        DELETE FROM player_comments
+      `);
+
+      return;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};
+

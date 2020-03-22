@@ -1,4 +1,8 @@
 module.exports = {
+  constants: {
+    weeklyPlayerHistoryRange: 100
+  },
+
   defaultServerResponse: {
     status: 400,
     message: 'server error!',
@@ -212,8 +216,16 @@ module.exports = {
       message: 'REGISTER_HISTORY_FAILED'
     },
     GET_HISTORIES_FAILED: {
-      code: 'h001',
+      code: 'h002',
       message: 'GET_HISTORIES_FAILED'
+    },
+    GET_COMMENTS_HISTORIES_FAILED: {
+      code: 'h003',
+      message: 'GET_COMMENTS_HISTORIES_FAILED'
+    },
+    GET_REPLIES_HISTORIES_FAILED: {
+      code: 'h004',
+      message: 'GET_REPLIES_HISTORIES_FAILED'
     },
 
     // Related to Report

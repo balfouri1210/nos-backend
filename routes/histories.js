@@ -1,14 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const historiesController = require('../controllers/histories-controller');
-// const tokenValidation = require('../middleware/token-validation');
-
-router.get('/:historyId',
-  historiesController.getHistory,
-);
 
 router.get('/',
   historiesController.getHistories
+);
+
+router.get('/:historyId',
+  historiesController.getHistory,
 );
 
 router.post('/',
@@ -18,4 +17,20 @@ router.post('/',
 router.get('/player/:historyId',
   historiesController.getPlayerHistories
 );
+
+
+// History페이지 player-modal 에서 필요
+router.get('/:historyId/player/:playerId',
+  historiesController.getPlayerHistory
+);
+
+router.get('/:historyId/player/:playerId/comments',
+  historiesController.getPlayerCommentsHistories
+);
+
+router.get('/:historyId/player/:playerId/replies',
+  historiesController.getPlayerRepliesHistories
+);
+
+
 module.exports = router;

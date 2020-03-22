@@ -1,4 +1,7 @@
 const schedule = require('node-schedule');
+const commentService = require('../services/comment-service');
+const replyService = require('../services/reply-service');
+const playerService = require('../services/player-service');
 const historiesService = require('../services/histories-service');
 const historyTerm = 1000 * 60 * 60 * 24 * 7;
 
@@ -7,16 +10,29 @@ async function schedulerWorker() {
   console.log('schedule worker executed!');
   try {
     const insertedHistoryId = await historiesService.addHistories(historyTerm);
-    await historiesService.getAndInsertTop100Players(insertedHistoryId);
+
+    await Promise.all([
+      playerService.top100PlayersMigrationToHistories(insertedHistoryId),
+      commentService.commentMigrationToHistories(insertedHistoryId),
+      replyService.replyMigrationToHistories(insertedHistoryId)
+    ]);
+
+    await Promise.all([
+      playerService.initiatePlayers(),
+      commentService.emptyPlayerComments(),
+      replyService.emptyPlayerReplies()
+    ]);
   } catch (err) {
     console.error(err);
     throw new Error(err.message || err);
+  } finally {
+    console.log('schedule worker done!');
   }
 }
 
 // Remember - in JavaScript: 0 - January, 11 - December.
 // 정기작업이 시작될 날짜를 지정한다.
-const date = new Date(Date.UTC(2020, 2, 14, 7, 48, 0));
+const date = new Date(Date.UTC(2020, 2, 21, 17, 15));
 
 module.exports.historyScheduler =
 schedule.scheduleJob(date, () => {
