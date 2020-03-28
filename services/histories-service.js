@@ -1,21 +1,45 @@
 const pool = require('../database/db-connection');
-const { errors } = require('../constants/index');
+const { errors, constants } = require('../constants/index');
 const moment = require('moment');
 
-module.exports.getHistories = async () => {
+module.exports.getHistories = async ({ minId }) => {
   try {
     const connection = await pool.getConnection();
 
     try {
+      minId = minId || constants.defaultMinId;
       const [histories] = await connection.query(`
         SELECT *
         FROM histories
+        WHERE histories.id < ${minId}
         ORDER BY id DESC
+        LIMIT 5
       `);
 
       if (!histories) {
         throw new Error(errors.GET_HISTORIES_FAILED.message);
       }
+
+      let query = [];
+      histories.forEach(history => {
+        query.push(`
+          (SELECT players_histories.*, players.known_as, players.birthday, players.position,
+          countries.code as country_code, clubs.image as club_image
+          FROM players_histories
+          LEFT JOIN players ON players.id = players_histories.players_id
+          LEFT JOIN countries ON players.nationality = countries.id
+          LEFT JOIN clubs ON players.club_team_id = clubs.id
+          WHERE histories_id=${history.id}
+          LIMIT 5)
+        `);
+      });
+      query = query.join(' union all ');
+
+      const [playerHistories] = await connection.query(query);
+
+      histories.forEach(history => {
+        history.players = playerHistories.filter(playerHistory => playerHistory.histories_id === history.id);
+      });
 
       return histories;
     } finally {

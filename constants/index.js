@@ -1,6 +1,7 @@
 module.exports = {
   constants: {
-    weeklyPlayerHistoryRange: 100
+    weeklyPlayerHistoryRange: 100,
+    defaultMinId: 2147483647
   },
 
   defaultServerResponse: {
@@ -233,6 +234,12 @@ module.exports = {
     CREATE_REPORT_FAIL: {
       code: 're001',
       message: 'CREATE_REPORT_FAIL'
+    },
+
+    // Related to Search
+    SEARCH_PLAYER_FAILED: {
+      code: 's001',
+      message: 'SEARCH_PLAYER_FAILED'
     }
   }
 };

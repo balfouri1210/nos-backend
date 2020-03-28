@@ -1,6 +1,6 @@
 const pool = require('../database/db-connection');
-const { errors } = require('../constants/index');
-const voteHistoryService = require('./vote-history-service');
+const { errors, constants } = require('../constants/index');
+const voteHistoriesService = require('./vote-histories-service');
 const playerService = require('./player-service');
 const { extractUserInfoFromJWT } = require('./auth-service');
 const moment = require('moment');
@@ -37,7 +37,7 @@ module.exports.getPlayerCommentsByPlayerId = async (
     const howManyCommentEachRequest = 10;
 
     // 최초 로드시 minId가 없으므로 최대값으로 설정하여 가장 큰 id를 가진 comment부터 가져오도록 한다.
-    minId = minId || 2147483647;
+    minId = minId || constants.defaultMinId;
     // 최초 로드시 comment list가 존재하지 않으므로 빈값을 할당한다.
     previousCommentIdList = previousCommentIdList || '""';
 
@@ -69,7 +69,7 @@ module.exports.getPlayerCommentsByPlayerId = async (
     if (authorization) {
       const { userId } = extractUserInfoFromJWT(authorization);
 
-      const commentVoteHistories = await voteHistoryService.getOpinionVoteHistoriesByUserId({
+      const commentVoteHistories = await voteHistoriesService.getOpinionVoteHistoriesByUserId({
         targetOpinion: table,
         userId
       });

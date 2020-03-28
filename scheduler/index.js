@@ -3,6 +3,7 @@ const commentService = require('../services/comment-service');
 const replyService = require('../services/reply-service');
 const playerService = require('../services/player-service');
 const historiesService = require('../services/histories-service');
+const voteHistoriesService = require('../services/vote-histories-service');
 const historyTerm = 1000 * 60 * 60 * 24 * 7;
 
 // 정기작업
@@ -20,7 +21,11 @@ async function schedulerWorker() {
     await Promise.all([
       playerService.initiatePlayers(),
       commentService.emptyPlayerComments(),
-      replyService.emptyPlayerReplies()
+      replyService.emptyPlayerReplies(),
+
+      voteHistoriesService.truncateOpinionVoteHistory('player_comments'),
+      voteHistoriesService.truncateOpinionVoteHistory('player_replies'),
+      voteHistoriesService.truncatePlayerVoteHistory()
     ]);
   } catch (err) {
     console.error(err);
@@ -32,7 +37,7 @@ async function schedulerWorker() {
 
 // Remember - in JavaScript: 0 - January, 11 - December.
 // 정기작업이 시작될 날짜를 지정한다.
-const date = new Date(Date.UTC(2020, 2, 21, 17, 15));
+const date = new Date(Date.UTC(2020, 2, 25, 1, 5));
 
 module.exports.historyScheduler =
 schedule.scheduleJob(date, () => {

@@ -22,6 +22,7 @@ app.use('/api/vote-histories', require('./routes/vote-histories'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/report', require('./routes/report'));
 app.use('/api/histories', require('./routes/histories'));
+app.use('/api/search', require('./routes/search'));
 
 app.get('/', (req, res, next) => {
   res.send('NOS api server is running');

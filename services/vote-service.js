@@ -1,6 +1,6 @@
 const pool = require('../database/db-connection');
 const { errors } = require('../constants/index');
-const voteHistoryService = require('./vote-history-service');
+const voteHistoriesService = require('./vote-histories-service');
 const notificationService = require('./notification-service');
 const { extractUserInfoFromJWT } = require('./auth-service');
 
@@ -12,7 +12,7 @@ module.exports.opinionVote = async (authorization, { targetAuthorId, targetOpini
     let result;
 
     try {
-      const voteHistory = await voteHistoryService.getOpinionVoteHistory({
+      const voteHistory = await voteHistoriesService.getOpinionVoteHistory({
         targetOpinion,
         targetOpinionId,
         userId
@@ -29,7 +29,7 @@ module.exports.opinionVote = async (authorization, { targetAuthorId, targetOpini
             `),
 
             // Delete vote history
-            voteHistoryService.deleteOpinionVoteHistory({ targetOpinion, targetOpinionId, userId })
+            voteHistoriesService.deleteOpinionVoteHistory({ targetOpinion, targetOpinionId, userId })
           ]);
 
           result = 'cancelled';
@@ -46,7 +46,7 @@ module.exports.opinionVote = async (authorization, { targetAuthorId, targetOpini
           `),
 
           // Register vote history
-          voteHistoryService.registerOpinionVoteHistory({ targetOpinion, targetOpinionId, userId, vote }),
+          voteHistoriesService.registerOpinionVoteHistory({ targetOpinion, targetOpinionId, userId, vote }),
         ]);
 
         result = 'voted';
@@ -89,7 +89,7 @@ module.exports.playerVote = async (authorization, { playerId, vote }) => {
     let result;
 
     try {
-      const voteHistory = await voteHistoryService.getPlayerVoteHistoryByUserId({
+      const voteHistory = await voteHistoriesService.getPlayerVoteHistoryByUserId({
         playerId,
         userId
       });
@@ -104,7 +104,7 @@ module.exports.playerVote = async (authorization, { playerId, vote }) => {
             WHERE id='${playerId}'
           `),
 
-            voteHistoryService.deletePlayerVoteHistory({ playerId, userId })
+            voteHistoriesService.deletePlayerVoteHistory({ playerId, userId })
           ]);
 
           result = 'cancelled';
@@ -121,7 +121,7 @@ module.exports.playerVote = async (authorization, { playerId, vote }) => {
           `),
 
           // Register vote history
-          voteHistoryService.registerPlayerVoteHistory({ playerId, userId, vote })
+          voteHistoriesService.registerPlayerVoteHistory({ playerId, userId, vote })
         ]);
 
         result = 'voted';

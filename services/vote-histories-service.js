@@ -95,6 +95,24 @@ module.exports.deleteOpinionVoteHistory = async ({ targetOpinion, targetOpinionI
   }
 };
 
+module.exports.truncateOpinionVoteHistory = async (targetOpinion) => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      await connection.query(`
+        TRUNCATE TABLE ${targetOpinion}_vote_histories
+      `);
+
+      return;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    throw new Error(err.message || err);
+  }
+};
+
 
 // PLAYER
 module.exports.getPlayerVoteHistoryByUserId = async ({ userId, playerId }) => {
@@ -153,6 +171,24 @@ module.exports.deletePlayerVoteHistory = async ({ playerId, userId }) => {
       if (!registeredHistory) throw new Error(errors.DELETE_VOTE_HISTORY_FAILED.message);
 
       return registeredHistory;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    throw new Error(err.message || err);
+  }
+};
+
+module.exports.truncatePlayerVoteHistory = async () => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      await connection.query(`
+        TRUNCATE TABLE players_vote_histories
+      `);
+
+      return;
     } finally {
       connection.release();
     }

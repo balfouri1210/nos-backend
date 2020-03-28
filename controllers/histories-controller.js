@@ -3,7 +3,9 @@ const { errors, defaultServerResponse } = require('../constants/index');
 
 module.exports.getHistories = async (req, res) => {
   try {
-    const result = await historiesService.getHistories();
+    const result = await historiesService.getHistories(
+      req.query
+    );
     res.send(result);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);

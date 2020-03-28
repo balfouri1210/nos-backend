@@ -1,9 +1,9 @@
-const voteHistoryService = require('../services/vote-history-service');
+const voteHistoriesService = require('../services/vote-histories-service');
 const { errors, defaultServerResponse } = require('../constants/index');
 
 module.exports.getPlayerCommentVoteHistories = async (req, res) => {
   try {
-    const result = await voteHistoryService.getOpinionVoteHistoriesByUserId({
+    const result = await voteHistoriesService.getOpinionVoteHistoriesByUserId({
       targetOpinion: 'player_comments_vote_histories',
       userId: req.params.userId
     });
