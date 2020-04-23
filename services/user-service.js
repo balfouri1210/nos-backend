@@ -64,14 +64,14 @@ module.exports.updateUserProfile = async (authorization, { username, countryId }
       const { userId } = extractUserInfoFromJWT(authorization);
       const targetUser = await this.getUserById({ id: userId });
       const date = new Date();
-      
+
       // 마지막 수정일 기준 30일이 지나지 않으면 업데이트 할 수 없음.
       if ((moment(date).valueOf() - moment(targetUser.updated_at).valueOf()) < 1000 * 60 * 60 * 24 * 30) {
         throw new Error(errors.LESS_THAN_THIRTY_DAYS.message);
       } else {
         const [updateResult] = await connection.query(`
           UPDATE users SET username='${username}', country_id='${countryId}',
-          updated_at='${moment(new Date()).utc().format('YYYY-MM-DD HH:mm:ss')}'
+          updated_at='${moment().utc().format('YYYY-MM-DD HH:mm:ss')}'
           WHERE id='${userId}'
         `);
 

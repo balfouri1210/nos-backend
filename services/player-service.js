@@ -12,7 +12,7 @@ module.exports.getPlayers = async (
       SELECT players.*, countries.name as country_name, countries.code as country_code,
       (players.hits + players.vote_up_count + players.vote_down_count + players.comment_count) as score
       FROM players
-      LEFT JOIN countries ON players.nationality = countries.id
+      LEFT JOIN countries ON players.country_id = countries.id
       WHERE players.id NOT IN (${previousPlayerIdList.toString()})
       ORDER BY players.hits + players.vote_up_count + players.vote_down_count + players.comment_count DESC, players.id DESC
       LIMIT ${size}
@@ -35,7 +35,7 @@ module.exports.getHeavyPlayerById = async (
       clubs.name as club_name, clubs.image as club_image,
       leagues.id as league_id
       FROM players
-      LEFT JOIN countries ON players.nationality = countries.id
+      LEFT JOIN countries ON players.country_id = countries.id
       LEFT JOIN clubs ON players.club_team_id = clubs.id
       LEFT JOIN leagues ON clubs.leagues_id = leagues.id
       WHERE players.id = ${playerId}

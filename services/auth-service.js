@@ -7,7 +7,10 @@ const moment = require('moment');
 
 module.exports.login = async ({ email, password }) => {
   try {
-    const [rows] = await pool.query(`SELECT * FROM users WHERE email='${email}'`);
+    const [rows] = await pool.query(`
+      SELECT * FROM users
+      WHERE email='${email}'
+    `);
     const user = rows[0];
 
     if (!user) {
@@ -76,10 +79,11 @@ module.exports.accountActivation = async ({ verificationCode }) => {
 
 module.exports.extractUserInfoFromJWT = (authorization) => {
   try {
-    const token = authorization.split('Bearer')[1].trim();
     let decoded = {};
-    if (token !== 'null')
+    if (authorization) {
+      const token = authorization.split('Bearer')[1].trim();
       decoded = jwt.verify(token, process.env.SECRET_KEY || 'nos-secret-key');
+    }
   
     return {
       userId: decoded.id || null,

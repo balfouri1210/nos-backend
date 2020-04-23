@@ -71,7 +71,6 @@ module.exports.getPlayerCommentsHistories = async (req, res) => {
 
 module.exports.getPlayerRepliesHistories = async (req, res) => {
   try {
-    console.log(req.params, req.query);
     const result = await historiesService.getPlayerRepliesHistories(
       req.params,
       req.query

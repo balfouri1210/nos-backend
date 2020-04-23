@@ -108,6 +108,10 @@ module.exports = {
       code: 'p010',
       message: 'ALREADY_VOTED_PLAYER'
     },
+    UPDATE_PLAYER_FAILED: {
+      code: 'p011',
+      message: 'UPDATE_PLAYER_FAILED'
+    },
 
     // Related to Authentication
     TOKEN_MISSING: {
