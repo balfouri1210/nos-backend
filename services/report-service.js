@@ -2,7 +2,7 @@ const pool = require('../database/db-connection');
 const { errors } = require('../constants/index');
 const { extractUserInfoFromJWT } = require('./auth-service');
 
-module.exports.reportOpinion = async (authorization, { type, subject, targetId }) => {
+module.exports.reportOpinion = async (authorization, { object, targetId, reason }) => {
   // type = comment or reply
   // subject = player of team
   try {
@@ -12,9 +12,9 @@ module.exports.reportOpinion = async (authorization, { type, subject, targetId }
     try {
       // Add report
       const [createdResult] = await connection.query(`
-        INSERT INTO ${type}_reports (subject, target_id, reporter_id)
-        VALUES (?, ?, ?)
-      `, [subject, targetId, userId]);
+        INSERT INTO reports (object, target_id, reporter_id, reason)
+        VALUES (?, ?, ?, ?)
+      `, [object, targetId, userId, reason]);
 
       if (!createdResult) {
         throw new Error(errors.CREATE_REPORT_FAIL.message);

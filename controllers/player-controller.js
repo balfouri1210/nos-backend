@@ -15,6 +15,7 @@ module.exports.getPlayers = async (req, res) => {
 module.exports.getHeavyPlayerById = async (req, res) => {
   try {
     const result = await playerService.getHeavyPlayerById(
+      req.headers.authorization,
       req.params
     );
     res.send(result);

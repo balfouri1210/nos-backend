@@ -1,47 +1,50 @@
 const pool = require('../database/db-connection');
-const { errors, constants } = require('../constants/index');
+const { errors } = require('../constants/index');
 const moment = require('moment');
 
-module.exports.getHistories = async ({ minId }) => {
+module.exports.getHistories = async ({ year, month }) => {
   try {
     const connection = await pool.getConnection();
 
     try {
-      minId = minId || constants.defaultMinId;
+      if (!year && !month) throw new Error(errors.GET_HISTORIES_FAILED.message);
+      month = moment(month, 'M').format('MM');
+
       const [histories] = await connection.query(`
         SELECT *
         FROM histories
-        WHERE histories.id < ${minId}
-        ORDER BY id DESC
-        LIMIT 5
+        WHERE end_date >= '${year}-${month}-01' AND start_date <= LAST_DAY('${year}-${month}-01')
+        ORDER BY id
       `);
 
-      if (!histories) {
-        throw new Error(errors.GET_HISTORIES_FAILED.message);
+      if (!histories) throw new Error(errors.GET_HISTORIES_FAILED.message);
+
+      if (histories.length === 0) {
+        return histories;
+      } else {
+        let query = [];
+        histories.forEach(history => {
+          query.push(`
+            (SELECT players_histories.*, players.known_as, players.birthday, players.position,
+            countries.code as country_code, clubs.image as club_image
+            FROM players_histories
+            LEFT JOIN players ON players.id = players_histories.players_id
+            LEFT JOIN countries ON players.country_id = countries.id
+            LEFT JOIN clubs ON players.club_team_id = clubs.id
+            WHERE histories_id=${history.id}
+            LIMIT 5)
+          `);
+        });
+        query = query.join(' union all ');
+
+        const [playerHistories] = await connection.query(query);
+
+        histories.forEach(history => {
+          history.players = playerHistories.filter(playerHistory => playerHistory.histories_id === history.id);
+        });
+
+        return histories;
       }
-
-      let query = [];
-      histories.forEach(history => {
-        query.push(`
-          (SELECT players_histories.*, players.known_as, players.birthday, players.position,
-          countries.code as country_code, clubs.image as club_image
-          FROM players_histories
-          LEFT JOIN players ON players.id = players_histories.players_id
-          LEFT JOIN countries ON players.country_id = countries.id
-          LEFT JOIN clubs ON players.club_team_id = clubs.id
-          WHERE histories_id=${history.id}
-          LIMIT 5)
-        `);
-      });
-      query = query.join(' union all ');
-
-      const [playerHistories] = await connection.query(query);
-
-      histories.forEach(history => {
-        history.players = playerHistories.filter(playerHistory => playerHistory.histories_id === history.id);
-      });
-
-      return histories;
     } finally {
       connection.release();
     }
@@ -81,16 +84,6 @@ module.exports.addHistories = async (historyTerm) => {
     const connection = await pool.getConnection();
 
     try {
-      // const date = new Date();
-
-      // const [insertedHistory] = await connection.query(`
-      //   INSERT INTO histories
-      //   (start_date, end_date)
-      //   VALUES (
-      //     '${moment(new Date(date.getTime() - historyTerm)).utc().format('YYYY-MM-DD HH:mm:ss')}',
-      //     '${moment(date).utc().format('YYYY-MM-DD HH:mm:ss')}'
-      //   )
-      // `);
       const [insertedHistory] = await connection.query(`
         INSERT INTO histories
         (start_date, end_date)
@@ -120,7 +113,7 @@ module.exports.getPlayerHistories = async ({ historyId }, { previousPlayerIdList
     try {
       const [playerHistories] = await connection.query(`
         SELECT players_histories.hits, players_histories.vote_up_count, players_histories.vote_down_count, players_histories.comment_count,
-        (players_histories.hits + players_histories.vote_up_count + players_histories.vote_down_count + players_histories.comment_count) as score,
+        (players_histories.hits/2 + players_histories.vote_up_count + players_histories.vote_down_count + players_histories.comment_count) as score,
         players.id, players.known_as, players.birthday, players.country_id, players.height, players.club_team_id, players.position,
         countries.name as country_name, countries.code as country_code
         FROM players_histories

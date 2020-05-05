@@ -112,6 +112,14 @@ module.exports = {
       code: 'p011',
       message: 'UPDATE_PLAYER_FAILED'
     },
+    CREATE_PLAYER_FAILED: {
+      code: 'p012',
+      message: 'CREATE_PLAYER_FAILED'
+    },
+    DELETE_PLAYER_FAILED: {
+      code: 'p013',
+      message: 'DELETE_PLAYER_FAILED'
+    },
 
     // Related to Authentication
     TOKEN_MISSING: {

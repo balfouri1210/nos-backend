@@ -25,13 +25,13 @@ module.exports.getUsers = async ({ searchKeyword }) => {
 
     if (searchKeyword) {
       query = `
-        SELECT id, email, username, gender, birth, status, created_at, activated_at, authorization
+        SELECT id, email, username, gender, birth, status, created_at, activated_at, updated_at, authorization
         FROM users
         WHERE email LIKE '%${searchKeyword}%'
       `;
     } else {
       query = `
-        SELECT id, email, username, gender, birth, status, created_at, activated_at, authorization
+        SELECT id, email, username, gender, birth, status, created_at, activated_at, updated_at, authorization
         FROM users
       `;
     }

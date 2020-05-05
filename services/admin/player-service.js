@@ -55,11 +55,69 @@ module.exports.updatePlayer = async ({ playerId, knownAs, birthday, countryId, h
         WHERE id='${playerId}'
       `);
 
-      if (!updatedPlayer) {
-        throw new Error(errors.UPDATE_PLAYER_FAILED.message);
-      }
+      if (!updatedPlayer) throw new Error(errors.UPDATE_PLAYER_FAILED.message);
 
       return updatedPlayer;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};
+
+module.exports.createPlayer = async ({
+  knownAs,
+  birthday,
+  countryId,
+  height,
+  clubTeamId,
+  position,
+  imageUrl,
+  footystatsPlayerId
+}) => {
+  try {
+    if (!(knownAs && birthday && countryId && height && clubTeamId && position))
+      throw new Error(errors.CREATE_PLAYER_FAILED.message);
+
+    const connection = await pool.getConnection();
+    
+    try {
+      // Query
+      const insertSql = `
+        INSERT INTO players (known_as, birthday, country_id, height, club_team_id, position, image_url, footystats_player_id)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `;
+      const params = [knownAs, birthday, countryId, height, clubTeamId, position, imageUrl, footystatsPlayerId];
+      const [createdPlayer] = await connection.query(insertSql, params);
+
+      if (!createdPlayer) throw new Error(errors.CREATE_PLAYER_FAILED.message);
+
+      return createdPlayer;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};
+
+module.exports.deletePlayer = async ({ playerId }) => {
+  try {
+    const connection = await pool.getConnection();
+    
+    try {
+      // Query
+      const [deletedPlayer] = await connection.query(`
+        DELETE FROM players
+        WHERE id='${playerId}'
+      `);
+
+      if (!deletedPlayer) throw new Error(errors.DELETE_PLAYER_FAILED.message);
+
+      return deletedPlayer;
     } finally {
       connection.release();
     }

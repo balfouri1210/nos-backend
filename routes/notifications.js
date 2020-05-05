@@ -10,7 +10,7 @@ router.get('/:recipientId',
 
 router.get('/unread/:recipientId',
   tokenValidation.validationToken,
-  notificationController.getUnreadNotifications
+  notificationController.getUnreadNotificationCount
 );
 
 module.exports = router;

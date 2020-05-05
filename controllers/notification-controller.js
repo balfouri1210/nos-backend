@@ -12,9 +12,9 @@ module.exports.getNotificationsByRecipientId = async (req, res) => {
   }
 };
 
-module.exports.getUnreadNotifications = async (req, res) => {
+module.exports.getUnreadNotificationCount = async (req, res) => {
   try {
-    const result = await notificationService.getUnreadNotifications(
+    const result = await notificationService.getUnreadNotificationCount(
       req.params
     );
     res.send(result);

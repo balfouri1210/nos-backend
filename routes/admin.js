@@ -34,4 +34,14 @@ router.put('/players',
   adminPlayerController.updatePlayer
 );
 
+router.post('/players',
+  tokenValidation.validationToken,
+  adminPlayerController.createPlayer
+);
+
+router.delete('/players',
+  tokenValidation.validationToken,
+  adminPlayerController.deletePlayer
+);
+
 module.exports = router;

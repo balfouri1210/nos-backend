@@ -1,5 +1,6 @@
 const pool = require('../database/db-connection');
 const { constants, errors } = require('../constants/index');
+const { extractUserInfoFromJWT } = require('./auth-service');
 
 module.exports.getPlayers = async (
   { previousPlayerIdList, size }
@@ -10,11 +11,11 @@ module.exports.getPlayers = async (
 
     const [players] = await pool.query(`
       SELECT players.*, countries.name as country_name, countries.code as country_code,
-      (players.hits + players.vote_up_count + players.vote_down_count + players.comment_count) as score
+      (players.hits/2 + players.vote_up_count + players.vote_down_count + players.comment_count) as score
       FROM players
       LEFT JOIN countries ON players.country_id = countries.id
       WHERE players.id NOT IN (${previousPlayerIdList.toString()})
-      ORDER BY players.hits + players.vote_up_count + players.vote_down_count + players.comment_count DESC, players.id DESC
+      ORDER BY players.hits/2 + players.vote_up_count + players.vote_down_count + players.comment_count DESC, players.id DESC
       LIMIT ${size}
     `);
 
@@ -27,23 +28,26 @@ module.exports.getPlayers = async (
 
 // Heavy인 이유 : player와 연결된 모든것들과 조인하기 때문
 module.exports.getHeavyPlayerById = async (
+  authorization,
   { playerId }
 ) => {
+  const { userId } = extractUserInfoFromJWT(authorization);
+
   try {
     const [player] = await pool.query(`
       SELECT players.*, countries.name as country_name, countries.code as country_code,
       clubs.name as club_name, clubs.image as club_image,
-      leagues.id as league_id
+      leagues.id as league_id,
+      players_vote_histories.vote as vote
       FROM players
       LEFT JOIN countries ON players.country_id = countries.id
       LEFT JOIN clubs ON players.club_team_id = clubs.id
       LEFT JOIN leagues ON clubs.leagues_id = leagues.id
+      LEFT JOIN players_vote_histories ON players_vote_histories.users_id = ${userId} AND players_vote_histories.players_id = ${playerId}
       WHERE players.id = ${playerId}
     `);
 
-    let result = player[0];
-
-    return result;
+    return player[0];
   } catch (err) {
     console.error(err);
     throw new Error(errors.GET_PLAYER_BY_ID_FAILED.message);
@@ -94,7 +98,7 @@ module.exports.top100PlayersMigrationToHistories = async (historyId) => {
       let [top100Players] = await connection.query(`
         SELECT *
         FROM players
-        ORDER BY players.hits + players.vote_up_count + players.vote_down_count + players.comment_count DESC, players.id DESC
+        ORDER BY players.hits/2 + players.vote_up_count + players.vote_down_count + players.comment_count DESC, players.id DESC
         LIMIT ${constants.weeklyPlayerHistoryRange}
       `);
 

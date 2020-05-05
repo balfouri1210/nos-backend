@@ -13,8 +13,10 @@ module.exports.getPlayerReplyByParentCommentsId = async (
     const targetOpinion = 'player_replies';
     const howManyReplyEachRequest = 10;
     maxId = maxId || 0;
+
     const [replies] = await pool.query(`
-      SELECT ${targetOpinion}.id, ${targetOpinion}.users_id, username, content, parent_comments_id, vote_up_count, vote_down_count, ${targetOpinion}.created_at FROM ${targetOpinion}
+      SELECT ${targetOpinion}.id, ${targetOpinion}.users_id, username, content, parent_comments_id, vote_up_count, vote_down_count, ${targetOpinion}.created_at
+      FROM ${targetOpinion}
       LEFT JOIN users ON ${targetOpinion}.users_id = users.id
       WHERE parent_comments_id=${parentCommentsId} AND ${targetOpinion}.id>${maxId}
       ORDER BY ${targetOpinion}.id
@@ -61,7 +63,7 @@ module.exports.addPlayerReply = async (authorization, { playerId, content, paren
       if (!createdComment)
         throw new Error(errors.CREATE_REPLY_FAILED.message);
 
-      // Increase parent's vote count
+      // Increase parent's reply count
       await connection.query(`
         UPDATE player_comments SET reply_count=reply_count+1
         WHERE id='${parentCommentsId}'
