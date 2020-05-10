@@ -104,10 +104,10 @@ module.exports = {
       code: 'p009',
       message: 'COOL_DOWN_PREVIOUS_TOP_PLAYER_FAILED'
     },
-    ALREADY_VOTED_PLAYER: {
-      code: 'p010',
-      message: 'ALREADY_VOTED_PLAYER'
-    },
+    // ALREADY_VOTED_PLAYER: {
+    //   code: 'p010',
+    //   message: 'ALREADY_VOTED_PLAYER'
+    // },
     UPDATE_PLAYER_FAILED: {
       code: 'p011',
       message: 'UPDATE_PLAYER_FAILED'

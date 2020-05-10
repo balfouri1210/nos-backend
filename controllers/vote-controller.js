@@ -24,3 +24,15 @@ module.exports.playerVote = async (req, res) => {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }
 };
+
+module.exports.cancelPlayerVote = async (req, res) => {
+  try {
+    const result = await voteService.cancelPlayerVote(
+      req.headers.authorization,
+      req.query
+    );
+    res.send(result);
+  } catch (err) {
+    res.status(400).send(errors[err.message] || defaultServerResponse);
+  }
+};

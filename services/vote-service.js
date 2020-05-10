@@ -86,7 +86,6 @@ module.exports.playerVote = async (authorization, { playerId, vote }) => {
   try {
     const connection = await pool.getConnection();
     const { userId } = extractUserInfoFromJWT(authorization);
-    let result;
 
     try {
       const voteHistory = await voteHistoriesService.getPlayerVoteHistoryByUserId({
@@ -95,39 +94,26 @@ module.exports.playerVote = async (authorization, { playerId, vote }) => {
       });
 
       if (voteHistory) {
-        if (voteHistory.vote === vote) {
-          await Promise.all([
-          // Decrease player vote count
-            connection.query(`
-            UPDATE players SET
-            vote_${vote}_count=vote_${vote}_count-1
-            WHERE id='${playerId}'
-          `),
-
-            voteHistoriesService.deletePlayerVoteHistory({ playerId, userId })
-          ]);
-
-          result = 'cancelled';
-        } else {
-          throw new Error(errors.ALREADY_VOTED_PLAYER.message);
-        }
-      } else {
-        await Promise.all([
-          // Increase player vote count
-          connection.query(`
-            UPDATE players SET
-            vote_${vote}_count=vote_${vote}_count+1
-            WHERE id='${playerId}'
-          `),
-
-          // Register vote history
-          voteHistoriesService.registerPlayerVoteHistory({ playerId, userId, vote })
-        ]);
-
-        result = 'voted';
+        // 투표 기록이 있으면 해당 투표 취소
+        await this.cancelPlayerVote(authorization, {
+          playerId,
+          vote: voteHistory.vote
+        });
       }
 
-      return result;
+      await Promise.all([
+        // 투표 진행
+        connection.query(`
+          UPDATE players SET
+          vote_${vote}_count=vote_${vote}_count+1
+          WHERE id='${playerId}'
+        `),
+
+        // 투표 기록 등록
+        voteHistoriesService.registerPlayerVoteHistory({ playerId, userId, vote })
+      ]);
+
+      return;
     } finally {
       connection.release();
     }
@@ -136,3 +122,48 @@ module.exports.playerVote = async (authorization, { playerId, vote }) => {
     throw new Error(err.message || err);
   }
 };
+
+module.exports.cancelPlayerVote = async (authorization, { playerId, vote }) => {
+  try {
+    const connection = await pool.getConnection();
+    const { userId } = extractUserInfoFromJWT(authorization);
+
+    try {
+      await Promise.all([
+        // Decrease player vote count
+        connection.query(`
+          UPDATE players SET
+          vote_${vote}_count=vote_${vote}_count-1
+          WHERE id='${playerId}'
+        `),
+
+        voteHistoriesService.deletePlayerVoteHistory({ playerId, userId })
+      ]);
+
+      return;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};
+
+// module.exports.cancelPlayerVote = async (authorization, { playerId }) => {
+//   try {
+//     const connection = await pool.getConnection();
+//     const { userId } = extractUserInfoFromJWT(authorization);
+
+//     try {
+//       await Promise.allvoteHistoriesService.deletePlayerVoteHistory({ playerId, userId });
+
+//       return;
+//     } finally {
+//       connection.release();
+//     }
+//   } catch (err) {
+//     console.error(err);
+//     throw new Error(err.message || err);
+//   }
+// };
