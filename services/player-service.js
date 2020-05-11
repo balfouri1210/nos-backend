@@ -1,5 +1,5 @@
 const pool = require('../database/db-connection');
-const { constants, errors } = require('../constants/index');
+const { constants, errors, getPlayerScoreSql } = require('../constants/index');
 const { extractUserInfoFromJWT } = require('./auth-service');
 
 module.exports.getPlayers = async (
@@ -11,11 +11,11 @@ module.exports.getPlayers = async (
 
     const [players] = await pool.query(`
       SELECT players.*, countries.name as country_name, countries.code as country_code,
-      (players.hits/2 + players.vote_up_count + players.vote_down_count + players.comment_count) as score
+      ${getPlayerScoreSql} as score
       FROM players
       LEFT JOIN countries ON players.country_id = countries.id
       WHERE players.id NOT IN (${previousPlayerIdList.toString()})
-      ORDER BY players.hits/2 + players.vote_up_count + players.vote_down_count + players.comment_count DESC, players.id DESC
+      ORDER BY ${getPlayerScoreSql} DESC, players.id DESC
       LIMIT ${size}
     `);
 
@@ -98,17 +98,34 @@ module.exports.top100PlayersMigrationToHistories = async (historyId) => {
       let [top100Players] = await connection.query(`
         SELECT *
         FROM players
-        ORDER BY players.hits/2 + players.vote_up_count + players.vote_down_count + players.comment_count DESC, players.id DESC
+        ORDER BY ${getPlayerScoreSql} DESC, players.id DESC
         LIMIT ${constants.weeklyPlayerHistoryRange}
       `);
 
       top100Players = top100Players.map(player => {
-        return [historyId, player.id, player.hits, player.vote_up_count, player.vote_down_count, player.comment_count];
+        return [
+          historyId,
+          player.id,
+          player.hits,
+          player.comment_count,
+          player.vote_up_count, player.vote_down_count, player.vote_question_count,
+          player.vote_fire_count, player.vote_celebration_count, player.vote_strong_count,
+          player.vote_alien_count, player.vote_battery_high_count, player.vote_battery_medium_count,
+          player.vote_battery_low_count, player.vote_battery_off_count, player.vote_bomb_count,
+          player.vote_angry_count, player.vote_doubt_count, player.vote_cool_count,
+          player.vote_sad_count, player.vote_lol_count, player.vote_poop_count
+        ];
       });
 
       await connection.query(`
         INSERT INTO players_histories
-        (histories_id, players_id, hits, vote_up_count, vote_down_count, comment_count)
+        (histories_id, players_id, hits, comment_count,
+        vote_up_count, vote_down_count, vote_question_count,
+        vote_fire_count, vote_celebration_count, vote_strong_count,
+        vote_alien_count, vote_battery_high_count, vote_battery_medium_count,
+        vote_battery_low_count, vote_battery_off_count, vote_bomb_count,
+        vote_angry_count, vote_doubt_count, vote_cool_count,
+        vote_sad_count, vote_lol_count, vote_poop_count)
         VALUES ?
       `, [top100Players]);
 
@@ -130,7 +147,13 @@ module.exports.initiatePlayers = async () => {
       // Initiate players table
       await connection.query(`
         UPDATE players
-        SET vote_up_count=0, vote_down_count=0, hits=0, comment_count=0
+        SET hits=0, comment_count=0,
+        vote_up_count=0, vote_down_count=0, vote_question_count=0,
+        vote_fire_count=0, vote_celebration_count=0, vote_strong_count=0,
+        vote_alien_count=0, vote_battery_high_count=0, vote_battery_medium_count=0,
+        vote_battery_low_count=0, vote_battery_off_count=0, vote_bomb_count=0,
+        vote_angry_count=0, vote_doubt_count=0, vote_cool_count=0,
+        vote_sad_count=0, vote_lol_count=0, vote_poop_count=0
       `);
 
       return;

@@ -101,6 +101,8 @@ module.exports.playerVote = async (authorization, { playerId, vote }) => {
         });
       }
 
+      console.log('do vote : ' + vote);
+
       await Promise.all([
         // 투표 진행
         connection.query(`
@@ -127,6 +129,8 @@ module.exports.cancelPlayerVote = async (authorization, { playerId, vote }) => {
   try {
     const connection = await pool.getConnection();
     const { userId } = extractUserInfoFromJWT(authorization);
+
+    console.log('decrease vote : ' + vote);
 
     try {
       await Promise.all([

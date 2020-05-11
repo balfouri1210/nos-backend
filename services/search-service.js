@@ -1,5 +1,5 @@
 const pool = require('../database/db-connection');
-const { errors } = require('../constants/index');
+const { errors, getPlayerScoreSql } = require('../constants/index');
 
 module.exports.searchPlayer = async ({ keyword }) => {
   try {
@@ -11,7 +11,7 @@ module.exports.searchPlayer = async ({ keyword }) => {
         FROM players
         LEFT JOIN clubs ON players.club_team_id = clubs.id
         WHERE known_as LIKE '%${keyword}%'
-        ORDER BY hits + vote_up_count + vote_down_count + comment_count DESC
+        ORDER BY ${getPlayerScoreSql} DESC
       `);
 
       if (!searchResult) {

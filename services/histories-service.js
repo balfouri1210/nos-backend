@@ -1,5 +1,5 @@
 const pool = require('../database/db-connection');
-const { errors } = require('../constants/index');
+const { errors, getPlayerHistoryScoreSql } = require('../constants/index');
 const moment = require('moment');
 
 module.exports.getHistories = async ({ year, month }) => {
@@ -113,7 +113,7 @@ module.exports.getPlayerHistories = async ({ historyId }, { previousPlayerIdList
     try {
       const [playerHistories] = await connection.query(`
         SELECT players_histories.hits, players_histories.vote_up_count, players_histories.vote_down_count, players_histories.comment_count,
-        (players_histories.hits/2 + players_histories.vote_up_count + players_histories.vote_down_count + players_histories.comment_count) as score,
+        ${getPlayerHistoryScoreSql} as score,
         players.id, players.known_as, players.birthday, players.country_id, players.height, players.club_team_id, players.position,
         countries.name as country_name, countries.code as country_code
         FROM players_histories
@@ -121,7 +121,7 @@ module.exports.getPlayerHistories = async ({ historyId }, { previousPlayerIdList
         LEFT JOIN countries ON players.country_id = countries.id
         WHERE histories_id='${historyId}' AND
         players.id NOT IN (${previousPlayerIdList.toString()})
-        ORDER BY players_histories.hits + players_histories.vote_up_count + players_histories.vote_down_count + players_histories.comment_count DESC
+        ORDER BY ${getPlayerHistoryScoreSql} DESC
         LIMIT 20
       `);
 
@@ -147,7 +147,7 @@ module.exports.getPlayerHistory = async ({ historyId, playerId }) => {
 
     try {
       const [playerHistory] = await connection.query(`
-        SELECT players.id, players_histories.histories_id, players_histories.hits, players_histories.vote_up_count, players_histories.vote_down_count, players_histories.comment_count,
+        SELECT players_histories.*, players.id,
         players.known_as, players.birthday, players.height, players.club_team_id, players.position, players.image_url,
         countries.name as country_name, countries.code as country_code,
         clubs.name as club_name, clubs.image as club_image,
