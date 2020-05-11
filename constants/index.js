@@ -10,6 +10,52 @@ module.exports = {
     body: {}
   },
 
+  getPlayerScoreSql: `
+    players.hits/2
+    + players.comment_count
+    + players.vote_up_count
+    + players.vote_down_count
+    + players.vote_question_count
+    + players.vote_fire_count
+    + players.vote_celebration_count
+    + players.vote_strong_count
+    + players.vote_alien_count
+    + players.vote_battery_high_count
+    + players.vote_battery_medium_count
+    + players.vote_battery_low_count
+    + players.vote_battery_off_count
+    + players.vote_bomb_count
+    + players.vote_angry_count
+    + players.vote_doubt_count
+    + players.vote_cool_count
+    + players.vote_sad_count
+    + players.vote_lol_count
+    + players.vote_poop_count
+  `,
+
+  getPlayerHistoryScoreSql: `
+    players_histories.hits/2
+    + players_histories.comment_count
+    + players_histories.vote_up_count
+    + players_histories.vote_down_count
+    + players_histories.vote_question_count
+    + players_histories.vote_fire_count
+    + players_histories.vote_celebration_count
+    + players_histories.vote_strong_count
+    + players_histories.vote_alien_count
+    + players_histories.vote_battery_high_count
+    + players_histories.vote_battery_medium_count
+    + players_histories.vote_battery_low_count
+    + players_histories.vote_battery_off_count
+    + players_histories.vote_bomb_count
+    + players_histories.vote_angry_count
+    + players_histories.vote_doubt_count
+    + players_histories.vote_cool_count
+    + players_histories.vote_sad_count
+    + players_histories.vote_lol_count
+    + players_histories.vote_poop_count
+  `,
+
   errors: {
     // Related to User
     UNAVAILABLE_EMAIL: {
