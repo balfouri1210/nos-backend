@@ -82,6 +82,10 @@ module.exports.opinionVote = async (authorization, { targetAuthorId, targetOpini
 
 
 // PLAYER
+// 프론트에서 투표를 연속적으로 계속 하면 (up -> fire -> bomb ... 이런식으로)
+// 요청과 요청이 겹치는 사이에 vote history 엉킴으로 인해 오작동이 발생한다.
+// 일단 프론트에서 하나의 투표 요청이 끝나기 전에 또다른 요청을 하지 못하도록 해놨지만
+// 개선이 필요한 것 같다. 위 현상과 더불어 처리 시간도 꽤 긴 느낌이다.
 module.exports.playerVote = async (authorization, { playerId, vote }) => {
   try {
     const connection = await pool.getConnection();
@@ -100,8 +104,6 @@ module.exports.playerVote = async (authorization, { playerId, vote }) => {
           vote: voteHistory.vote
         });
       }
-
-      console.log('do vote : ' + vote);
 
       await Promise.all([
         // 투표 진행
@@ -129,8 +131,6 @@ module.exports.cancelPlayerVote = async (authorization, { playerId, vote }) => {
   try {
     const connection = await pool.getConnection();
     const { userId } = extractUserInfoFromJWT(authorization);
-
-    console.log('decrease vote : ' + vote);
 
     try {
       await Promise.all([

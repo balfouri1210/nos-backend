@@ -13,7 +13,7 @@ module.exports.getPlayers = async ({ searchKeyword, page }) => {
       LEFT JOIN countries ON players.country_id = countries.id
       LEFT JOIN clubs ON players.club_team_id = clubs.id
       WHERE players.known_as LIKE '%${searchKeyword || ''}%'
-      LIMIT 20
+      LIMIT ${playerPerPage}
       OFFSET ${playerPerPage * (page - 1)}
     `);
 
