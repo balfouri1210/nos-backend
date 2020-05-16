@@ -19,8 +19,10 @@ module.exports.getUserTotalCount = async () => {
   }
 };
 
-module.exports.getUsers = async ({ searchKeyword }) => {
+module.exports.getUsers = async ({ searchKeyword, page }) => {
   try {
+    const userPerPage = 20;
+    page = page || 1;
     let query;
 
     if (searchKeyword) {
@@ -28,20 +30,34 @@ module.exports.getUsers = async ({ searchKeyword }) => {
         SELECT id, email, username, gender, birth, status, created_at, activated_at, updated_at, authorization
         FROM users
         WHERE email LIKE '%${searchKeyword}%'
+        LIMIT ${userPerPage}
+        OFFSET ${userPerPage * (page - 1)}
       `;
     } else {
       query = `
         SELECT id, email, username, gender, birth, status, created_at, activated_at, updated_at, authorization
         FROM users
+        LIMIT ${userPerPage}
+        OFFSET ${userPerPage * (page - 1)}
       `;
     }
 
     const [users] = await pool.query(query);
 
+    const [totalUserCount] = await pool.query(`
+      SELECT COUNT(*) as totalCount
+      FROM users
+      WHERE users.email LIKE '%${searchKeyword || ''}%'
+    `);
+
     if (!users) 
       throw new Error(errors.USER_NOT_FOUND.message);
 
-    return { users };
+    return {
+      users,
+      currentPage: 1,
+      totalPage: Math.ceil(totalUserCount[0]['totalCount'] / userPerPage)
+    };
   } catch (err) {
     console.error(err);
     throw new Error(err.message || err);

@@ -13,4 +13,9 @@ router.put('/player',
   voteController.playerVote
 );
 
+router.delete('/player',
+  tokenValidation.validationToken,
+  voteController.cancelPlayerVote
+);
+
 module.exports = router;

@@ -141,10 +141,15 @@ module.exports.deleteUser = async (authorization, { currentPassword }) => {
         if (!deletedUser)
           throw new Error(errors.DELETE_USER_FAILED.message);
 
-        await pool.query(`DELETE FROM player_comments WHERE users_id='${userId}'`);
-        await pool.query(`DELETE FROM player_replies WHERE users_id='${userId}'`);
-        await pool.query(`DELETE FROM player_comments_vote_histories WHERE users_id='${userId}'`);
-        await pool.query(`DELETE FROM player_replies_vote_histories WHERE users_id='${userId}'`);
+        await Promise.all([
+          pool.query(`DELETE FROM player_comments WHERE users_id='${userId}'`),
+          pool.query(`DELETE FROM player_comments_histories WHERE users_id='${userId}'`),
+          pool.query(`DELETE FROM player_comments_vote_histories WHERE users_id='${userId}'`),
+          pool.query(`DELETE FROM player_replies WHERE users_id='${userId}'`),
+          pool.query(`DELETE FROM player_replies_histories WHERE users_id='${userId}'`),
+          pool.query(`DELETE FROM player_replies_vote_histories WHERE users_id='${userId}'`),
+          pool.query(`DELETE FROM notifications WHERE sender_id='${userId}'`)
+        ]);
 
         return;
       } else {

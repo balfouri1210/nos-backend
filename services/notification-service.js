@@ -112,3 +112,23 @@ module.exports.addNotification = async ({ recipientId, senderId, object, objectI
     }
   }
 };
+
+module.exports.emptyNotifications = async () => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      // Query
+      await connection.query(`
+        DELETE FROM notifications
+      `);
+
+      return;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};

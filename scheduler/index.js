@@ -4,6 +4,7 @@ const replyService = require('../services/reply-service');
 const playerService = require('../services/player-service');
 const historiesService = require('../services/histories-service');
 const voteHistoriesService = require('../services/vote-histories-service');
+const notificationService = require('../services/notification-service');
 const historyTerm = 7;
 
 // 정기작업
@@ -26,7 +27,9 @@ async function schedulerWorker() {
 
       voteHistoriesService.truncateOpinionVoteHistory('player_comments'),
       voteHistoriesService.truncateOpinionVoteHistory('player_replies'),
-      voteHistoriesService.truncatePlayerVoteHistory()
+      voteHistoriesService.truncatePlayerVoteHistory(),
+
+      notificationService.emptyNotifications()
     ]);
   } catch (err) {
     console.error(err);
