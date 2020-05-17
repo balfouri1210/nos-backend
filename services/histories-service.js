@@ -2,6 +2,29 @@ const pool = require('../database/db-connection');
 const { errors, getPlayerHistoryScoreSql } = require('../constants/index');
 const moment = require('moment');
 
+module.exports.getLatestHistoryId = async() => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      const [history] = await connection.query(`
+        SELECT MAX(id) as latest_history_id FROM histories
+      `);
+
+      if (!history) {
+        throw new Error(errors.GET_LATEST_HISTORY_ID_FAILED.message);
+      }
+
+      return history[0];
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};
+
 module.exports.getHistories = async ({ year, month }) => {
   try {
     const connection = await pool.getConnection();
