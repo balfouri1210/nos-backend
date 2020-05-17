@@ -286,6 +286,10 @@ module.exports = {
       code: 'h004',
       message: 'GET_REPLIES_HISTORIES_FAILED'
     },
+    GET_LATEST_HISTORY_ID_FAILED: {
+      code: 'h005',
+      message: 'GET_LATEST_HISTORY_ID_FAILED'
+    },
 
     // Related to Report
     // r001, r002.. 는 reply가 사용중

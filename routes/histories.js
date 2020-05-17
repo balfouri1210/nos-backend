@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const historiesController = require('../controllers/histories-controller');
 
+router.get('/latest',
+  historiesController.getLatestHistoryId
+);
+
 router.get('/',
   historiesController.getHistories
 );

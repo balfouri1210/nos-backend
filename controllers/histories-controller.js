@@ -1,6 +1,17 @@
 const historiesService = require('../services/histories-service');
 const { errors, defaultServerResponse } = require('../constants/index');
 
+module.exports.getLatestHistoryId = async (req, res) => {
+  try {
+    const result = await historiesService.getLatestHistoryId(
+      req.query
+    );
+    res.send(result);
+  } catch (err) {
+    res.status(400).send(errors[err.message] || defaultServerResponse);
+  }
+};
+
 module.exports.getHistories = async (req, res) => {
   try {
     const result = await historiesService.getHistories(
