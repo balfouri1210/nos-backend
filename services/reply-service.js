@@ -99,6 +99,9 @@ module.exports.editPlayerReply = async ({ replyId }, { newContent }) => {
     const connection = await pool.getConnection();
 
     try {
+      // ' (apostrophe) 가 포함되면 mysql syntax error가 발생하기 때문. \'로 대체한다
+      newContent = newContent.replace(/'/g, "\\'");
+
       // Query
       const [edittedReply] = await connection.query(`
         UPDATE player_replies SET

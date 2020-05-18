@@ -21,7 +21,7 @@ module.exports.getUserById = async ({ id }) => {
   }
 };
 
-module.exports.signup = async ({ email, password, username, countryId, birth, gender }) => {
+module.exports.signup = async ({ email, password, username, countryId, birth }) => {
   try {
     const connection = await pool.getConnection();
 
@@ -34,8 +34,8 @@ module.exports.signup = async ({ email, password, username, countryId, birth, ge
       const verificationCode = generateNewVerificationCode();
 
       // Query
-      const insertSql = 'INSERT INTO users (email, password, username, country_id, birth, gender, verification_code) VALUES (?, ?, ?, ?, ?, ?, ?)';
-      const params = [email, password, username, countryId, birth, gender, verificationCode];
+      const insertSql = 'INSERT INTO users (email, password, username, country_id, birth, verification_code) VALUES (?, ?, ?, ?, ?, ?)';
+      const params = [email, password, username, countryId, birth, verificationCode];
       const [signedUpUser] = await connection.query(insertSql, params);
       if (signedUpUser[0]) throw new Error(errors.SIGNUP_FAILED.message);
 

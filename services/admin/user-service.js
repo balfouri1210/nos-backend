@@ -27,7 +27,7 @@ module.exports.getUsers = async ({ searchKeyword, page }) => {
 
     if (searchKeyword) {
       query = `
-        SELECT id, email, username, gender, birth, status, created_at, activated_at, updated_at, authorization
+        SELECT id, email, username, birth, status, created_at, activated_at, updated_at, authorization
         FROM users
         WHERE email LIKE '%${searchKeyword}%'
         LIMIT ${userPerPage}
@@ -35,7 +35,7 @@ module.exports.getUsers = async ({ searchKeyword, page }) => {
       `;
     } else {
       query = `
-        SELECT id, email, username, gender, birth, status, created_at, activated_at, updated_at, authorization
+        SELECT id, email, username, birth, status, created_at, activated_at, updated_at, authorization
         FROM users
         LIMIT ${userPerPage}
         OFFSET ${userPerPage * (page - 1)}
@@ -64,7 +64,7 @@ module.exports.getUsers = async ({ searchKeyword, page }) => {
   }
 };
 
-module.exports.updateUser = async ({ userId, username, gender, birth, status, authorization }) => {
+module.exports.updateUser = async ({ userId, username, birth, status, authorization }) => {
   try {
     const connection = await pool.getConnection();
 
@@ -73,7 +73,6 @@ module.exports.updateUser = async ({ userId, username, gender, birth, status, au
       const [updatedUser] = await connection.query(`
         UPDATE users SET
         username='${username}',
-        gender='${gender}',
         birth='${birth}',
         status='${status}',
         authorization='${authorization}',
