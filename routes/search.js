@@ -6,5 +6,9 @@ router.get('/:keyword',
   searchController.searchPlayer
 );
 
+router.get('/club/:clubId',
+  searchController.searchPlayerByClub
+);
+
 module.exports = router;
 

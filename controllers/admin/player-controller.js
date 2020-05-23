@@ -10,9 +10,27 @@ module.exports.getPlayers = async (req, res) => {
   }
 };
 
+module.exports.getPlayersByClub = async (req, res) => {
+  try {
+    const result = await adminPlayerService.getPlayersByClub(req.params);
+    res.send(result);
+  } catch (err) {
+    res.status(400).send(errors[err.message] || defaultServerResponse);
+  }
+};
+
 module.exports.updatePlayer = async (req, res) => {
   try {
     const result = await adminPlayerService.updatePlayer(req.body);
+    res.send(result);
+  } catch (err) {
+    res.status(400).send(errors[err.message] || defaultServerResponse);
+  }
+};
+
+module.exports.togglePlayerActivation = async (req, res) => {
+  try {
+    const result = await adminPlayerService.togglePlayerActivation(req.body);
     res.send(result);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);

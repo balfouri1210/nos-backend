@@ -47,7 +47,7 @@ module.exports.getPlayerHistories = async (req, res) => {
   try {
     const result = await historiesService.getPlayerHistories(
       req.params,
-      req.query
+      req.body
     );
     res.send(result);
   } catch (err) {

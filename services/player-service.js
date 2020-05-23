@@ -2,6 +2,21 @@ const pool = require('../database/db-connection');
 const { constants, errors, getPlayerScoreSql } = require('../constants/index');
 const { extractUserInfoFromJWT } = require('./auth-service');
 
+module.exports.getTotalPlayerCount = async () => {
+  try {
+    const [totalPlayerCount] = await pool.query(`
+      SELECT COUNT(*) as total_player_count
+      FROM players
+      WHERE activation='1'
+    `);
+
+    return totalPlayerCount[0];
+  } catch (err) {
+    console.error(err);
+    throw new Error(errors.GET_TOTAL_PLAYER_COUNT_FAILED.message);
+  }
+};
+
 module.exports.getPlayers = async (
   { previousPlayerIdList, size }
 ) => {
@@ -14,8 +29,8 @@ module.exports.getPlayers = async (
       ${getPlayerScoreSql} as score
       FROM players
       LEFT JOIN countries ON players.country_id = countries.id
-      WHERE players.id NOT IN (${previousPlayerIdList.toString()})
-      ORDER BY ${getPlayerScoreSql} DESC, players.id DESC
+      WHERE players.id NOT IN (${previousPlayerIdList.toString()}) AND activation='1'
+      ORDER BY ${getPlayerScoreSql} DESC, rand()
       LIMIT ${size}
     `);
 
@@ -42,7 +57,7 @@ module.exports.getHeavyPlayerById = async (
       FROM players
       LEFT JOIN countries ON players.country_id = countries.id
       LEFT JOIN clubs ON players.club_team_id = clubs.id
-      LEFT JOIN leagues ON clubs.leagues_id = leagues.id
+      LEFT JOIN leagues ON clubs.league_id = leagues.id
       LEFT JOIN players_vote_histories ON players_vote_histories.users_id = ${userId} AND players_vote_histories.players_id = ${playerId}
       WHERE players.id = ${playerId}
     `);
@@ -99,6 +114,7 @@ module.exports.top100PlayersMigrationToHistories = async (historyId) => {
         SELECT *
         FROM players
         ORDER BY ${getPlayerScoreSql} DESC, players.id DESC
+        WHERE activation='1' AND ${getPlayerScoreSql} > 0
         LIMIT ${constants.weeklyPlayerHistoryRange}
       `);
 

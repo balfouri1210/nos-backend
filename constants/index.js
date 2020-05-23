@@ -166,6 +166,10 @@ module.exports = {
       code: 'p013',
       message: 'DELETE_PLAYER_FAILED'
     },
+    GET_TOTAL_PLAYER_COUNT_FAILED: {
+      code: 'p014',
+      message: 'GET_TOTAL_PLAYER_COUNT_FAILED'
+    },
 
     // Related to Authentication
     TOKEN_MISSING: {
@@ -302,6 +306,12 @@ module.exports = {
     SEARCH_PLAYER_FAILED: {
       code: 's001',
       message: 'SEARCH_PLAYER_FAILED'
+    },
+
+    // Related to Club
+    GET_CLUBS_FAILED: {
+      code: 'club001',
+      message: 'GET_CLUBS_FAILED'
     }
   }
 };

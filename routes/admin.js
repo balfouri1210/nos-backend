@@ -29,9 +29,19 @@ router.get('/players',
   adminPlayerController.getPlayers
 );
 
+router.get('/players/:clubId',
+  tokenValidation.validationToken,
+  adminPlayerController.getPlayersByClub
+);
+
 router.put('/players',
   tokenValidation.validationToken,
   adminPlayerController.updatePlayer
+);
+
+router.put('/players/activation',
+  tokenValidation.validationToken,
+  adminPlayerController.togglePlayerActivation
 );
 
 router.post('/players',

@@ -179,7 +179,7 @@ module.exports.getPlayerHistory = async ({ historyId, playerId }) => {
         LEFT JOIN players ON players_histories.players_id = players.id
         LEFT JOIN countries ON players.country_id = countries.id
         LEFT JOIN clubs ON players.club_team_id = clubs.id
-        LEFT JOIN leagues ON clubs.leagues_id = leagues.id
+        LEFT JOIN leagues ON clubs.league_id = leagues.id
         WHERE histories_id='${historyId}' AND players_id='${playerId}'
       `);
 

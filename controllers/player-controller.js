@@ -1,10 +1,19 @@
 const playerService = require('../services/player-service');
 const { errors, defaultServerResponse } = require('../constants/index');
 
+module.exports.getTotalPlayerCount = async (req, res) => {
+  try {
+    const result = await playerService.getTotalPlayerCount();
+    res.send(result);
+  } catch (err) {
+    res.status(400).send(errors[err.message] || defaultServerResponse);
+  }
+};
+
 module.exports.getPlayers = async (req, res) => {
   try {
     const result = await playerService.getPlayers(
-      req.query
+      req.body
     );
     res.send(result);
   } catch (err) {
@@ -23,6 +32,16 @@ module.exports.getHeavyPlayerById = async (req, res) => {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }
 };
+
+module.exports.getPlayersByClub = async (req, res) => {
+  try {
+    const result = await playerService.getPlayersByClub(req.params);
+    res.send(result);
+  } catch (err) {
+    res.status(400).send(errors[err.message] || defaultServerResponse);
+  }
+};
+
 
 module.exports.increasePlayerHits = async (req, res) => {
   try {
