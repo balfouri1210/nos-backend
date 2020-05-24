@@ -53,7 +53,7 @@ module.exports.getHistories = async ({ year, month }) => {
             FROM players_histories
             LEFT JOIN players ON players.id = players_histories.players_id
             LEFT JOIN countries ON players.country_id = countries.id
-            LEFT JOIN clubs ON players.club_team_id = clubs.id
+            LEFT JOIN clubs ON players.club_id = clubs.id
             WHERE histories_id=${history.id}
             LIMIT 5)
           `);
@@ -137,7 +137,7 @@ module.exports.getPlayerHistories = async ({ historyId }, { previousPlayerIdList
       const [playerHistories] = await connection.query(`
         SELECT players_histories.hits, players_histories.vote_up_count, players_histories.vote_down_count, players_histories.comment_count,
         ${getPlayerHistoryScoreSql} as score,
-        players.id, players.known_as, players.birthday, players.country_id, players.height, players.club_team_id, players.position,
+        players.id, players.known_as, players.birthday, players.country_id, players.height, players.club_id, players.position,
         countries.name as country_name, countries.code as country_code
         FROM players_histories
         LEFT JOIN players ON players_histories.players_id = players.id
@@ -171,14 +171,14 @@ module.exports.getPlayerHistory = async ({ historyId, playerId }) => {
     try {
       const [playerHistory] = await connection.query(`
         SELECT players_histories.*, players.id,
-        players.known_as, players.birthday, players.height, players.club_team_id, players.position, players.image_url,
+        players.known_as, players.birthday, players.height, players.club_id, players.position, players.image_url,
         countries.name as country_name, countries.code as country_code,
         clubs.name as club_name, clubs.image as club_image,
         leagues.id as league_id
         FROM players_histories
         LEFT JOIN players ON players_histories.players_id = players.id
         LEFT JOIN countries ON players.country_id = countries.id
-        LEFT JOIN clubs ON players.club_team_id = clubs.id
+        LEFT JOIN clubs ON players.club_id = clubs.id
         LEFT JOIN leagues ON clubs.league_id = leagues.id
         WHERE histories_id='${historyId}' AND players_id='${playerId}'
       `);

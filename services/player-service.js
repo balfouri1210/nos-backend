@@ -56,7 +56,7 @@ module.exports.getHeavyPlayerById = async (
       players_vote_histories.vote as vote
       FROM players
       LEFT JOIN countries ON players.country_id = countries.id
-      LEFT JOIN clubs ON players.club_team_id = clubs.id
+      LEFT JOIN clubs ON players.club_id = clubs.id
       LEFT JOIN leagues ON clubs.league_id = leagues.id
       LEFT JOIN players_vote_histories ON players_vote_histories.users_id = ${userId} AND players_vote_histories.players_id = ${playerId}
       WHERE players.id = ${playerId}
@@ -113,8 +113,8 @@ module.exports.top100PlayersMigrationToHistories = async (historyId) => {
       let [top100Players] = await connection.query(`
         SELECT *
         FROM players
-        ORDER BY ${getPlayerScoreSql} DESC, players.id DESC
         WHERE activation='1' AND ${getPlayerScoreSql} > 0
+        ORDER BY ${getPlayerScoreSql} DESC, players.id DESC
         LIMIT ${constants.weeklyPlayerHistoryRange}
       `);
 

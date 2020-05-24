@@ -11,7 +11,7 @@ module.exports.getPlayers = async ({ searchKeyword, page }) => {
       clubs.name as club_name, clubs.image as club_image
       FROM players
       LEFT JOIN countries ON players.country_id = countries.id
-      LEFT JOIN clubs ON players.club_team_id = clubs.id
+      LEFT JOIN clubs ON players.club_id = clubs.id
       WHERE players.known_as LIKE '%${searchKeyword || ''}%'
       LIMIT ${playerPerPage}
       OFFSET ${playerPerPage * (page - 1)}
@@ -44,8 +44,8 @@ module.exports.getPlayersByClub = async ({ clubId }) => {
       clubs.name as club_name, clubs.image as club_image
       FROM players
       LEFT JOIN countries ON players.country_id = countries.id
-      LEFT JOIN clubs ON players.club_team_id = clubs.id
-      WHERE players.club_team_id=${clubId}
+      LEFT JOIN clubs ON players.club_id = clubs.id
+      WHERE players.club_id=${clubId}
     `);
 
     if (!players) 
@@ -72,7 +72,7 @@ module.exports.updatePlayer = async ({ playerId, knownAs, birthday, countryId, h
         birthday='${birthday}',
         country_id='${countryId}',
         height='${height}',
-        club_team_id='${clubTeamId}',
+        club_id='${clubTeamId}',
         position='${position}',
         image_url='${imageUrl}'
         WHERE id='${playerId}'
@@ -133,7 +133,7 @@ module.exports.createPlayer = async ({
     try {
       // Query
       const insertSql = `
-        INSERT INTO players (known_as, birthday, country_id, height, club_team_id, position, image_url, footystats_player_id)
+        INSERT INTO players (known_as, birthday, country_id, height, club_id, position, image_url, footystats_player_id)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `;
       const params = [knownAs, birthday, countryId, height, clubTeamId, position, imageUrl, footystatsPlayerId];

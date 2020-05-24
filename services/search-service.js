@@ -9,7 +9,7 @@ module.exports.searchPlayer = async ({ keyword }) => {
       const [searchResult] = await connection.query(`
         SELECT players.*, clubs.image as club_image, countries.code as country_code
         FROM players
-        LEFT JOIN clubs ON players.club_team_id = clubs.id
+        LEFT JOIN clubs ON players.club_id = clubs.id
         LEFT JOIN countries ON players.country_id = countries.id
         WHERE known_as LIKE '%${keyword}%'
         ORDER BY ${getPlayerScoreSql} DESC
@@ -39,9 +39,9 @@ module.exports.searchPlayerByClub = async ({ clubId }) => {
         SELECT players.*, countries.name as country_name, countries.code as country_code,
         clubs.image as club_image
         FROM players
-        LEFT JOIN clubs ON players.club_team_id = clubs.id
+        LEFT JOIN clubs ON players.club_id = clubs.id
         LEFT JOIN countries ON players.country_id = countries.id
-        WHERE club_team_id='${clubId}' AND activation='1'
+        WHERE club_id='${clubId}' AND activation='1'
         ORDER BY ${getPlayerScoreSql} DESC, rand()
       `);
 
