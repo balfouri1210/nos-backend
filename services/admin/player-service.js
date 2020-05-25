@@ -58,7 +58,7 @@ module.exports.getPlayersByClub = async ({ clubId }) => {
   }
 };
 
-module.exports.updatePlayer = async ({ playerId, knownAs, birthday, countryId, height, clubTeamId, position, imageUrl }) => {
+module.exports.updatePlayer = async ({ playerId, knownAs, birthday, countryId, height, clubId, position, imageUrl }) => {
   try {
     const connection = await pool.getConnection();
     
@@ -72,7 +72,7 @@ module.exports.updatePlayer = async ({ playerId, knownAs, birthday, countryId, h
         birthday='${birthday}',
         country_id='${countryId}',
         height='${height}',
-        club_id='${clubTeamId}',
+        club_id='${clubId}',
         position='${position}',
         image_url='${imageUrl}'
         WHERE id='${playerId}'
@@ -119,13 +119,13 @@ module.exports.createPlayer = async ({
   birthday,
   countryId,
   height,
-  clubTeamId,
+  clubId,
   position,
   imageUrl,
   footystatsPlayerId
 }) => {
   try {
-    if (!(knownAs && birthday && countryId && height && clubTeamId && position))
+    if (!(knownAs && birthday && countryId && height && clubId && position))
       throw new Error(errors.CREATE_PLAYER_FAILED.message);
 
     const connection = await pool.getConnection();
@@ -136,7 +136,7 @@ module.exports.createPlayer = async ({
         INSERT INTO players (known_as, birthday, country_id, height, club_id, position, image_url, footystats_player_id)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?)
       `;
-      const params = [knownAs, birthday, countryId, height, clubTeamId, position, imageUrl, footystatsPlayerId];
+      const params = [knownAs, birthday, countryId, height, clubId, position, imageUrl, footystatsPlayerId];
       const [createdPlayer] = await connection.query(insertSql, params);
 
       if (!createdPlayer) throw new Error(errors.CREATE_PLAYER_FAILED.message);
