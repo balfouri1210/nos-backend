@@ -11,18 +11,16 @@ module.exports.login = async ({ email, password }) => {
       SELECT * FROM users
       WHERE email='${email}'
     `);
-    const user = rows[0];
 
-    if (!user) {
-      throw new Error(errors.USER_NOT_FOUND.message);
-    } else if (user.status !== 'activated') {
-      throw new Error(errors.USER_NOT_ACTIVATED.message);
-    }
+    const user = rows[0];
+    if (!user) throw new Error(errors.USER_NOT_FOUND.message);
 
     const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) {
+    if (!isValid)
       throw new Error(errors.INVALID_PASSWORD.message);
-    }
+
+    if (user.status !== 'activated')
+      throw new Error(errors.USER_NOT_ACTIVATED.message);
 
     const token = this.generateNewJWT(user);
 

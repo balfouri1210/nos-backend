@@ -10,6 +10,15 @@ module.exports.reportOpinion = async (authorization, { object, targetId, reason 
     const { userId } = extractUserInfoFromJWT(authorization);
 
     try {
+      // Check already reported
+      const [reportedOpinion] = await connection.query(`
+        SELECT *
+        FROM reports
+        WHERE target_id='${targetId}' AND reporter_id='${userId}'
+      `);
+
+      if (reportedOpinion.length > 0) return;
+
       // Add report
       const [createdResult] = await connection.query(`
         INSERT INTO reports (object, target_id, reporter_id, reason)

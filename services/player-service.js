@@ -29,7 +29,7 @@ module.exports.getPlayers = async (
       ${getPlayerScoreSql} as score
       FROM players
       LEFT JOIN countries ON players.country_id = countries.id
-      WHERE players.id NOT IN (${previousPlayerIdList.toString()}) AND activation='1'
+      WHERE players.id NOT IN (${previousPlayerIdList}) AND activation='1'
       ORDER BY ${getPlayerScoreSql} DESC, rand()
       LIMIT ${size}
     `);
@@ -51,7 +51,7 @@ module.exports.getHeavyPlayerById = async (
   try {
     const [player] = await pool.query(`
       SELECT players.*, countries.name as country_name, countries.code as country_code,
-      clubs.name as club_name, clubs.image as club_image,
+      clubs.clean_name as club_name, clubs.image as club_image,
       leagues.id as league_id,
       players_vote_histories.vote as vote
       FROM players
@@ -85,7 +85,7 @@ module.exports.increasePlayerHits = async (
   }
 };
 
-module.exports.increasePlayerCommentsCount = async (
+module.exports.mutatePlayerCommentsCount = async (
   playerId, type
 ) => {
   try {

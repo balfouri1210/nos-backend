@@ -29,8 +29,7 @@ module.exports.getPlayerCommentsByPlayerId = async (
   { playerId },
   { sortType, minId, previousCommentIdList }
   // minId: date 정렬일 때 페이징 처리를 위한 변수
-  // minPoint : upvote - downvote 정렬일 때 페이징 처리를 위한 변수 
-  // previousCommentIdList : upvote - downvote 정렬일 때 이미 로드된 댓글들의 아이디 목록 (걔네를 제외하고 검색해야 하기 때문)
+  // previousCommentIdList : like 정렬일 때 이미 로드된 댓글들의 아이디 목록 (걔네를 제외하고 검색해야 하기 때문)
 ) => {
   try {
     const table = 'player_comments';
@@ -51,7 +50,7 @@ module.exports.getPlayerCommentsByPlayerId = async (
     case 'like' :
     default :
       orderByQuery = `(${table}.vote_up_count - ${table}.vote_down_count) DESC, ${table}.id DESC`;
-      whereQuery = `players_id='${playerId}' and ${table}.id NOT IN (${previousCommentIdList.toString()})`;
+      whereQuery = `players_id='${playerId}' and ${table}.id NOT IN (${previousCommentIdList})`;
       break;
     }
 
@@ -120,7 +119,7 @@ module.exports.addPlayerComment = async (authorization, { playerId, content }) =
       }
 
       // Increase player comment count & Update player degrees
-      await playerService.increasePlayerCommentsCount(playerId, 'increase');
+      await playerService.mutatePlayerCommentsCount(playerId, 'increase');
       
       return createdComment[0];
     } finally {
@@ -189,7 +188,7 @@ module.exports.deletePlayerComment = async ({ playerId, commentId }) => {
       }
 
       // Decrease player comment count & Update player degrees
-      await playerService.increasePlayerCommentsCount(playerId, 'decrease');
+      await playerService.mutatePlayerCommentsCount(playerId, 'decrease');
 
       return deletedComment;
     } finally {

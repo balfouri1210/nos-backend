@@ -36,10 +36,4 @@ router.delete('/',
   userController.deleteUser
 );
 
-// generate or delete volatile verification code
-router.patch('/volatile-verification',
-  tokenValidation.validationToken,
-  userController.updateVolatileVerificationCode
-);
-
 module.exports = router;

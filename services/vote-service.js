@@ -63,8 +63,8 @@ module.exports.opinionVote = async (authorization, { targetAuthorId, targetOpini
         notificationService.addNotification({
           recipientId: targetAuthorId,
           senderId: userId,
-          object: targetOpinion.split('_')[0],
-          objectId: targetOpinionId,
+          object: 'player',
+          objectId: votedOpinion.players_id,
           type: 'vote_up',
           content: votedOpinion.vote_up_count
         });

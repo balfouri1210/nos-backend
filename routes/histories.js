@@ -18,7 +18,7 @@ router.post('/',
   historiesController.addHistories
 );
 
-router.put('/player/:historyId',
+router.get('/player/:historyId',
   historiesController.getPlayerHistories
 );
 

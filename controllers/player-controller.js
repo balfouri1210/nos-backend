@@ -13,7 +13,7 @@ module.exports.getTotalPlayerCount = async (req, res) => {
 module.exports.getPlayers = async (req, res) => {
   try {
     const result = await playerService.getPlayers(
-      req.body
+      req.query
     );
     res.send(result);
   } catch (err) {

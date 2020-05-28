@@ -143,7 +143,7 @@ module.exports.getPlayerHistories = async ({ historyId }, { previousPlayerIdList
         LEFT JOIN players ON players_histories.players_id = players.id
         LEFT JOIN countries ON players.country_id = countries.id
         WHERE histories_id='${historyId}' AND
-        players.id NOT IN (${previousPlayerIdList.toString()})
+        players.id NOT IN (${previousPlayerIdList})
         ORDER BY ${getPlayerHistoryScoreSql} DESC
         LIMIT 20
       `);
@@ -223,7 +223,7 @@ module.exports.getPlayerCommentsHistories = async (
     case 'like' :
     default :
       orderByQuery = `(${table}.vote_up_count - ${table}.vote_down_count) DESC, ${table}.id DESC`;
-      whereQuery = `histories_id='${historyId}' AND players_id='${playerId}' AND ${table}.id NOT IN (${previousCommentIdList.toString()})`;
+      whereQuery = `histories_id='${historyId}' AND players_id='${playerId}' AND ${table}.id NOT IN (${previousCommentIdList})`;
       break;
     }
 
