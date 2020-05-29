@@ -18,6 +18,10 @@ router.post('/',
   historiesController.addHistories
 );
 
+router.get('/player/total/:historyId',
+  historiesController.getTotalPlayersOfHistory
+);
+
 router.get('/player/:historyId',
   historiesController.getPlayerHistories
 );

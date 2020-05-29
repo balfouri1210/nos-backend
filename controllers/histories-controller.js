@@ -43,6 +43,17 @@ module.exports.addHistories = async (req, res) => {
   }
 };
 
+module.exports.getTotalPlayersOfHistory = async (req, res) => {
+  try {
+    const result = await historiesService.getTotalPlayersOfHistory(
+      req.params
+    );
+    res.send(result);
+  } catch (err) {
+    res.status(400).send(errors[err.message] || defaultServerResponse);
+  }
+};
+
 module.exports.getPlayerHistories = async (req, res) => {
   try {
     const result = await historiesService.getPlayerHistories(
@@ -54,7 +65,6 @@ module.exports.getPlayerHistories = async (req, res) => {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }
 };
-
 
 // History페이지 player-modal 에서 필요
 module.exports.getPlayerHistory = async (req, res) => {

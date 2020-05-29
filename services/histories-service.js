@@ -128,6 +128,27 @@ module.exports.addHistories = async (historyTerm) => {
   }
 };
 
+module.exports.getTotalPlayersOfHistory = async ({ historyId }) => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      const [totalPlayerCount] = await connection.query(`
+        SELECT COUNT(*) as total_player_count
+        FROM players_histories
+        WHERE histories_id='${historyId}'
+      `);
+
+      return totalPlayerCount[0];
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(errors.GET_TOTAL_PLAYER_COUNT_FAILED.message);
+  }
+};
+
 module.exports.getPlayerHistories = async ({ historyId }, { previousPlayerIdList }) => {
   try {
     const connection = await pool.getConnection();
