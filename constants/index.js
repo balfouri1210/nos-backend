@@ -204,10 +204,6 @@ module.exports = {
       code: 'o002',
       message: 'GET_VOTED_OPINION_FAILED'
     },
-    ALREADY_VOTED_OPINION: {
-      code: 'o003',
-      message: 'ALREADY_VOTED_OPINION'
-    },
 
     // Related to Comment
     GET_COMMENT_FAILED: {
@@ -261,6 +257,10 @@ module.exports = {
     DELETE_VOTE_HISTORY_FAILED: {
       code: 'v003',
       message: 'DELETE_VOTE_HISTORY_FAILED'
+    },
+    UPDATE_VOTE_HISTORY_FAILED: {
+      code: 'v004',
+      message: 'UPDATE_VOTE_HISTORY_FAILED'
     },
 
     // Related to Notification

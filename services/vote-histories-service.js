@@ -74,6 +74,28 @@ module.exports.registerOpinionVoteHistory = async ({ targetOpinion, targetOpinio
   }
 };
 
+module.exports.updateOpinionVoteHistory = async ({ userId, targetOpinion, targetOpinionId, vote }) => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      // Update vote history
+      const [updatedHistory] = await connection.query(`
+        UPDATE ${targetOpinion}_vote_histories
+        SET vote='${vote}'
+        WHERE ${targetOpinion}_id=${targetOpinionId} AND users_id=${userId}
+      `);
+      if (!updatedHistory) throw new Error(errors.UPDATE_VOTE_HISTORY_FAILED.message);
+
+      return updatedHistory;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    throw new Error(err.message || err);
+  }
+};
+
 module.exports.deleteOpinionVoteHistory = async ({ targetOpinion, targetOpinionId, userId }) => {
   try {
     const connection = await pool.getConnection();
@@ -158,6 +180,28 @@ module.exports.registerPlayerVoteHistory = async ({ playerId, userId, vote }) =>
   }
 };
 
+module.exports.updatePlayerVoteHistory = async ({ playerId, userId, vote }) => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      // Update vote history
+      const [updatedHistory] = await connection.query(`
+        UPDATE players_vote_histories
+        SET vote='${vote}'
+        WHERE players_id=${playerId} AND users_id=${userId}
+      `);
+      if (!updatedHistory) throw new Error(errors.UPDATE_VOTE_HISTORY_FAILED.message);
+
+      return updatedHistory;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    throw new Error(err.message || err);
+  }
+};
+
 module.exports.deletePlayerVoteHistory = async ({ playerId, userId }) => {
   try {
     const connection = await pool.getConnection();
@@ -178,6 +222,7 @@ module.exports.deletePlayerVoteHistory = async ({ playerId, userId }) => {
     throw new Error(err.message || err);
   }
 };
+
 
 module.exports.truncatePlayerVoteHistory = async () => {
   try {

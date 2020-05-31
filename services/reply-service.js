@@ -34,7 +34,7 @@ module.exports.getPlayerReplyByParentCommentsId = async (
       replies.forEach(reply => {
         replyVoteHistories.forEach(history => {
           if (history.targetOpinionId === reply.id) {
-            reply.isVoted = history.vote;
+            reply.vote = history.vote;
           }
         });
       });

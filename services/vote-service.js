@@ -9,53 +9,25 @@ module.exports.opinionVote = async (authorization, { targetAuthorId, targetOpini
   try {
     const connection = await pool.getConnection();
     const { userId } = extractUserInfoFromJWT(authorization);
-    let result;
 
     try {
-      const voteHistory = await voteHistoriesService.getOpinionVoteHistory({
-        targetOpinion,
-        targetOpinionId,
-        userId
-      });
+      await Promise.all([
+        // Increase player vote count
+        connection.query(`
+          UPDATE ${targetOpinion} SET
+          vote_${vote}_count=vote_${vote}_count+1
+          WHERE id='${targetOpinionId}'
+        `),
 
-      if (voteHistory) {
-        if (voteHistory.vote === vote) {
-          await Promise.all([
-            // Decrease player vote count
-            connection.query(`
-              UPDATE ${targetOpinion} SET
-              vote_${vote}_count=vote_${vote}_count-1
-              WHERE id='${targetOpinionId}'
-            `),
-
-            // Delete vote history
-            voteHistoriesService.deleteOpinionVoteHistory({ targetOpinion, targetOpinionId, userId })
-          ]);
-
-          result = 'cancelled';
-        } else {
-          throw new Error(errors.ALREADY_VOTED_OPINION.message);
-        }
-      } else {
-        await Promise.all([
-          // Increase player vote count
-          connection.query(`
-            UPDATE ${targetOpinion} SET
-            vote_${vote}_count=vote_${vote}_count+1
-            WHERE id='${targetOpinionId}'
-          `),
-
-          // Register vote history
-          voteHistoriesService.registerOpinionVoteHistory({ targetOpinion, targetOpinionId, userId, vote }),
-        ]);
-
-        result = 'voted';
-      }
+        // Register vote history
+        voteHistoriesService.registerOpinionVoteHistory({ targetOpinion, targetOpinionId, userId, vote }),
+      ]);
 
       const votedOpinion = (await connection.query(`
         SELECT * FROM ${targetOpinion}
         WHERE id='${targetOpinionId}'
-      `))[0][0];
+      `));
+
       if (!votedOpinion) throw new Error(errors.GET_VOTED_OPINION_FAILED.message);
 
       // Add new notification if vote_up_count is 20, 40, 60 ...
@@ -70,7 +42,64 @@ module.exports.opinionVote = async (authorization, { targetAuthorId, targetOpini
         });
       }
 
-      return result;
+      return;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};
+
+module.exports.updateOpinionVote = async (authorization, { targetOpinion, targetOpinionId, previousVote, vote }) => {
+  try {
+    const connection = await pool.getConnection();
+    const { userId } = extractUserInfoFromJWT(authorization);
+
+    try {
+      await Promise.all([
+        // 리액션 업데이트
+        connection.query(`
+          UPDATE ${targetOpinion} SET
+          vote_${previousVote}_count=vote_${previousVote}_count-1,
+          vote_${vote}_count=vote_${vote}_count+1
+          WHERE id='${targetOpinionId}'
+        `),
+
+        // 리액션 기록 업데이트
+        voteHistoriesService.updateOpinionVoteHistory({ userId, targetOpinion, targetOpinionId, vote })
+      ]);
+
+      return;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};
+
+module.exports.cancelOpinionVote = async (authorization, { targetOpinion, targetOpinionId, vote }) => {
+  try {
+    const connection = await pool.getConnection();
+    const { userId } = extractUserInfoFromJWT(authorization);
+
+    try {
+      await Promise.all([
+        // Increase opinion vote count
+        connection.query(`
+          UPDATE ${targetOpinion} SET
+          vote_${vote}_count=vote_${vote}_count-1
+          WHERE id='${targetOpinionId}'
+        `),
+
+        // Delete vote history
+        voteHistoriesService.deleteOpinionVoteHistory({ targetOpinion, targetOpinionId, userId })
+      ]);
+
+      return;
     } finally {
       connection.release();
     }
@@ -81,40 +110,53 @@ module.exports.opinionVote = async (authorization, { targetAuthorId, targetOpini
 };
 
 
+
 // PLAYER
-// 프론트에서 투표를 연속적으로 계속 하면 (up -> fire -> bomb ... 이런식으로)
-// 요청과 요청이 겹치는 사이에 vote history 엉킴으로 인해 오작동이 발생한다.
-// 일단 프론트에서 하나의 투표 요청이 끝나기 전에 또다른 요청을 하지 못하도록 해놨지만
-// 개선이 필요한 것 같다. 위 현상과 더불어 처리 시간도 꽤 긴 느낌이다.
 module.exports.playerVote = async (authorization, { playerId, vote }) => {
   try {
     const connection = await pool.getConnection();
     const { userId } = extractUserInfoFromJWT(authorization);
 
     try {
-      const voteHistory = await voteHistoriesService.getPlayerVoteHistoryByUserId({
-        playerId,
-        userId
-      });
-
-      if (voteHistory) {
-        // 투표 기록이 있으면 해당 투표 취소
-        await this.cancelPlayerVote(authorization, {
-          playerId,
-          vote: voteHistory.vote
-        });
-      }
-
       await Promise.all([
-        // 투표 진행
+        // 리액션 진행
         connection.query(`
           UPDATE players SET
           vote_${vote}_count=vote_${vote}_count+1
           WHERE id='${playerId}'
         `),
 
-        // 투표 기록 등록
+        // 리액션 기록 등록
         voteHistoriesService.registerPlayerVoteHistory({ playerId, userId, vote })
+      ]);
+
+      return;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};
+
+module.exports.updatePlayerVote = async (authorization, { playerId, previousVote, vote }) => {
+  try {
+    const connection = await pool.getConnection();
+    const { userId } = extractUserInfoFromJWT(authorization);
+
+    try {
+      await Promise.all([
+        // 리액션 업데이트
+        connection.query(`
+          UPDATE players SET
+          vote_${previousVote}_count=vote_${previousVote}_count-1,
+          vote_${vote}_count=vote_${vote}_count+1
+          WHERE id='${playerId}'
+        `),
+
+        // 리액션 기록 업데이트
+        voteHistoriesService.updatePlayerVoteHistory({ playerId, userId, vote })
       ]);
 
       return;
@@ -134,13 +176,14 @@ module.exports.cancelPlayerVote = async (authorization, { playerId, vote }) => {
 
     try {
       await Promise.all([
-        // Decrease player vote count
+        // 리액션 삭제
         connection.query(`
           UPDATE players SET
           vote_${vote}_count=vote_${vote}_count-1
           WHERE id='${playerId}'
         `),
 
+        // 리액션 기록 삭제
         voteHistoriesService.deletePlayerVoteHistory({ playerId, userId })
       ]);
 
@@ -153,21 +196,3 @@ module.exports.cancelPlayerVote = async (authorization, { playerId, vote }) => {
     throw new Error(err.message || err);
   }
 };
-
-// module.exports.cancelPlayerVote = async (authorization, { playerId }) => {
-//   try {
-//     const connection = await pool.getConnection();
-//     const { userId } = extractUserInfoFromJWT(authorization);
-
-//     try {
-//       await Promise.allvoteHistoriesService.deletePlayerVoteHistory({ playerId, userId });
-
-//       return;
-//     } finally {
-//       connection.release();
-//     }
-//   } catch (err) {
-//     console.error(err);
-//     throw new Error(err.message || err);
-//   }
-// };

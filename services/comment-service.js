@@ -75,7 +75,7 @@ module.exports.getPlayerCommentsByPlayerId = async (
       comments.forEach(comment => {
         commentVoteHistories.forEach(history => {
           if (history.targetOpinionId === comment.id) {
-            comment.isVoted = history.vote;
+            comment.vote = history.vote;
           }
         });
       });
