@@ -128,7 +128,7 @@ module.exports.top100PlayersMigrationToHistories = async (historyId) => {
           player.vote_fire_count, player.vote_celebration_count, player.vote_strong_count,
           player.vote_alien_count, player.vote_battery_high_count, player.vote_battery_medium_count,
           player.vote_battery_low_count, player.vote_battery_off_count, player.vote_bomb_count,
-          player.vote_angry_count, player.vote_doubt_count, player.vote_cool_count,
+          player.vote_angry_count, player.vote_hmm_count, player.vote_cool_count,
           player.vote_sad_count, player.vote_lol_count, player.vote_poop_count
         ];
       });
@@ -140,7 +140,7 @@ module.exports.top100PlayersMigrationToHistories = async (historyId) => {
         vote_fire_count, vote_celebration_count, vote_strong_count,
         vote_alien_count, vote_battery_high_count, vote_battery_medium_count,
         vote_battery_low_count, vote_battery_off_count, vote_bomb_count,
-        vote_angry_count, vote_doubt_count, vote_cool_count,
+        vote_angry_count, vote_hmm_count, vote_cool_count,
         vote_sad_count, vote_lol_count, vote_poop_count)
         VALUES ?
       `, [top100Players]);
@@ -168,7 +168,7 @@ module.exports.initiatePlayers = async () => {
         vote_fire_count=0, vote_celebration_count=0, vote_strong_count=0,
         vote_alien_count=0, vote_battery_high_count=0, vote_battery_medium_count=0,
         vote_battery_low_count=0, vote_battery_off_count=0, vote_bomb_count=0,
-        vote_angry_count=0, vote_doubt_count=0, vote_cool_count=0,
+        vote_angry_count=0, vote_hmm_count=0, vote_cool_count=0,
         vote_sad_count=0, vote_lol_count=0, vote_poop_count=0
       `);
 

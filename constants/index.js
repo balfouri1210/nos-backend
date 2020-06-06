@@ -26,7 +26,7 @@ module.exports = {
     + players.vote_battery_off_count
     + players.vote_bomb_count
     + players.vote_angry_count
-    + players.vote_doubt_count
+    + players.vote_hmm_count
     + players.vote_cool_count
     + players.vote_sad_count
     + players.vote_lol_count
@@ -49,7 +49,7 @@ module.exports = {
     + players_histories.vote_battery_off_count
     + players_histories.vote_bomb_count
     + players_histories.vote_angry_count
-    + players_histories.vote_doubt_count
+    + players_histories.vote_hmm_count
     + players_histories.vote_cool_count
     + players_histories.vote_sad_count
     + players_histories.vote_lol_count
