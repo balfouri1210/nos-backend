@@ -1,6 +1,7 @@
 const pool = require('../database/db-connection');
 const { errors, constants } = require('../constants/index');
 const voteHistoriesService = require('./vote-histories-service');
+const replyService = require('./reply-service');
 const playerService = require('./player-service');
 const { extractUserInfoFromJWT } = require('./auth-service');
 const moment = require('moment');
@@ -166,29 +167,31 @@ module.exports.deletePlayerComment = async ({ playerId, commentId }) => {
     const connection = await pool.getConnection();
 
     try {
-      let deleteComment = () => {
+      const deleteComment = () => {
         return connection.query(`
           DELETE FROM player_comments
           WHERE id='${commentId}'
         `);
       };
 
-      let deleteReplies = () => {
+      const deleteCommentVoteHistories = () => {
         return connection.query(`
-          DELETE FROM player_replies
-          WHERE parent_comments_id='${commentId}'
+          DELETE FROM player_comments_vote_histories
+          WHERE player_comments_id='${commentId}'
         `);
       };
 
-      const [deletedComment, deletedReplies] =
-      await Promise.all([deleteComment(), deleteReplies()]);
+      const [deletedComment] =
+      await Promise.all([
+        deleteComment(),
+        deleteCommentVoteHistories(),
+        replyService.deletePlayerReplyByParentCommentId(commentId),
+        playerService.mutatePlayerCommentsCount(playerId, 'decrease')
+      ]);
 
-      if (!deletedComment || !deletedReplies) {
+      if (!deletedComment) {
         throw new Error(errors.DELETE_COMMENT_FAILED.message);
       }
-
-      // Decrease player comment count & Update player degrees
-      await playerService.mutatePlayerCommentsCount(playerId, 'decrease');
 
       return deletedComment;
     } finally {

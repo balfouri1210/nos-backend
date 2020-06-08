@@ -123,6 +123,7 @@ module.exports.editPlayerReply = async ({ replyId }, { newContent }) => {
   }
 };
 
+// 특정 reply만 삭제하는 함수
 module.exports.deletePlayerReply = async ({ replyId }, { parentCommentsId }) => {
   try {
     const connection = await pool.getConnection();
@@ -137,13 +138,66 @@ module.exports.deletePlayerReply = async ({ replyId }, { parentCommentsId }) => 
       if (!deletedReply)
         throw new Error(errors.DELETE_REPLY_FAILED.message);
 
-      // Decrease parent's vote count
-      await connection.query(`
-        UPDATE player_comments SET reply_count=reply_count-1
-        WHERE id='${parentCommentsId}'
-      `);
+
+      const decreaseParentReplyCount = () => {
+        return connection.query(`
+          UPDATE player_comments SET reply_count=reply_count-1
+          WHERE id='${parentCommentsId}'
+        `);
+      };
+      const deleteReplyVoteHistories = () => {
+        return connection.query(`
+          DELETE FROM player_replies_vote_histories
+          WHERE player_replies_id=${replyId}
+        `);
+      };
+  
+      await Promise.all([ decreaseParentReplyCount(), deleteReplyVoteHistories() ]);
 
       return deletedReply;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};
+
+// Comment를 지웠을 때, 그 comment에 달린 reply들을 삭제하는 함수.
+module.exports.deletePlayerReplyByParentCommentId = async (parentCommentId) => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      // Query
+      let [targetReplies] = await connection.query(`
+        SELECT id FROM player_replies
+        WHERE parent_comments_id='${parentCommentId}'
+      `);
+
+      if (!targetReplies[0]) return;
+
+      targetReplies = targetReplies.map(reply => {
+        return reply.id;
+      }).join(',');
+
+      const deleteTargetReplies = () => {
+        return connection.query(`
+          DELETE FROM player_replies
+          WHERE id IN (${targetReplies})
+        `);
+      };
+      const deleteTargetReplyVoteHistories = () => {
+        return connection.query(`
+          DELETE FROM player_replies_vote_histories
+          WHERE player_replies_id IN (${targetReplies})
+        `);
+      };
+  
+      await Promise.all([ deleteTargetReplies(), deleteTargetReplyVoteHistories() ]);
+
+      return;
     } finally {
       connection.release();
     }
