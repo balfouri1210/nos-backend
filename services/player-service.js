@@ -17,6 +17,23 @@ module.exports.getTotalPlayerCount = async () => {
   }
 };
 
+module.exports.getTopPlayerScore = async () => {
+  try {
+    const [totalPlayerCount] = await pool.query(`
+      SELECT known_as, ${getPlayerScoreSql} as score
+      FROM players
+      WHERE activation='1'
+      ORDER BY ${getPlayerScoreSql} DESC
+      LIMIT 1
+    `);
+
+    return totalPlayerCount[0];
+  } catch (err) {
+    console.error(err);
+    throw new Error(errors.GET_TOTAL_PLAYER_COUNT_FAILED.message);
+  }
+};
+
 module.exports.getPlayers = async (
   { previousPlayerIdList, size }
 ) => {
@@ -53,7 +70,8 @@ module.exports.getHeavyPlayerById = async (
       SELECT players.*, countries.name as country_name, countries.code as country_code,
       clubs.clean_name as club_name, clubs.image as club_image,
       leagues.id as league_id,
-      players_vote_histories.vote as vote
+      players_vote_histories.vote as vote,
+      ${getPlayerScoreSql} as score
       FROM players
       LEFT JOIN countries ON players.country_id = countries.id
       LEFT JOIN clubs ON players.club_id = clubs.id

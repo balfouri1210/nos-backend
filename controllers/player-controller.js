@@ -10,6 +10,15 @@ module.exports.getTotalPlayerCount = async (req, res) => {
   }
 };
 
+module.exports.getTopPlayerScore = async (req, res) => {
+  try {
+    const result = await playerService.getTopPlayerScore();
+    res.send(result);
+  } catch (err) {
+    res.status(400).send(errors[err.message] || defaultServerResponse);
+  }
+};
+
 module.exports.getPlayers = async (req, res) => {
   try {
     const result = await playerService.getPlayers(
