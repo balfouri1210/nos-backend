@@ -159,7 +159,7 @@ module.exports.getPlayerHistories = async ({ historyId }, { previousPlayerIdList
         SELECT players_histories.hits, players_histories.vote_up_count, players_histories.vote_down_count, players_histories.comment_count,
         ${getPlayerHistoryScoreSql} as score,
         players.id, players.known_as, players.birthday, players.country_id, players.height, players.club_id, players.position,
-        countries.name as country_name, countries.code as country_code
+        countries.name as country_name, countries.code as country_code, image_url
         FROM players_histories
         LEFT JOIN players ON players_histories.players_id = players.id
         LEFT JOIN countries ON players.country_id = countries.id
