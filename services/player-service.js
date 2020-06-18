@@ -43,9 +43,10 @@ module.exports.getPlayers = async (
 
     const [players] = await pool.query(`
       SELECT players.*, countries.name as country_name, countries.code as country_code,
-      ${getPlayerScoreSql} as score
+      ${getPlayerScoreSql} as score, clubs.image as club_image
       FROM players
       LEFT JOIN countries ON players.country_id = countries.id
+      LEFT JOIN clubs ON players.club_id = clubs.id
       WHERE players.id NOT IN (${previousPlayerIdList}) AND activation='1'
       ORDER BY ${getPlayerScoreSql} DESC, rand()
       LIMIT ${size}

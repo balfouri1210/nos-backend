@@ -57,7 +57,7 @@ module.exports.getPlayerCommentsByPlayerId = async (
 
     const [comments] = await pool.query(`
       SELECT ${table}.id, ${table}.users_id, ${table}.created_at,
-      content, vote_up_count, vote_down_count, username, reply_count
+      content, vote_up_count, vote_down_count, username, reply_count, authorization as user_authorization
       FROM ${table}
       LEFT JOIN users ON ${table}.users_id = users.id
       WHERE ${whereQuery}
@@ -110,7 +110,7 @@ module.exports.addPlayerComment = async (authorization, { playerId, content }) =
       // Get added comment to return to frontend
       const [createdComment] = await connection.query(`
         SELECT ${table}.id, ${table}.users_id, ${table}.created_at,
-        content, vote_up_count, vote_down_count, username, reply_count FROM ${table}
+        content, vote_up_count, vote_down_count, username, authorization as user_authorization, reply_count FROM ${table}
         LEFT JOIN users ON ${table}.users_id = users.id
         WHERE ${table}.id='${createdResult.insertId}'
       `);
