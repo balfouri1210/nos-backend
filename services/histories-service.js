@@ -1,5 +1,5 @@
 const pool = require('../database/db-connection');
-const { errors, getPlayerHistoryScoreSql } = require('../constants/index');
+const { errors, playerScoreSqlGenerator } = require('../constants/index');
 const moment = require('moment');
 
 module.exports.getLatestHistoryId = async() => {
@@ -128,6 +128,7 @@ module.exports.addHistories = async (historyTerm) => {
   }
 };
 
+// 프론트에서 history페이지 player list의 infinite scroll을 제어하기 위함.
 module.exports.getTotalPlayersOfHistory = async ({ historyId }) => {
   try {
     const connection = await pool.getConnection();
@@ -157,15 +158,17 @@ module.exports.getPlayerHistories = async ({ historyId }, { previousPlayerIdList
     try {
       const [playerHistories] = await connection.query(`
         SELECT players_histories.hits, players_histories.vote_up_count, players_histories.vote_down_count, players_histories.comment_count,
-        ${getPlayerHistoryScoreSql} as score,
+        ${playerScoreSqlGenerator('players_histories')} as score,
         players.id, players.known_as, players.birthday, players.country_id, players.height, players.club_id, players.position,
-        countries.name as country_name, countries.code as country_code, image_url
+        countries.name as country_name, countries.code as country_code, image_url,
+        clubs.image as club_image
         FROM players_histories
         LEFT JOIN players ON players_histories.players_id = players.id
         LEFT JOIN countries ON players.country_id = countries.id
+        LEFT JOIN clubs ON players.club_id = clubs.id
         WHERE histories_id='${historyId}' AND
         players.id NOT IN (${previousPlayerIdList})
-        ORDER BY ${getPlayerHistoryScoreSql} DESC
+        ORDER BY ${playerScoreSqlGenerator('players_histories')} DESC
         LIMIT 20
       `);
 
@@ -195,12 +198,14 @@ module.exports.getPlayerHistory = async ({ historyId, playerId }) => {
         players.known_as, players.birthday, players.height, players.club_id, players.position, players.image_url,
         countries.name as country_name, countries.code as country_code,
         clubs.name as club_name, clubs.image as club_image,
-        leagues.id as league_id
+        leagues.id as league_id,
+        histories.top_player_score as top_player_score
         FROM players_histories
         LEFT JOIN players ON players_histories.players_id = players.id
         LEFT JOIN countries ON players.country_id = countries.id
         LEFT JOIN clubs ON players.club_id = clubs.id
         LEFT JOIN leagues ON clubs.league_id = leagues.id
+        LEFT JOIN histories ON players_histories.histories_id = histories.id
         WHERE histories_id='${historyId}' AND players_id='${playerId}'
       `);
 

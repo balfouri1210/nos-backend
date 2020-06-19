@@ -1,5 +1,5 @@
 const pool = require('../database/db-connection');
-const { errors, getPlayerScoreSql } = require('../constants/index');
+const { errors, playerScoreSqlGenerator } = require('../constants/index');
 
 module.exports.searchPlayer = async ({ keyword }) => {
   try {
@@ -12,7 +12,7 @@ module.exports.searchPlayer = async ({ keyword }) => {
         LEFT JOIN clubs ON players.club_id = clubs.id
         LEFT JOIN countries ON players.country_id = countries.id
         WHERE known_as LIKE '%${keyword}%'
-        ORDER BY ${getPlayerScoreSql} DESC
+        ORDER BY ${playerScoreSqlGenerator('players')} DESC
       `);
 
       if (!searchResult) {
@@ -42,7 +42,7 @@ module.exports.searchPlayerByClub = async ({ clubId }) => {
         LEFT JOIN clubs ON players.club_id = clubs.id
         LEFT JOIN countries ON players.country_id = countries.id
         WHERE club_id='${clubId}' AND activation='1'
-        ORDER BY ${getPlayerScoreSql} DESC, rand()
+        ORDER BY ${playerScoreSqlGenerator('players')} DESC, rand()
       `);
 
       if (!players) {

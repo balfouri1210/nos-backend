@@ -1,5 +1,5 @@
 const pool = require('../database/db-connection');
-const { constants, errors, getPlayerScoreSql } = require('../constants/index');
+const { constants, errors, playerScoreSqlGenerator } = require('../constants/index');
 const { extractUserInfoFromJWT } = require('./auth-service');
 
 module.exports.getTotalPlayerCount = async () => {
@@ -20,10 +20,10 @@ module.exports.getTotalPlayerCount = async () => {
 module.exports.getTopPlayerScore = async () => {
   try {
     const [totalPlayerCount] = await pool.query(`
-      SELECT known_as, ${getPlayerScoreSql} as score
+      SELECT known_as, ${playerScoreSqlGenerator('players')} as score
       FROM players
       WHERE activation='1'
-      ORDER BY ${getPlayerScoreSql} DESC
+      ORDER BY ${playerScoreSqlGenerator('players')} DESC
       LIMIT 1
     `);
 
@@ -43,12 +43,12 @@ module.exports.getPlayers = async (
 
     const [players] = await pool.query(`
       SELECT players.*, countries.name as country_name, countries.code as country_code,
-      ${getPlayerScoreSql} as score, clubs.image as club_image
+      ${playerScoreSqlGenerator('players')} as score, clubs.image as club_image
       FROM players
       LEFT JOIN countries ON players.country_id = countries.id
       LEFT JOIN clubs ON players.club_id = clubs.id
       WHERE players.id NOT IN (${previousPlayerIdList}) AND activation='1'
-      ORDER BY ${getPlayerScoreSql} DESC, rand()
+      ORDER BY ${playerScoreSqlGenerator('players')} DESC, rand()
       LIMIT ${size}
     `);
 
@@ -72,7 +72,7 @@ module.exports.getHeavyPlayerById = async (
       clubs.clean_name as club_name, clubs.image as club_image,
       leagues.id as league_id,
       players_vote_histories.vote as vote,
-      ${getPlayerScoreSql} as score
+      ${playerScoreSqlGenerator('players')} as score
       FROM players
       LEFT JOIN countries ON players.country_id = countries.id
       LEFT JOIN clubs ON players.club_id = clubs.id
@@ -129,15 +129,37 @@ module.exports.top100PlayersMigrationToHistories = async (historyId) => {
     const connection = await pool.getConnection();
 
     try {
-      let [top100Players] = await connection.query(`
+      let [targetPlayerList] = await connection.query(`
         SELECT *
         FROM players
-        WHERE activation='1' AND ${getPlayerScoreSql} > 0
-        ORDER BY ${getPlayerScoreSql} DESC, players.id DESC
+        WHERE activation='1' AND ${playerScoreSqlGenerator('players')} > 0
+        ORDER BY ${playerScoreSqlGenerator('players')} DESC, players.id DESC
         LIMIT ${constants.weeklyPlayerHistoryRange}
       `);
 
-      top100Players = top100Players.map(player => {
+      const topPlayer = targetPlayerList[0];
+      const topPlayerScore = topPlayer.hits/2
+      + topPlayer.comment_count
+      + topPlayer.vote_up_count
+      + topPlayer.vote_down_count
+      + topPlayer.vote_question_count
+      + topPlayer.vote_fire_count
+      + topPlayer.vote_celebration_count
+      + topPlayer.vote_strong_count
+      + topPlayer.vote_alien_count
+      + topPlayer.vote_battery_high_count
+      + topPlayer.vote_battery_medium_count
+      + topPlayer.vote_battery_low_count
+      + topPlayer.vote_battery_off_count
+      + topPlayer.vote_bomb_count
+      + topPlayer.vote_angry_count
+      + topPlayer.vote_hmm_count
+      + topPlayer.vote_cool_count
+      + topPlayer.vote_sad_count
+      + topPlayer.vote_lol_count
+      + topPlayer.vote_poop_count;
+
+      const top100Players = targetPlayerList.map(player => {
         return [
           historyId,
           player.id,
@@ -152,17 +174,25 @@ module.exports.top100PlayersMigrationToHistories = async (historyId) => {
         ];
       });
 
-      await connection.query(`
-        INSERT INTO players_histories
-        (histories_id, players_id, hits, comment_count,
-        vote_up_count, vote_down_count, vote_question_count,
-        vote_fire_count, vote_celebration_count, vote_strong_count,
-        vote_alien_count, vote_battery_high_count, vote_battery_medium_count,
-        vote_battery_low_count, vote_battery_off_count, vote_bomb_count,
-        vote_angry_count, vote_hmm_count, vote_cool_count,
-        vote_sad_count, vote_lol_count, vote_poop_count)
-        VALUES ?
-      `, [top100Players]);
+      await Promise.all([
+        connection.query(`
+          INSERT INTO players_histories
+          (histories_id, players_id, hits, comment_count,
+          vote_up_count, vote_down_count, vote_question_count,
+          vote_fire_count, vote_celebration_count, vote_strong_count,
+          vote_alien_count, vote_battery_high_count, vote_battery_medium_count,
+          vote_battery_low_count, vote_battery_off_count, vote_bomb_count,
+          vote_angry_count, vote_hmm_count, vote_cool_count,
+          vote_sad_count, vote_lol_count, vote_poop_count)
+          VALUES ?
+        `, [top100Players]),
+
+        connection.query(`
+          UPDATE histories
+          SET top_player_score='${topPlayerScore}'
+          WHERE id='${historyId}'
+        `)
+      ]);
 
       return;
     } finally {

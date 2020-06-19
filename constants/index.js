@@ -10,51 +10,30 @@ module.exports = {
     body: {}
   },
 
-  getPlayerScoreSql: `
-    players.hits/2
-    + players.comment_count
-    + players.vote_up_count
-    + players.vote_down_count
-    + players.vote_question_count
-    + players.vote_fire_count
-    + players.vote_celebration_count
-    + players.vote_strong_count
-    + players.vote_alien_count
-    + players.vote_battery_high_count
-    + players.vote_battery_medium_count
-    + players.vote_battery_low_count
-    + players.vote_battery_off_count
-    + players.vote_bomb_count
-    + players.vote_angry_count
-    + players.vote_hmm_count
-    + players.vote_cool_count
-    + players.vote_sad_count
-    + players.vote_lol_count
-    + players.vote_poop_count
-  `,
-
-  getPlayerHistoryScoreSql: `
-    players_histories.hits/2
-    + players_histories.comment_count
-    + players_histories.vote_up_count
-    + players_histories.vote_down_count
-    + players_histories.vote_question_count
-    + players_histories.vote_fire_count
-    + players_histories.vote_celebration_count
-    + players_histories.vote_strong_count
-    + players_histories.vote_alien_count
-    + players_histories.vote_battery_high_count
-    + players_histories.vote_battery_medium_count
-    + players_histories.vote_battery_low_count
-    + players_histories.vote_battery_off_count
-    + players_histories.vote_bomb_count
-    + players_histories.vote_angry_count
-    + players_histories.vote_hmm_count
-    + players_histories.vote_cool_count
-    + players_histories.vote_sad_count
-    + players_histories.vote_lol_count
-    + players_histories.vote_poop_count
-  `,
+  playerScoreSqlGenerator(target) {
+    return `
+      ${target}.hits/2
+      + ${target}.comment_count
+      + ${target}.vote_up_count
+      + ${target}.vote_down_count
+      + ${target}.vote_question_count
+      + ${target}.vote_fire_count
+      + ${target}.vote_celebration_count
+      + ${target}.vote_strong_count
+      + ${target}.vote_alien_count
+      + ${target}.vote_battery_high_count
+      + ${target}.vote_battery_medium_count
+      + ${target}.vote_battery_low_count
+      + ${target}.vote_battery_off_count
+      + ${target}.vote_bomb_count
+      + ${target}.vote_angry_count
+      + ${target}.vote_hmm_count
+      + ${target}.vote_cool_count
+      + ${target}.vote_sad_count
+      + ${target}.vote_lol_count
+      + ${target}.vote_poop_count
+    `;
+  },
 
   errors: {
     // Related to User
