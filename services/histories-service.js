@@ -196,6 +196,7 @@ module.exports.getPlayerHistory = async ({ historyId, playerId }) => {
       const [playerHistory] = await connection.query(`
         SELECT players_histories.*, players.id,
         players.known_as, players.birthday, players.height, players.club_id, players.position, players.image_url,
+        ${playerScoreSqlGenerator('players_histories')} as score,
         countries.name as country_name, countries.code as country_code,
         clubs.name as club_name, clubs.image as club_image,
         leagues.id as league_id,

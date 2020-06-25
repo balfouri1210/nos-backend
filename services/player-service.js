@@ -17,10 +17,10 @@ module.exports.getTotalPlayerCount = async () => {
   }
 };
 
-module.exports.getTopPlayerScore = async () => {
+module.exports.getTopPlayer = async () => {
   try {
     const [totalPlayerCount] = await pool.query(`
-      SELECT known_as, ${playerScoreSqlGenerator('players')} as score
+      SELECT *, ${playerScoreSqlGenerator('players')} as score
       FROM players
       WHERE activation='1'
       ORDER BY ${playerScoreSqlGenerator('players')} DESC

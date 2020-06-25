@@ -7,8 +7,8 @@ router.get('/total',
   playerController.getTotalPlayerCount
 );
 
-router.get('/top-score',
-  playerController.getTopPlayerScore
+router.get('/top-player',
+  playerController.getTopPlayer
 );
 
 // 원래 get으로 했지만 parameter로 배열을 받아야 해서
