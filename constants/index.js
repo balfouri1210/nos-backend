@@ -12,7 +12,7 @@ module.exports = {
 
   playerScoreSqlGenerator(target) {
     return `
-      ${target}.hits/2
+      ROUND(${target}.hits/2)
       + ${target}.comment_count
       + ${target}.vote_up_count
       + ${target}.vote_down_count

@@ -138,7 +138,7 @@ module.exports.top100PlayersMigrationToHistories = async (historyId) => {
       `);
 
       const topPlayer = targetPlayerList[0];
-      const topPlayerScore = topPlayer.hits/2
+      const topPlayerScore = Math.round(topPlayer.hits/2)
       + topPlayer.comment_count
       + topPlayer.vote_up_count
       + topPlayer.vote_down_count
