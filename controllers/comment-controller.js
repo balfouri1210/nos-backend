@@ -25,6 +25,17 @@ module.exports.getPlayerCommentsByPlayerId = async (req, res) => {
   }
 };
 
+module.exports.getPlayerCommentsPreview = async (req, res) => {
+  try {
+    const result = await commentService.getPlayerCommentsPreview(
+      req.query
+    );
+    res.send(result);
+  } catch (err) {
+    res.status(400).send(errors[err.message] || defaultServerResponse);
+  }
+};
+
 module.exports.addPlayerComment = async (req, res) => {
   try {
     const result = await commentService.addPlayerComment(

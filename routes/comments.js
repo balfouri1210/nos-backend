@@ -11,6 +11,10 @@ router.get('/player/:playerId',
   commentController.getPlayerCommentsByPlayerId
 );
 
+router.get('/preview/player',
+  commentController.getPlayerCommentsPreview
+);
+
 router.post('/player',
   tokenValidation.validationToken,
   commentController.addPlayerComment

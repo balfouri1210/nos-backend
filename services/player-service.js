@@ -34,25 +34,29 @@ module.exports.getTopPlayer = async () => {
   }
 };
 
-module.exports.getPlayers = async (
-  { previousPlayerIdList, size }
-) => {
+module.exports.getPlayers = async ({ previousPlayerIdList, size }) => {
   try {
-    previousPlayerIdList = previousPlayerIdList || '""';
-    size = size || 20;
+    const connection = await pool.getConnection();
 
-    const [players] = await pool.query(`
-      SELECT players.*, countries.name as country_name, countries.code as country_code,
-      ${playerScoreSqlGenerator('players')} as score, clubs.image as club_image
-      FROM players
-      LEFT JOIN countries ON players.country_id = countries.id
-      LEFT JOIN clubs ON players.club_id = clubs.id
-      WHERE players.id NOT IN (${previousPlayerIdList}) AND activation='1'
-      ORDER BY ${playerScoreSqlGenerator('players')} DESC, rand()
-      LIMIT ${size}
-    `);
+    try {
+      previousPlayerIdList = previousPlayerIdList || '""';
+      size = size || 20;
 
-    return players;
+      const [players] = await connection.query(`
+        SELECT players.*, countries.name as country_name, countries.code as country_code,
+        ${playerScoreSqlGenerator('players')} as score, clubs.image as club_image
+        FROM players
+        LEFT JOIN countries ON players.country_id = countries.id
+        LEFT JOIN clubs ON players.club_id = clubs.id
+        WHERE players.id NOT IN (${previousPlayerIdList}) AND activation='1'
+        ORDER BY ${playerScoreSqlGenerator('players')} DESC, rand()
+        LIMIT ${size}
+      `);
+
+      return players;
+    } finally {
+      connection.release();
+    }
   } catch (err) {
     console.error(err);
     throw new Error(errors.GET_PLAYERS_FAILED.message);

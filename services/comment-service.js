@@ -89,6 +89,38 @@ module.exports.getPlayerCommentsByPlayerId = async (
   }
 };
 
+module.exports.getPlayerCommentsPreview = async ({ playerIdList }) => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      playerIdList = playerIdList.split(',');
+      let commentsByPlayerQuery = [];
+
+      playerIdList.forEach(playerId => {
+        commentsByPlayerQuery.push(`
+          (SELECT player_comments.*, users.username
+          FROM player_comments
+          LEFT JOIN users ON player_comments.user_id=users.id
+          WHERE player_id=${playerId}
+          ORDER BY player_comments.id DESC
+          LIMIT 3)
+        `);
+      });
+      commentsByPlayerQuery = commentsByPlayerQuery.join(' union all ');
+
+      const [playerComments] = await connection.query(commentsByPlayerQuery);
+
+      return playerComments;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(errors.GET_COMMENT_FAILED.message);
+  }
+};
+
 module.exports.addPlayerComment = async (authorization, { playerId, content }) => {
   try {
     const connection = await pool.getConnection();
