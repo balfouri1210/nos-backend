@@ -48,13 +48,13 @@ module.exports.getHistories = async ({ year, month }) => {
         let query = [];
         histories.forEach(history => {
           query.push(`
-            (SELECT players_histories.*, players.known_as, players.birthday, players.position,
+            (SELECT player_histories.*, players.known_as, players.birthday, players.position,
             countries.code as country_code, clubs.image as club_image
-            FROM players_histories
-            LEFT JOIN players ON players.id = players_histories.players_id
+            FROM player_histories
+            LEFT JOIN players ON players.id = player_histories.player_id
             LEFT JOIN countries ON players.country_id = countries.id
             LEFT JOIN clubs ON players.club_id = clubs.id
-            WHERE histories_id=${history.id}
+            WHERE history_id=${history.id}
             LIMIT 5)
           `);
         });
@@ -63,7 +63,7 @@ module.exports.getHistories = async ({ year, month }) => {
         const [playerHistories] = await connection.query(query);
 
         histories.forEach(history => {
-          history.players = playerHistories.filter(playerHistory => playerHistory.histories_id === history.id);
+          history.players = playerHistories.filter(playerHistory => playerHistory.history_id === history.id);
         });
 
         return histories;
@@ -136,8 +136,8 @@ module.exports.getTotalPlayersOfHistory = async ({ historyId }) => {
     try {
       const [totalPlayerCount] = await connection.query(`
         SELECT COUNT(*) as total_player_count
-        FROM players_histories
-        WHERE histories_id='${historyId}'
+        FROM player_histories
+        WHERE history_id='${historyId}'
       `);
 
       return totalPlayerCount[0];
@@ -157,18 +157,18 @@ module.exports.getPlayerHistories = async ({ historyId }, { previousPlayerIdList
 
     try {
       const [playerHistories] = await connection.query(`
-        SELECT players_histories.hits, players_histories.vote_up_count, players_histories.vote_down_count, players_histories.comment_count,
-        ${playerScoreSqlGenerator('players_histories')} as score,
+        SELECT player_histories.hits, player_histories.vote_up_count, player_histories.vote_down_count, player_histories.comment_count,
+        ${playerScoreSqlGenerator('player_histories')} as score,
         players.id, players.known_as, players.birthday, players.country_id, players.height, players.club_id, players.position,
         countries.name as country_name, countries.code as country_code, image_url,
         clubs.image as club_image
-        FROM players_histories
-        LEFT JOIN players ON players_histories.players_id = players.id
+        FROM player_histories
+        LEFT JOIN players ON player_histories.player_id = players.id
         LEFT JOIN countries ON players.country_id = countries.id
         LEFT JOIN clubs ON players.club_id = clubs.id
-        WHERE histories_id='${historyId}' AND
+        WHERE history_id='${historyId}' AND
         players.id NOT IN (${previousPlayerIdList})
-        ORDER BY ${playerScoreSqlGenerator('players_histories')} DESC
+        ORDER BY ${playerScoreSqlGenerator('player_histories')} DESC
         LIMIT 20
       `);
 
@@ -194,20 +194,20 @@ module.exports.getPlayerHistory = async ({ historyId, playerId }) => {
 
     try {
       const [playerHistory] = await connection.query(`
-        SELECT players_histories.*, players.id,
+        SELECT player_histories.*, players.id,
         players.known_as, players.birthday, players.height, players.club_id, players.position, players.image_url,
-        ${playerScoreSqlGenerator('players_histories')} as score,
+        ${playerScoreSqlGenerator('player_histories')} as score,
         countries.name as country_name, countries.code as country_code,
         clubs.name as club_name, clubs.image as club_image,
         leagues.id as league_id,
         histories.top_player_score as top_player_score
-        FROM players_histories
-        LEFT JOIN players ON players_histories.players_id = players.id
+        FROM player_histories
+        LEFT JOIN players ON player_histories.player_id = players.id
         LEFT JOIN countries ON players.country_id = countries.id
         LEFT JOIN clubs ON players.club_id = clubs.id
         LEFT JOIN leagues ON clubs.league_id = leagues.id
-        LEFT JOIN histories ON players_histories.histories_id = histories.id
-        WHERE histories_id='${historyId}' AND players_id='${playerId}'
+        LEFT JOIN histories ON player_histories.history_id = histories.id
+        WHERE history_id='${historyId}' AND player_id='${playerId}'
       `);
 
       if (!playerHistory) {
@@ -232,7 +232,7 @@ module.exports.getPlayerCommentsHistories = async (
   // previousCommentIdList : upvote - downvote 정렬일 때 이미 로드된 댓글들의 아이디 목록 (걔네를 제외하고 검색해야 하기 때문)
 ) => {
   try {
-    const table = 'player_comments_histories';
+    const table = 'player_comment_histories';
     const howManyCommentEachRequest = 10;
 
     // 최초 로드시 minId가 없으므로 최대값으로 설정하여 가장 큰 id를 가진 comment부터 가져오도록 한다.
@@ -244,21 +244,21 @@ module.exports.getPlayerCommentsHistories = async (
     switch (sortType) {
     case 'date' :
       orderByQuery = `${table}.id DESC`;
-      whereQuery = `histories_id='${historyId}' AND players_id='${playerId}' AND ${table}.id < ${minId}`;
+      whereQuery = `history_id='${historyId}' AND player_id='${playerId}' AND ${table}.id < ${minId}`;
       break;
 
     case 'like' :
     default :
       orderByQuery = `(${table}.vote_up_count - ${table}.vote_down_count) DESC, ${table}.id DESC`;
-      whereQuery = `histories_id='${historyId}' AND players_id='${playerId}' AND ${table}.id NOT IN (${previousCommentIdList})`;
+      whereQuery = `history_id='${historyId}' AND player_id='${playerId}' AND ${table}.id NOT IN (${previousCommentIdList})`;
       break;
     }
 
     const [comments] = await pool.query(`
-      SELECT ${table}.id, ${table}.users_id, ${table}.created_at,
+      SELECT ${table}.id, ${table}.user_id, ${table}.created_at,
       content, vote_up_count, vote_down_count, username, reply_count
       FROM ${table}
-      LEFT JOIN users ON ${table}.users_id = users.id
+      LEFT JOIN users ON ${table}.user_id = users.id
       WHERE ${whereQuery}
       ORDER BY ${orderByQuery}
       LIMIT ${howManyCommentEachRequest}`
@@ -273,18 +273,18 @@ module.exports.getPlayerCommentsHistories = async (
 
 module.exports.getPlayerRepliesHistories = async (
   { historyId },
-  { maxId, parentCommentsId }
+  { maxId, parentCommentId }
 ) => {
   try {
-    const table = 'player_replies_histories';
+    const table = 'player_reply_histories';
     const howManyReplyEachRequest = 10;
     maxId = maxId || 0;
 
     const [replies] = await pool.query(`
-      SELECT ${table}.id, ${table}.users_id, username, content, parent_comments_id, vote_up_count, vote_down_count,
+      SELECT ${table}.id, ${table}.user_id, username, content, parent_comment_id, vote_up_count, vote_down_count,
       ${table}.created_at FROM ${table}
-      LEFT JOIN users ON ${table}.users_id = users.id
-      WHERE histories_id=${historyId} AND parent_comments_id=${parentCommentsId} AND ${table}.id>${maxId}
+      LEFT JOIN users ON ${table}.user_id = users.id
+      WHERE history_id=${historyId} AND parent_comment_id=${parentCommentId} AND ${table}.id>${maxId}
       ORDER BY ${table}.id
       LIMIT ${howManyReplyEachRequest}
     `);

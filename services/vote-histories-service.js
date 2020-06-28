@@ -10,7 +10,7 @@ module.exports.getOpinionVoteHistory = async ({ targetOpinion, targetOpinionId, 
       // Make new vote history
       const [voteHistory] = await connection.query(`
         SELECT * FROM ${targetOpinion}_vote_histories
-        WHERE ${targetOpinion}_id='${targetOpinionId}' AND users_id='${userId}'
+        WHERE ${targetOpinion}_id='${targetOpinionId}' AND user_id='${userId}'
         ORDER BY id DESC
       `);
       if (!voteHistory) throw new Error(errors.GET_VOTE_HISTORIES_FAILED.message);
@@ -32,7 +32,7 @@ module.exports.getOpinionVoteHistoriesByUserId = async ({ targetOpinion, userId 
       // Make new vote history
       const [voteHistories] = await connection.query(`
         SELECT * FROM ${targetOpinion}_vote_histories
-        WHERE users_id='${userId}'
+        WHERE user_id='${userId}'
         ORDER BY id DESC
       `);
       if (!voteHistories) throw new Error(errors.GET_VOTE_HISTORIES_FAILED.message);
@@ -60,7 +60,7 @@ module.exports.registerOpinionVoteHistory = async ({ targetOpinion, targetOpinio
       // Make new vote history
       const [registeredHistory] = await connection.query(`
         INSERT INTO ${targetOpinion}_vote_histories
-        (users_id, ${targetOpinion}_id, vote)
+        (user_id, ${targetOpinion}_id, vote)
         VALUES ('${userId}', '${targetOpinionId}', '${vote}')
       `);
       if (!registeredHistory) throw new Error(errors.REGISTER_VOTE_HISTORY_FAILED.message);
@@ -83,7 +83,7 @@ module.exports.updateOpinionVoteHistory = async ({ userId, targetOpinion, target
       const [updatedHistory] = await connection.query(`
         UPDATE ${targetOpinion}_vote_histories
         SET vote='${vote}'
-        WHERE ${targetOpinion}_id=${targetOpinionId} AND users_id=${userId}
+        WHERE ${targetOpinion}_id=${targetOpinionId} AND user_id=${userId}
       `);
       if (!updatedHistory) throw new Error(errors.UPDATE_VOTE_HISTORY_FAILED.message);
 
@@ -104,7 +104,7 @@ module.exports.deleteOpinionVoteHistory = async ({ targetOpinion, targetOpinionI
       // Make new vote history
       const [registeredHistory] = await connection.query(`
         DELETE FROM ${targetOpinion}_vote_histories
-        WHERE ${targetOpinion}_id=${targetOpinionId} AND users_id=${userId}
+        WHERE ${targetOpinion}_id=${targetOpinionId} AND user_id=${userId}
       `);
       if (!registeredHistory) throw new Error(errors.DELETE_VOTE_HISTORY_FAILED.message);
 
@@ -117,13 +117,13 @@ module.exports.deleteOpinionVoteHistory = async ({ targetOpinion, targetOpinionI
   }
 };
 
-module.exports.truncateOpinionVoteHistory = async (targetOpinion) => {
+module.exports.deleteAllOpinionVoteHistory = async (targetOpinion) => {
   try {
     const connection = await pool.getConnection();
 
     try {
       await connection.query(`
-        TRUNCATE TABLE ${targetOpinion}_vote_histories
+        DELETE FROM ${targetOpinion}_vote_histories
       `);
 
       return;
@@ -144,8 +144,8 @@ module.exports.getPlayerVoteHistoryByUserId = async ({ userId, playerId }) => {
     try {
       // Make new vote history
       const [voteHistory] = await connection.query(`
-        SELECT * FROM players_vote_histories
-        WHERE users_id='${userId}' AND players_id='${playerId}'
+        SELECT * FROM player_vote_histories
+        WHERE user_id='${userId}' AND player_id='${playerId}'
       `);
       if (!voteHistory) throw new Error(errors.GET_VOTE_HISTORIES_FAILED.message);
 
@@ -165,8 +165,8 @@ module.exports.registerPlayerVoteHistory = async ({ playerId, userId, vote }) =>
     try {
       // Make new vote history
       const [registeredHistory] = await connection.query(`
-        INSERT INTO players_vote_histories
-        (users_id, players_id, vote)
+        INSERT INTO player_vote_histories
+        (user_id, player_id, vote)
         VALUES ('${userId}', '${playerId}', '${vote}')
       `);
       if (!registeredHistory) throw new Error(errors.REGISTER_VOTE_HISTORY_FAILED.message);
@@ -187,9 +187,9 @@ module.exports.updatePlayerVoteHistory = async ({ playerId, userId, vote }) => {
     try {
       // Update vote history
       const [updatedHistory] = await connection.query(`
-        UPDATE players_vote_histories
+        UPDATE player_vote_histories
         SET vote='${vote}'
-        WHERE players_id=${playerId} AND users_id=${userId}
+        WHERE player_id=${playerId} AND user_id=${userId}
       `);
       if (!updatedHistory) throw new Error(errors.UPDATE_VOTE_HISTORY_FAILED.message);
 
@@ -209,8 +209,8 @@ module.exports.deletePlayerVoteHistory = async ({ playerId, userId }) => {
     try {
       // Make new vote history
       const [registeredHistory] = await connection.query(`
-        DELETE FROM players_vote_histories
-        WHERE players_id=${playerId} AND users_id=${userId}
+        DELETE FROM player_vote_histories
+        WHERE player_id=${playerId} AND user_id=${userId}
       `);
       if (!registeredHistory) throw new Error(errors.DELETE_VOTE_HISTORY_FAILED.message);
 
@@ -224,13 +224,13 @@ module.exports.deletePlayerVoteHistory = async ({ playerId, userId }) => {
 };
 
 
-module.exports.truncatePlayerVoteHistory = async () => {
+module.exports.deletePlayerVoteHistory = async () => {
   try {
     const connection = await pool.getConnection();
 
     try {
       await connection.query(`
-        TRUNCATE TABLE players_vote_histories
+        DELETE FROM player_vote_histories
       `);
 
       return;

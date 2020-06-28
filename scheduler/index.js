@@ -25,9 +25,9 @@ async function schedulerWorker() {
       commentService.emptyPlayerComments(),
       replyService.emptyPlayerReplies(),
 
-      voteHistoriesService.truncateOpinionVoteHistory('player_comments'),
-      voteHistoriesService.truncateOpinionVoteHistory('player_replies'),
-      voteHistoriesService.truncatePlayerVoteHistory(),
+      voteHistoriesService.deleteAllOpinionVoteHistory('player_comments'),
+      voteHistoriesService.deleteAllOpinionVoteHistory('player_replys'),
+      voteHistoriesService.deletePlayerVoteHistory(),
 
       notificationService.emptyNotifications()
     ]);

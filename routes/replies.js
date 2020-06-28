@@ -3,8 +3,8 @@ const router = express.Router();
 const replyController = require('../controllers/reply-controller');
 const tokenValidation = require('../middleware/token-validation');
 
-router.get('/player/:parentCommentsId',
-  replyController.getPlayerReplyByParentCommentsId
+router.get('/player/:parentCommentId',
+  replyController.getPlayerReplyByparentCommentId
 );
 
 router.post('/player',

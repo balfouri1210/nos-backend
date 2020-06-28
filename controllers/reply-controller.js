@@ -1,9 +1,9 @@
 const replyService = require('../services/reply-service');
 const { errors, defaultServerResponse } = require('../constants/index');
 
-module.exports.getPlayerReplyByParentCommentsId = async (req, res) => {
+module.exports.getPlayerReplyByparentCommentId = async (req, res) => {
   try {
-    const result = await replyService.getPlayerReplyByParentCommentsId(
+    const result = await replyService.getPlayerReplyByparentCommentId(
       req.headers.authorization,
       req.params,
       req.query

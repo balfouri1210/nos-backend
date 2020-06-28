@@ -14,7 +14,7 @@ module.exports.opinionVote = async (authorization, { targetAuthorId, targetOpini
       await Promise.all([
         // Increase player vote count
         connection.query(`
-          UPDATE ${targetOpinion} SET
+          UPDATE ${targetOpinion}s SET
           vote_${vote}_count=vote_${vote}_count+1
           WHERE id='${targetOpinionId}'
         `),
@@ -24,7 +24,7 @@ module.exports.opinionVote = async (authorization, { targetAuthorId, targetOpini
       ]);
 
       const votedOpinion = (await connection.query(`
-        SELECT * FROM ${targetOpinion}
+        SELECT * FROM ${targetOpinion}s
         WHERE id='${targetOpinionId}'
       `));
 
@@ -36,7 +36,7 @@ module.exports.opinionVote = async (authorization, { targetAuthorId, targetOpini
           recipientId: targetAuthorId,
           senderId: userId,
           object: 'player',
-          objectId: votedOpinion.players_id,
+          objectId: votedOpinion.player_id,
           type: 'vote_up',
           content: votedOpinion.vote_up_count
         });
@@ -61,7 +61,7 @@ module.exports.updateOpinionVote = async (authorization, { targetOpinion, target
       await Promise.all([
         // 리액션 업데이트
         connection.query(`
-          UPDATE ${targetOpinion} SET
+          UPDATE ${targetOpinion}s SET
           vote_${previousVote}_count=vote_${previousVote}_count-1,
           vote_${vote}_count=vote_${vote}_count+1
           WHERE id='${targetOpinionId}'
@@ -90,7 +90,7 @@ module.exports.cancelOpinionVote = async (authorization, { targetOpinion, target
       await Promise.all([
         // Increase opinion vote count
         connection.query(`
-          UPDATE ${targetOpinion} SET
+          UPDATE ${targetOpinion}s SET
           vote_${vote}_count=vote_${vote}_count-1
           WHERE id='${targetOpinionId}'
         `),

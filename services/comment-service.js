@@ -10,7 +10,7 @@ module.exports.getPlayerCommentsCountByPlayerId = async ({ playerId }) => {
   try {
     const [playerCommentsCount] = await pool.query(`
       SELECT COUNT(*) AS COUNT FROM player_comments
-      WHERE players_id='${playerId}'
+      WHERE player_id='${playerId}'
     `);
 
     if (!playerCommentsCount.length) {
@@ -45,21 +45,21 @@ module.exports.getPlayerCommentsByPlayerId = async (
     switch (sortType) {
     case 'date' :
       orderByQuery = `${table}.id DESC`;
-      whereQuery = `players_id='${playerId}' and ${table}.id < ${minId}`;
+      whereQuery = `player_id='${playerId}' and ${table}.id < ${minId}`;
       break;
 
     case 'like' :
     default :
       orderByQuery = `(${table}.vote_up_count - ${table}.vote_down_count) DESC, ${table}.id DESC`;
-      whereQuery = `players_id='${playerId}' and ${table}.id NOT IN (${previousCommentIdList})`;
+      whereQuery = `player_id='${playerId}' and ${table}.id NOT IN (${previousCommentIdList})`;
       break;
     }
 
     const [comments] = await pool.query(`
-      SELECT ${table}.id, ${table}.users_id, ${table}.created_at,
+      SELECT ${table}.id, ${table}.user_id, ${table}.created_at,
       content, vote_up_count, vote_down_count, username, reply_count, authorization as user_authorization
       FROM ${table}
-      LEFT JOIN users ON ${table}.users_id = users.id
+      LEFT JOIN users ON ${table}.user_id = users.id
       WHERE ${whereQuery}
       ORDER BY ${orderByQuery}
       LIMIT ${howManyCommentEachRequest}`
@@ -70,7 +70,7 @@ module.exports.getPlayerCommentsByPlayerId = async (
       const { userId } = extractUserInfoFromJWT(authorization);
 
       const commentVoteHistories = await voteHistoriesService.getOpinionVoteHistoriesByUserId({
-        targetOpinion: table,
+        targetOpinion: 'player_comment',
         userId
       });
       comments.forEach(comment => {
@@ -99,7 +99,7 @@ module.exports.addPlayerComment = async (authorization, { playerId, content }) =
 
       // Add comment
       const [createdResult] = await connection.query(`
-        INSERT INTO ${table} (users_id, players_id, content)
+        INSERT INTO ${table} (user_id, player_id, content)
         VALUES (?, ?, ?)
       `, [userId, playerId, content]);
 
@@ -109,9 +109,9 @@ module.exports.addPlayerComment = async (authorization, { playerId, content }) =
 
       // Get added comment to return to frontend
       const [createdComment] = await connection.query(`
-        SELECT ${table}.id, ${table}.users_id, ${table}.created_at,
+        SELECT ${table}.id, ${table}.user_id, ${table}.created_at,
         content, vote_up_count, vote_down_count, username, authorization as user_authorization, reply_count FROM ${table}
-        LEFT JOIN users ON ${table}.users_id = users.id
+        LEFT JOIN users ON ${table}.user_id = users.id
         WHERE ${table}.id='${createdResult.insertId}'
       `);
 
@@ -176,8 +176,8 @@ module.exports.deletePlayerComment = async ({ playerId, commentId }) => {
 
       const deleteCommentVoteHistories = () => {
         return connection.query(`
-          DELETE FROM player_comments_vote_histories
-          WHERE player_comments_id='${commentId}'
+          DELETE FROM player_comment_vote_histories
+          WHERE player_comment_id='${commentId}'
         `);
       };
 
@@ -212,9 +212,9 @@ module.exports.commentMigrationToHistories = async (historyId) => {
 
     try {
       await connection.query(`
-        INSERT INTO player_comments_histories 
-        (histories_id, id, users_id, players_id, content, vote_up_count, vote_down_count, reply_count, created_at, updated_at)
-        SELECT ${historyId}, id, users_id, players_id, content, vote_up_count, vote_down_count, reply_count, created_at, updated_at
+        INSERT INTO player_comment_histories 
+        (history_id, id, user_id, player_id, content, vote_up_count, vote_down_count, reply_count, created_at, updated_at)
+        SELECT ${historyId}, id, user_id, player_id, content, vote_up_count, vote_down_count, reply_count, created_at, updated_at
         FROM player_comments
       `);
 

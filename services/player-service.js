@@ -71,13 +71,13 @@ module.exports.getHeavyPlayerById = async (
       SELECT players.*, countries.name as country_name, countries.code as country_code,
       clubs.clean_name as club_name, clubs.image as club_image,
       leagues.id as league_id,
-      players_vote_histories.vote as vote,
+      player_vote_histories.vote as vote,
       ${playerScoreSqlGenerator('players')} as score
       FROM players
       LEFT JOIN countries ON players.country_id = countries.id
       LEFT JOIN clubs ON players.club_id = clubs.id
       LEFT JOIN leagues ON clubs.league_id = leagues.id
-      LEFT JOIN players_vote_histories ON players_vote_histories.users_id = ${userId} AND players_vote_histories.players_id = ${playerId}
+      LEFT JOIN player_vote_histories ON player_vote_histories.user_id = ${userId} AND player_vote_histories.player_id = ${playerId}
       WHERE players.id = ${playerId}
     `);
 
@@ -176,8 +176,8 @@ module.exports.top100PlayersMigrationToHistories = async (historyId) => {
 
       await Promise.all([
         connection.query(`
-          INSERT INTO players_histories
-          (histories_id, players_id, hits, comment_count,
+          INSERT INTO player_histories
+          (history_id, player_id, hits, comment_count,
           vote_up_count, vote_down_count, vote_question_count,
           vote_fire_count, vote_celebration_count, vote_strong_count,
           vote_alien_count, vote_battery_high_count, vote_battery_medium_count,

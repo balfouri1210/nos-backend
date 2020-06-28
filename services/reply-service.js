@@ -4,22 +4,23 @@ const voteHistoriesService = require('./vote-histories-service');
 const notificationService = require('./notification-service');
 const { extractUserInfoFromJWT } = require('./auth-service');
 
-module.exports.getPlayerReplyByParentCommentsId = async (
+module.exports.getPlayerReplyByparentCommentId = async (
   authorization,
-  { parentCommentsId },
+  { parentCommentId },
   { maxId }
 ) => {
   try {
-    const targetOpinion = 'player_replies';
+    const table = 'player_replys';
     const howManyReplyEachRequest = 10;
     maxId = maxId || 0;
 
     const [replies] = await pool.query(`
-      SELECT ${targetOpinion}.id, ${targetOpinion}.users_id, username, content, parent_comments_id, vote_up_count, vote_down_count, ${targetOpinion}.created_at
-      FROM ${targetOpinion}
-      LEFT JOIN users ON ${targetOpinion}.users_id = users.id
-      WHERE parent_comments_id=${parentCommentsId} AND ${targetOpinion}.id>${maxId}
-      ORDER BY ${targetOpinion}.id
+      SELECT ${table}.id, ${table}.user_id, username, content,
+      parent_comment_id, vote_up_count, vote_down_count, ${table}.created_at
+      FROM ${table}
+      LEFT JOIN users ON ${table}.user_id = users.id
+      WHERE parent_comment_id=${parentCommentId} AND ${table}.id>${maxId}
+      ORDER BY ${table}.id
       LIMIT ${howManyReplyEachRequest}
     `);
 
@@ -27,7 +28,7 @@ module.exports.getPlayerReplyByParentCommentsId = async (
 
     if (userId !== 'null') {
       const replyVoteHistories = await voteHistoriesService.getOpinionVoteHistoriesByUserId({
-        targetOpinion,
+        targetOpinion: 'player_reply',
         userId
       });
 
@@ -47,7 +48,7 @@ module.exports.getPlayerReplyByParentCommentsId = async (
   }
 };
 
-module.exports.addPlayerReply = async (authorization, { playerId, content, parentCommentsId, parentAuthorId }) => {
+module.exports.addPlayerReply = async (authorization, { playerId, content, parentCommentId, parentAuthorId }) => {
   try {
     const connection = await pool.getConnection();
     const { userId } = extractUserInfoFromJWT(authorization);
@@ -55,10 +56,10 @@ module.exports.addPlayerReply = async (authorization, { playerId, content, paren
     try {
       // Add reply
       const [createdComment] = await connection.query(`
-        INSERT INTO player_replies
-        (users_id, players_id, content, parent_comments_id)
+        INSERT INTO player_replys
+        (user_id, player_id, content, parent_comment_id)
         VALUES (?, ?, ?, ?)
-      `, [userId, playerId, content, parentCommentsId]);
+      `, [userId, playerId, content, parentCommentId]);
 
       if (!createdComment)
         throw new Error(errors.CREATE_REPLY_FAILED.message);
@@ -66,7 +67,7 @@ module.exports.addPlayerReply = async (authorization, { playerId, content, paren
       // Increase parent's reply count
       await connection.query(`
         UPDATE player_comments SET reply_count=reply_count+1
-        WHERE id='${parentCommentsId}'
+        WHERE id='${parentCommentId}'
       `);
 
       if (userId !== parentAuthorId) {
@@ -104,7 +105,7 @@ module.exports.editPlayerReply = async ({ replyId }, { newContent }) => {
 
       // Query
       const [edittedReply] = await connection.query(`
-        UPDATE player_replies SET
+        UPDATE player_replys SET
         content='${newContent}'
         WHERE id='${replyId}'
       `);
@@ -124,14 +125,14 @@ module.exports.editPlayerReply = async ({ replyId }, { newContent }) => {
 };
 
 // 특정 reply만 삭제하는 함수
-module.exports.deletePlayerReply = async ({ replyId }, { parentCommentsId }) => {
+module.exports.deletePlayerReply = async ({ replyId }, { parentCommentId }) => {
   try {
     const connection = await pool.getConnection();
 
     try {
       // Query
       const [deletedReply] = await connection.query(`
-        DELETE FROM player_replies
+        DELETE FROM player_replys
         WHERE id='${replyId}'
       `);
 
@@ -142,13 +143,13 @@ module.exports.deletePlayerReply = async ({ replyId }, { parentCommentsId }) => 
       const decreaseParentReplyCount = () => {
         return connection.query(`
           UPDATE player_comments SET reply_count=reply_count-1
-          WHERE id='${parentCommentsId}'
+          WHERE id='${parentCommentId}'
         `);
       };
       const deleteReplyVoteHistories = () => {
         return connection.query(`
-          DELETE FROM player_replies_vote_histories
-          WHERE player_replies_id=${replyId}
+          DELETE FROM player_reply_vote_histories
+          WHERE player_reply_id=${replyId}
         `);
       };
   
@@ -172,8 +173,8 @@ module.exports.deletePlayerReplyByParentCommentId = async (parentCommentId) => {
     try {
       // Query
       let [targetReplies] = await connection.query(`
-        SELECT id FROM player_replies
-        WHERE parent_comments_id='${parentCommentId}'
+        SELECT id FROM player_replys
+        WHERE parent_comment_id='${parentCommentId}'
       `);
 
       if (!targetReplies[0]) return;
@@ -184,14 +185,14 @@ module.exports.deletePlayerReplyByParentCommentId = async (parentCommentId) => {
 
       const deleteTargetReplies = () => {
         return connection.query(`
-          DELETE FROM player_replies
+          DELETE FROM player_replys
           WHERE id IN (${targetReplies})
         `);
       };
       const deleteTargetReplyVoteHistories = () => {
         return connection.query(`
-          DELETE FROM player_replies_vote_histories
-          WHERE player_replies_id IN (${targetReplies})
+          DELETE FROM player_reply_vote_histories
+          WHERE player_reply_id IN (${targetReplies})
         `);
       };
   
@@ -217,10 +218,10 @@ module.exports.replyMigrationToHistories = async (historyId) => {
     try {
       // Query
       await connection.query(`
-        INSERT INTO player_replies_histories 
-        (histories_id, id, users_id, players_id, parent_comments_id, content, vote_up_count, vote_down_count, created_at, updated_at)
-        SELECT ${historyId}, id, users_id, players_id, parent_comments_id, content, vote_up_count, vote_down_count, created_at, updated_at
-        FROM player_replies
+        INSERT INTO player_reply_histories 
+        (history_id, id, user_id, player_id, parent_comment_id, content, vote_up_count, vote_down_count, created_at, updated_at)
+        SELECT ${historyId}, id, user_id, player_id, parent_comment_id, content, vote_up_count, vote_down_count, created_at, updated_at
+        FROM player_replys
       `);
 
       return;
@@ -240,7 +241,7 @@ module.exports.emptyPlayerReplies = async () => {
     try {
       // Query
       await connection.query(`
-        DELETE FROM player_replies
+        DELETE FROM player_replys
       `);
 
       return;
