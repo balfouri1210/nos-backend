@@ -66,6 +66,19 @@ module.exports.getPlayerHistories = async (req, res) => {
   }
 };
 
+module.exports.getPlayerCommentsHistoryPreview = async (req, res) => {
+  try {
+    const result = await historiesService.getPlayerCommentsHistoryPreview(
+      req.params,
+      req.query
+    );
+    res.send(result);
+  } catch (err) {
+    res.status(400).send(errors[err.message] || defaultServerResponse);
+  }
+};
+
+
 // History페이지 player-modal 에서 필요
 module.exports.getPlayerHistory = async (req, res) => {
   try {

@@ -26,6 +26,10 @@ router.get('/player/:historyId',
   historiesController.getPlayerHistories
 );
 
+router.get('/:historyId/player/comments/preview',
+  historiesController.getPlayerCommentsHistoryPreview
+);
+
 
 // History페이지 player-modal 에서 필요
 router.get('/:historyId/player/:playerId',

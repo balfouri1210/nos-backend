@@ -186,6 +186,39 @@ module.exports.getPlayerHistories = async ({ historyId }, { previousPlayerIdList
   }
 };
 
+module.exports.getPlayerCommentsHistoryPreview = async ({historyId}, { playerIdList }) => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      playerIdList = playerIdList.split(',');
+      let query = [];
+
+      playerIdList.forEach(playerId => {
+        query.push(`
+          (SELECT player_comment_histories.*, users.username
+          FROM player_comment_histories
+          LEFT JOIN users ON player_comment_histories.user_id=users.id
+          WHERE history_id=${historyId} AND player_id=${playerId}
+          ORDER BY player_comment_histories.id DESC
+          LIMIT 3)
+        `);
+      });
+      query = query.join(' union all ');
+
+      const [playerCommentsHistories] = await connection.query(query);
+
+      return playerCommentsHistories;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(errors.GET_COMMENTS_HISTORIES_FAILED.message);
+  }
+};
+
+
 
 // Player modal 에서 쓰이는 함수들
 module.exports.getPlayerHistory = async ({ historyId, playerId }) => {

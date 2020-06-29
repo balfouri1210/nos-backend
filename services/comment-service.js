@@ -95,10 +95,10 @@ module.exports.getPlayerCommentsPreview = async ({ playerIdList }) => {
 
     try {
       playerIdList = playerIdList.split(',');
-      let commentsByPlayerQuery = [];
+      let query = [];
 
       playerIdList.forEach(playerId => {
-        commentsByPlayerQuery.push(`
+        query.push(`
           (SELECT player_comments.*, users.username
           FROM player_comments
           LEFT JOIN users ON player_comments.user_id=users.id
@@ -107,9 +107,9 @@ module.exports.getPlayerCommentsPreview = async ({ playerIdList }) => {
           LIMIT 3)
         `);
       });
-      commentsByPlayerQuery = commentsByPlayerQuery.join(' union all ');
+      query = query.join(' union all ');
 
-      const [playerComments] = await connection.query(commentsByPlayerQuery);
+      const [playerComments] = await connection.query(query);
 
       return playerComments;
     } finally {
