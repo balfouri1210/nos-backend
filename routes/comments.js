@@ -20,6 +20,11 @@ router.post('/player',
   commentController.addPlayerComment
 );
 
+router.post('/player/fake',
+  tokenValidation.validationToken,
+  commentController.addFakePlayerComment
+);
+
 router.put('/player/:commentId',
   tokenValidation.validationToken,
   commentController.editPlayerComment

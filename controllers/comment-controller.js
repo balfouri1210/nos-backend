@@ -48,6 +48,18 @@ module.exports.addPlayerComment = async (req, res) => {
   }
 };
 
+module.exports.addFakePlayerComment = async (req, res) => {
+  try {
+    const result = await commentService.addFakePlayerComment(
+      req.headers.authorization,
+      req.body
+    );
+    res.send(result);
+  } catch (err) {
+    res.status(400).send(errors[err.message] || defaultServerResponse);
+  }
+};
+
 module.exports.editPlayerComment = async (req, res) => {
   try {
     const result = await commentService.editPlayerComment(req.params, req.body);
