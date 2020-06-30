@@ -200,7 +200,7 @@ module.exports.getPlayerCommentsHistoryPreview = async ({historyId}, { playerIdL
           FROM player_comment_histories
           LEFT JOIN users ON player_comment_histories.user_id=users.id
           WHERE history_id=${historyId} AND player_id=${playerId}
-          ORDER BY player_comment_histories.id DESC
+          ORDER BY (player_comment_histories.vote_up_count - player_comment_histories.vote_down_count) DESC, player_comment_histories.id DESC
           LIMIT 3)
         `);
       });
