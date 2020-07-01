@@ -1,6 +1,7 @@
 const pool = require('../database/db-connection');
 const { constants, errors, playerScoreSqlGenerator } = require('../constants/index');
 const { extractUserInfoFromJWT } = require('./auth-service');
+const moment = require('moment');
 
 module.exports.getTotalPlayerCount = async () => {
   try {
@@ -112,16 +113,22 @@ module.exports.mutatePlayerCommentsCount = async (
   playerId, type
 ) => {
   try {
-    let query = type === 'increase' ? 'comment_count+1' : 'comment_count-1';
-    await pool.query(`
-      UPDATE players SET comment_count=${query}
-      WHERE id='${playerId}'
-    `);
+    if (type === 'increase') {
+      await pool.query(`
+        UPDATE players SET comment_count=comment_count+1, last_comment_date='${moment(new Date()).utc().format('YYYY-MM-DD HH:mm:ss')}'
+        WHERE id='${playerId}'
+      `);
+    } else {
+      await pool.query(`
+        UPDATE players SET comment_count=comment_count-1
+        WHERE id='${playerId}'
+      `);
+    }
 
     return;
   } catch (err) {
     console.error(err);
-    throw new Error(errors.INCREASE_PLAYER_HITS_FAILED.message);
+    throw new Error(errors.MUTATE_PLAYER_COMMENT_COUNT_FAILED.message);
   }
 };
 

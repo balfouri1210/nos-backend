@@ -149,6 +149,10 @@ module.exports = {
       code: 'p014',
       message: 'GET_TOTAL_PLAYER_COUNT_FAILED'
     },
+    MUTATE_PLAYER_COMMENT_COUNT_FAILED: {
+      code: 'p015',
+      message: 'MUTATE_PLAYER_COMMENT_COUNT_FAILED'
+    },
 
     // Related to Authentication
     TOKEN_MISSING: {
