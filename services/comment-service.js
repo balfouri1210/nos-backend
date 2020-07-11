@@ -164,6 +164,7 @@ module.exports.addPlayerComment = async (authorization, { playerId, content }) =
   }
 };
 
+// FAKE COMMENT !!
 module.exports.addFakePlayerComment = async (authorization, { fakeUsername, playerId, content }) => {
   try {
     const connection = await pool.getConnection();

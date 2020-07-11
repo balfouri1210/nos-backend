@@ -115,7 +115,7 @@ module.exports.mutatePlayerCommentsCount = async (
   try {
     if (type === 'increase') {
       await pool.query(`
-        UPDATE players SET comment_count=comment_count+1, last_comment_date='${moment(new Date()).utc().format('YYYY-MM-DD HH:mm:ss')}'
+        UPDATE players SET comment_count=comment_count+1, last_commented_at='${moment(new Date()).utc().format('YYYY-MM-DD HH:mm:ss')}'
         WHERE id='${playerId}'
       `);
     } else {
