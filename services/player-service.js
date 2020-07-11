@@ -223,7 +223,7 @@ module.exports.initiatePlayers = async () => {
       // Initiate players table
       await connection.query(`
         UPDATE players
-        SET hits=0, comment_count=0,
+        SET hits=0, comment_count=0, last_commented_at=0,
         vote_up_count=0, vote_down_count=0, vote_question_count=0,
         vote_fire_count=0, vote_celebration_count=0, vote_strong_count=0,
         vote_alien_count=0, vote_battery_high_count=0, vote_battery_medium_count=0,
