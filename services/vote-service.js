@@ -26,12 +26,14 @@ module.exports.opinionVote = async (authorization, { targetAuthorId, targetOpini
       const votedOpinion = (await connection.query(`
         SELECT * FROM ${targetOpinion}s
         WHERE id='${targetOpinionId}'
-      `));
+      `))[0][0];
+      console.log(votedOpinion);
 
       if (!votedOpinion) throw new Error(errors.GET_VOTED_OPINION_FAILED.message);
 
       // Add new notification if vote_up_count is 20, 40, 60 ...
-      if (votedOpinion.vote_up_count > 0 && votedOpinion.vote_up_count % 20 === 0) {
+      if (votedOpinion.vote_up_count > 0) {
+        console.log('add notification');
         notificationService.addNotification({
           recipientId: targetAuthorId,
           senderId: userId,
