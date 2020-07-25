@@ -288,7 +288,7 @@ module.exports.getPlayerCommentsHistories = async (
     }
 
     const [comments] = await pool.query(`
-      SELECT ${table}.id, ${table}.user_id, ${table}.created_at,
+      SELECT ${table}.id, ${table}.user_id, ${table}.created_at, ${table}.fake_username,
       content, vote_up_count, vote_down_count, username, reply_count
       FROM ${table}
       LEFT JOIN users ON ${table}.user_id = users.id

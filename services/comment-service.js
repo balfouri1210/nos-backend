@@ -286,8 +286,8 @@ module.exports.commentMigrationToHistories = async (historyId) => {
     try {
       await connection.query(`
         INSERT INTO player_comment_histories 
-        (history_id, id, user_id, player_id, content, vote_up_count, vote_down_count, reply_count, created_at, updated_at)
-        SELECT ${historyId}, id, user_id, player_id, content, vote_up_count, vote_down_count, reply_count, created_at, updated_at
+        (history_id, id, user_id, player_id, content, vote_up_count, vote_down_count, reply_count, created_at, updated_at, fake_username)
+        SELECT ${historyId}, id, user_id, player_id, content, vote_up_count, vote_down_count, reply_count, created_at, updated_at, fake_username
         FROM player_comments
       `);
 
