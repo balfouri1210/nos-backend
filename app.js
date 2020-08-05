@@ -4,7 +4,14 @@ const dotEnv = require('dotenv');
 const cors = require('cors');
 
 const app = express(); // Generate express app
-app.use(cors()); // Allow cors
+app.use(cors({
+  origin: [
+    'http://localhost:3000',
+    'https://907degrees.com',
+    'http://localhost:4000',
+    'https://admin-dev.907degrees.com'
+  ]
+})); // Allow cors
 dotEnv.config(); // Use .env file
 
 // Request payload middleware
