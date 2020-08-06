@@ -9,7 +9,7 @@ app.use(cors({
     'http://localhost:3000',
     'https://907degrees.com',
     'http://localhost:4000',
-    'https://admin-dev.907degrees.com'
+    'https://admin.907degrees.com'
   ]
 })); // Allow cors
 dotEnv.config(); // Use .env file
