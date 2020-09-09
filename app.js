@@ -2,8 +2,14 @@ const express = require('express');
 const STAGE = process.env.STAGE || 'local';
 const dotEnv = require('dotenv');
 const cors = require('cors');
+const Sentry = require('@sentry/node');
 
 const app = express(); // Generate express app
+Sentry.init({ dsn: 'https://b9bc76568087440e9f7cdd1d1ed46d9a@o437600.ingest.sentry.io/5405986' }); // Sentry setup
+
+// [Sentry] The request handler must be the first middleware on the app
+app.use(Sentry.Handlers.requestHandler());
+
 app.use(cors({
   origin: [
     'http://localhost:3000',
@@ -13,6 +19,7 @@ app.use(cors({
   ]
 })); // Allow cors
 dotEnv.config(); // Use .env file
+
 
 // Request payload middleware
 app.use(express.json());
@@ -42,6 +49,11 @@ app.get('/', (req, res, next) => {
 
 // Leaderboard Scheduler
 require('./scheduler').historyScheduler;
+
+
+// [Sentry] The error handler must be before any other error middleware and after all controllers
+app.use(Sentry.Handlers.errorHandler());
+
 
 const PORT = process.env.PORT || 3000;
 
