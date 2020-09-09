@@ -14,6 +14,7 @@ app.use(cors({
   origin: [
     'http://localhost:3000',
     'https://907degrees.com',
+    'https://dev.907degrees.com',
     'http://localhost:4000',
     'https://admin.907degrees.com'
   ]
