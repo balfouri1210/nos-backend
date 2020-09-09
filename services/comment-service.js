@@ -6,6 +6,29 @@ const playerService = require('./player-service');
 const { extractUserInfoFromJWT } = require('./auth-service');
 const moment = require('moment');
 
+module.exports.getTotalCommentsCount = async () => {
+  try {
+    const [totalCommentsCount, totalHotCommentsCount] = await Promise.all([
+      pool.query(`
+        SELECT COUNT(*) AS COUNT FROM player_comments
+      `),
+
+      pool.query(`
+        SELECT COUNT(*) AS COUNT FROM player_comments
+        WHERE vote_up_count >= 1
+      `)
+    ]);
+
+    return {
+      totalCommentsCount: totalCommentsCount[0][0].COUNT,
+      totalHotCommentsCount: totalHotCommentsCount[0][0].COUNT
+    };
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};
+
 module.exports.getPlayerCommentsCountByPlayerId = async ({ playerId }) => {
   try {
     const [playerCommentsCount] = await pool.query(`
@@ -121,6 +144,46 @@ module.exports.getPlayerCommentsPreview = async ({ playerIdList }) => {
   }
 };
 
+module.exports.getPlayerCommentsBySortType = async ({ sortType, commentsPerRequest, page }) => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      // Query
+      let query;
+      let commonQuery = `SELECT player_comments.content, player_comments.created_at, player_comments.reply_count, player_comments.vote_up_count,
+        players.id as player_id, players.known_as as player_name, clubs.image as club_image FROM player_comments
+        LEFT JOIN players ON players.id = player_comments.player_id
+        LEFT JOIN clubs ON clubs.id = players.club_id`;
+
+      if (sortType === 'date') {
+        query = `
+          ${commonQuery}
+          ORDER BY player_comments.id DESC
+          LIMIT ${commentsPerRequest}
+          OFFSET ${commentsPerRequest * (page - 1)}
+            `;
+      } else if (sortType === 'vote') {
+        query = `
+          ${commonQuery}
+          WHERE player_comments.vote_up_count > 0
+          ORDER BY player_comments.id DESC
+          LIMIT ${commentsPerRequest}
+          OFFSET ${commentsPerRequest * (page - 1)}
+        `;
+      }
+      const [comments] = await connection.query(query);
+
+      return comments;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};
+
 module.exports.addPlayerComment = async (authorization, { playerId, content }) => {
   try {
     const connection = await pool.getConnection();
@@ -145,47 +208,6 @@ module.exports.addPlayerComment = async (authorization, { playerId, content }) =
         content, vote_up_count, vote_down_count, username, authorization as user_authorization, reply_count FROM ${table}
         LEFT JOIN users ON ${table}.user_id = users.id
         WHERE ${table}.id='${createdResult.insertId}'
-      `);
-
-      if (!createdComment.length) {
-        throw new Error(errors.GET_COMMENT_FAILED.message);
-      }
-
-      // Increase player comment count & Update player degrees
-      await playerService.mutatePlayerCommentsCount(playerId, 'increase');
-      
-      return createdComment[0];
-    } finally {
-      connection.release();
-    }
-  } catch (err) {
-    console.error(err);
-    throw new Error(err.message || err);
-  }
-};
-
-// FAKE COMMENT !!
-module.exports.addFakePlayerComment = async (authorization, { fakeUsername, playerId, content }) => {
-  try {
-    const connection = await pool.getConnection();
-    const userId = 3;
-
-    try {
-      // Add comment
-      const [createdResult] = await connection.query(`
-        INSERT INTO player_comments (user_id, fake_username, player_id, content)
-        VALUES (?, ?, ?, ?)
-      `, [userId, fakeUsername, playerId, content]);
-
-      if (!createdResult) {
-        throw new Error(errors.CREATE_COMMENT_FAILED.message);
-      }
-
-      // Get added comment to return to frontend
-      const [createdComment] = await connection.query(`
-        SELECT *
-        FROM player_comments
-        WHERE player_comments.id='${createdResult.insertId}'
       `);
 
       if (!createdComment.length) {
@@ -321,3 +343,46 @@ module.exports.emptyPlayerComments = async () => {
   }
 };
 
+
+
+// FAKE COMMENT !!
+module.exports.addFakePlayerComment = async (authorization, { fakeUsername, playerId, content }) => {
+  try {
+    const connection = await pool.getConnection();
+    const userId = 3;
+
+    try {
+      // Add comment
+      const [createdResult] = await connection.query(`
+        INSERT INTO player_comments (user_id, fake_username, player_id, content)
+        VALUES (?, ?, ?, ?)
+      `, [userId, fakeUsername, playerId, content]);
+
+      if (!createdResult) {
+        throw new Error(errors.CREATE_COMMENT_FAILED.message);
+      }
+
+      // Get added comment to return to frontend
+      const [createdComment] = await connection.query(`
+        SELECT *
+        FROM player_comments
+        WHERE player_comments.id='${createdResult.insertId}'
+      `);
+
+      if (!createdComment.length) {
+        throw new Error(errors.GET_COMMENT_FAILED.message);
+      }
+
+      // Increase player comment count & Update player degrees
+      await playerService.mutatePlayerCommentsCount(playerId, 'increase');
+      
+      return createdComment[0];
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};
+// FAKE COMMENT END

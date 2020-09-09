@@ -3,6 +3,10 @@ const router = express.Router();
 const commentController = require('../controllers/comment-controller');
 const tokenValidation = require('../middleware/token-validation');
 
+router.get('/count',
+  commentController.getTotalCommentsCount
+);
+
 router.get('/count/player/:playerId',
   commentController.getPlayerCommentsCountByPlayerId
 );
@@ -13,6 +17,10 @@ router.get('/player/:playerId',
 
 router.get('/preview/player',
   commentController.getPlayerCommentsPreview
+);
+
+router.get('/player',
+  commentController.getPlayerCommentsBySortType
 );
 
 router.post('/player',
