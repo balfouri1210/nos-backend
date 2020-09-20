@@ -112,7 +112,7 @@ module.exports.getPlayerCommentsByPlayerId = async (
   }
 };
 
-module.exports.getPlayerCommentsPreview = async ({ playerIdList }) => {
+module.exports.getPlayerCommentsPreview = async ({ playerIdList, count }) => {
   try {
     const connection = await pool.getConnection();
 
@@ -127,7 +127,7 @@ module.exports.getPlayerCommentsPreview = async ({ playerIdList }) => {
           LEFT JOIN users ON player_comments.user_id=users.id
           WHERE player_id=${playerId}
           ORDER BY player_comments.id DESC
-          LIMIT 3)
+          LIMIT ${count || 3})
         `);
       });
       query = query.join(' union all ');
@@ -166,7 +166,7 @@ module.exports.getPlayerCommentsBySortType = async ({ sortType, commentsPerReque
       } else if (sortType === 'vote') {
         query = `
           ${commonQuery}
-          WHERE player_comments.vote_up_count > 0
+          WHERE player_comments.vote_up_count > 5
           ORDER BY player_comments.id DESC
           LIMIT ${commentsPerRequest}
           OFFSET ${commentsPerRequest * (page - 1)}

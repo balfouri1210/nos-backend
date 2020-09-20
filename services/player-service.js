@@ -49,7 +49,7 @@ module.exports.getPlayers = async ({ previousPlayerIdList, size }) => {
         FROM players
         LEFT JOIN countries ON players.country_id = countries.id
         LEFT JOIN clubs ON players.club_id = clubs.id
-        WHERE players.id NOT IN (${previousPlayerIdList}) AND activation='1'
+        WHERE players.id NOT IN (${previousPlayerIdList}) AND players.activation='1'
         ORDER BY ${playerScoreSqlGenerator('players')} DESC, rand()
         LIMIT ${size}
       `);
@@ -73,11 +73,16 @@ module.exports.getHeavyPlayerById = async (
 
   try {
     const [player] = await pool.query(`
-      SELECT players.*, countries.name as country_name, countries.code as country_code,
-      clubs.clean_name as club_name, clubs.image as club_image,
-      leagues.id as league_id,
-      player_vote_histories.vote as vote,
-      ${playerScoreSqlGenerator('players')} as score
+      SELECT players.*,
+      countries.name AS country_name,
+      countries.code AS country_code,
+      clubs.clean_name AS club_name,
+      clubs.image AS club_image,
+      clubs.color AS club_color,
+      leagues.id AS league_id,
+      player_vote_histories.vote AS vote,
+      ${playerScoreSqlGenerator('players')} AS score,
+      (SELECT COUNT(*)+1 FROM players WHERE score < ${playerScoreSqlGenerator('players')}) AS ranking
       FROM players
       LEFT JOIN countries ON players.country_id = countries.id
       LEFT JOIN clubs ON players.club_id = clubs.id

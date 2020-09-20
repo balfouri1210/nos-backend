@@ -1,16 +1,20 @@
 const pool = require('../database/db-connection');
 const { errors, playerScoreSqlGenerator } = require('../constants/index');
 
-module.exports.searchPlayer = async ({ keyword, clubId }) => {
+module.exports.searchPlayer = async ({ keyword, clubId, countryId }) => {
   try {
     const connection = await pool.getConnection();
 
     try {
       let whereSql;
       if (keyword) {
-        whereSql = `WHERE known_as LIKE '%${keyword}%' AND activation=1`;
+        whereSql = `WHERE known_as LIKE '%${keyword}%' AND players.activation=1`;
+      } else if (clubId) {
+        whereSql = `WHERE club_id='${clubId}' AND players.activation=1`;
+      } else if (countryId) {
+        whereSql = `WHERE players.country_id='${countryId}' AND players.activation=1`;
       } else {
-        whereSql = `WHERE club_id='${clubId}' AND activation=1`;
+        whereSql = '';
       }
 
       const [searchResult] = await connection.query(`

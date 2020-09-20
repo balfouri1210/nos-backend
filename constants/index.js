@@ -295,6 +295,11 @@ module.exports = {
     GET_CLUBS_FAILED: {
       code: 'club001',
       message: 'GET_CLUBS_FAILED'
+    },
+
+    UPDATE_CLUB_FAILED: {
+      code: 'club002',
+      message: 'UPDATE_CLUB_FAILED'
     }
   }
 };
