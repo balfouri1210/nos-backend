@@ -6,7 +6,8 @@ module.exports.searchPlayer = async ({ keyword, clubId, countryId }) => {
     const connection = await pool.getConnection();
 
     try {
-      let whereSql;
+      let whereSql = '';
+      let limitSql = '';
       if (keyword) {
         whereSql = `WHERE known_as LIKE '%${keyword}%' AND players.activation=1`;
       } else if (clubId) {
@@ -14,7 +15,7 @@ module.exports.searchPlayer = async ({ keyword, clubId, countryId }) => {
       } else if (countryId) {
         whereSql = `WHERE players.country_id='${countryId}' AND players.activation=1`;
       } else {
-        whereSql = '';
+        limitSql = 'LIMIT 50';
       }
 
       const [searchResult] = await connection.query(`
@@ -25,6 +26,7 @@ module.exports.searchPlayer = async ({ keyword, clubId, countryId }) => {
         LEFT JOIN countries ON players.country_id = countries.id
         ${whereSql}
         ORDER BY ${playerScoreSqlGenerator('players')} DESC
+        ${limitSql}
       `);
 
       if (!searchResult) {

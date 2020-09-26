@@ -158,10 +158,12 @@ module.exports.getPlayerHistories = async ({ historyId }, { previousPlayerIdList
     try {
       const [playerHistories] = await connection.query(`
         SELECT player_histories.hits, player_histories.vote_up_count, player_histories.vote_down_count, player_histories.comment_count,
-        ${playerScoreSqlGenerator('player_histories')} as score,
-        players.id, players.known_as, players.birthday, players.country_id, players.height, players.club_id, players.position,
-        countries.name as country_name, countries.code as country_code, image_url,
-        clubs.image as club_image
+        ${playerScoreSqlGenerator('player_histories')} AS score,
+        players.id, players.known_as, players.birthday, players.country_id, players.height, players.club_id, players.position, image_url,
+        countries.name AS country_name,
+        countries.code AS country_code,
+        clubs.image AS club_image,
+        clubs.color AS club_color
         FROM player_histories
         LEFT JOIN players ON player_histories.player_id = players.id
         LEFT JOIN countries ON players.country_id = countries.id
@@ -229,11 +231,15 @@ module.exports.getPlayerHistory = async ({ historyId, playerId }) => {
       const [playerHistory] = await connection.query(`
         SELECT player_histories.*, players.id,
         players.known_as, players.birthday, players.height, players.club_id, players.position, players.image_url,
-        ${playerScoreSqlGenerator('player_histories')} as score,
-        countries.name as country_name, countries.code as country_code,
-        clubs.name as club_name, clubs.image as club_image,
-        leagues.id as league_id,
-        histories.top_player_score as top_player_score
+        ${playerScoreSqlGenerator('player_histories')} AS score,
+        (SELECT COUNT(*)+1 FROM player_histories WHERE history_id='${historyId}' AND score < ${playerScoreSqlGenerator('player_histories')}) AS ranking,
+        countries.name AS country_name,
+        countries.code AS country_code,
+        clubs.name AS club_name,
+        clubs.color AS club_color,
+        clubs.image AS club_image,
+        leagues.id AS league_id,
+        histories.top_player_score AS top_player_score
         FROM player_histories
         LEFT JOIN players ON player_histories.player_id = players.id
         LEFT JOIN countries ON players.country_id = countries.id
