@@ -19,6 +19,7 @@ app.use(cors({
     'https://admin.907degrees.com'
   ]
 })); // Allow cors
+
 dotEnv.config(); // Use .env file
 
 

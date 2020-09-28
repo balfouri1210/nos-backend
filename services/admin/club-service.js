@@ -47,8 +47,6 @@ module.exports.toggleClubActivation = async ({ clubId, activation }) => {
         `),
       ]);
 
-      console.log(updatedClub, updatedPlayers);
-
       if (!updatedClub || !updatedPlayers) throw new Error(errors.UPDATE_CLUB_FAILED.message);
 
       return;

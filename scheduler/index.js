@@ -25,8 +25,8 @@ async function schedulerWorker() {
       commentService.emptyPlayerComments(),
       replyService.emptyPlayerReplies(),
 
-      voteHistoriesService.deleteAllOpinionVoteHistory('player_comments'),
-      voteHistoriesService.deleteAllOpinionVoteHistory('player_replys'),
+      voteHistoriesService.deleteAllOpinionVoteHistory('player_comment'),
+      voteHistoriesService.deleteAllOpinionVoteHistory('player_reply'),
       voteHistoriesService.deletePlayerVoteHistory(),
 
       notificationService.emptyNotifications()

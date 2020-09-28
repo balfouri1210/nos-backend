@@ -196,3 +196,31 @@ module.exports.cancelPlayerVote = async (authorization, { playerId, vote }) => {
     throw new Error(err.message || err);
   }
 };
+
+
+
+
+// PLAYER VOTE FAKE
+module.exports.playerVoteFake = async (authorization, { playerId, vote }) => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      await Promise.all([
+        // 리액션 진행
+        connection.query(`
+          UPDATE players SET
+          vote_${vote}_count=vote_${vote}_count+1
+          WHERE id='${playerId}'
+        `),
+      ]);
+
+      return;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};

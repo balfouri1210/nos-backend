@@ -74,3 +74,17 @@ module.exports.cancelPlayerVote = async (req, res) => {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }
 };
+
+
+// Fake
+module.exports.playerVoteFake = async (req, res) => {
+  try {
+    const result = await voteService.playerVoteFake(
+      req.headers.authorization,
+      req.body
+    );
+    res.send(result);
+  } catch (err) {
+    res.status(400).send(errors[err.message] || defaultServerResponse);
+  }
+};

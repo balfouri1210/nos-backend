@@ -165,8 +165,10 @@ module.exports.generateNewJWT = (user) => {
     {
       id: user.id,
       email: user.email,
-      username: user.username
+      username: user.username,
+      authorization: user.authorization
     },
+
     // JWT 생성할 때 쓰이는 SECRET_KEY도 암호화되어야 할 것 같은데? (20200102)
     process.env.SECRET_KEY || 'nos-secret-key',
     { expiresIn: '3d' }

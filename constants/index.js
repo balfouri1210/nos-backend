@@ -36,6 +36,13 @@ module.exports = {
   },
 
   errors: {
+    // Related to origin
+    // 원하지 않는 origin에서 들어온 요청일 경우 (like postman)
+    NOW_ALLOWED_ORIGIN: {
+      code: 'not_allowed_origin',
+      message: 'NOT_ALLOWED_ORIGIN'
+    },
+    
     // Related to User
     UNAVAILABLE_EMAIL: {
       code: 'u001',
