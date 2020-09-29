@@ -216,6 +216,10 @@ module.exports = {
       code: 'c005',
       message: 'GET_COMMENT_COUNT_FAILED'
     },
+    NO_COMMENT_CONTENT: {
+      code: 'c006',
+      message: 'NO_COMMENT_CONTENT'
+    },
 
     // Related to Reply
     GET_REPLY_FAILED: {

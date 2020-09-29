@@ -166,7 +166,7 @@ module.exports.getPlayerCommentsBySortType = async ({ sortType, commentsPerReque
       } else if (sortType === 'vote') {
         query = `
           ${commonQuery}
-          WHERE player_comments.vote_up_count > 5
+          WHERE player_comments.vote_up_count >= 5
           ORDER BY player_comments.id DESC
           LIMIT ${commentsPerRequest}
           OFFSET ${commentsPerRequest * (page - 1)}
@@ -186,6 +186,9 @@ module.exports.getPlayerCommentsBySortType = async ({ sortType, commentsPerReque
 
 module.exports.addPlayerComment = async (authorization, { playerId, content }) => {
   try {
+    if (!content)
+      throw new Error(errors.NO_COMMENT_CONTENT.message);
+
     const connection = await pool.getConnection();
     const { userId } = extractUserInfoFromJWT(authorization);
 
@@ -210,9 +213,8 @@ module.exports.addPlayerComment = async (authorization, { playerId, content }) =
         WHERE ${table}.id='${createdResult.insertId}'
       `);
 
-      if (!createdComment.length) {
+      if (!createdComment.length)
         throw new Error(errors.GET_COMMENT_FAILED.message);
-      }
 
       // Increase player comment count & Update player degrees
       await playerService.mutatePlayerCommentsCount(playerId, 'increase');
@@ -229,6 +231,9 @@ module.exports.addPlayerComment = async (authorization, { playerId, content }) =
 
 module.exports.editPlayerComment = async ({ commentId }, { newContent }) => {
   try {
+    if (!newContent)
+      throw new Error(errors.NO_COMMENT_CONTENT.message);
+    
     const connection = await pool.getConnection();
 
     try {
