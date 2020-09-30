@@ -13,6 +13,7 @@ app.use(Sentry.Handlers.requestHandler());
 app.use(cors({
   origin: [
     'http://localhost:3000',
+    'http://192.168.0.15:3000',
     'https://907degrees.com',
     'https://dev.907degrees.com',
     'http://localhost:4000',
