@@ -7,7 +7,7 @@ module.exports.login = async ({ email, password }) => {
   try {
     const [rows] = await pool.query(`
       SELECT * FROM users
-      WHERE email='${email}' AND authorization=2
+      WHERE email='${email}' AND authorization=3
     `);
     const user = rows[0];
 
@@ -38,6 +38,7 @@ module.exports.generateNewJWT = (user) => {
       email: user.email,
       username: user.username
     },
+
     // JWT 생성할 때 쓰이는 SECRET_KEY도 암호화되어야 할 것 같은데? (20200102)
     process.env.SECRET_KEY || 'nos-secret-key',
     { expiresIn: '3d' }
