@@ -1,7 +1,8 @@
 module.exports = {
   constants: {
     weeklyPlayerHistoryRange: 100,
-    defaultMinId: 2147483647
+    defaultMinId: 2147483647,
+    hotCommentVoteCriteria: 5 // hot comment로 분류되는 추천 수 기준
   },
 
   defaultServerResponse: {

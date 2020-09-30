@@ -15,7 +15,7 @@ module.exports.getTotalCommentsCount = async () => {
 
       pool.query(`
         SELECT COUNT(*) AS COUNT FROM player_comments
-        WHERE vote_up_count >= 1
+        WHERE vote_up_count >= ${constants.hotCommentVoteCriteria}
       `)
     ]);
 
@@ -166,7 +166,7 @@ module.exports.getPlayerCommentsBySortType = async ({ sortType, commentsPerReque
       } else if (sortType === 'vote') {
         query = `
           ${commonQuery}
-          WHERE player_comments.vote_up_count >= 5
+          WHERE player_comments.vote_up_count >= ${constants.hotCommentVoteCriteria}
           ORDER BY player_comments.id DESC
           LIMIT ${commentsPerRequest}
           OFFSET ${commentsPerRequest * (page - 1)}
