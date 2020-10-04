@@ -99,6 +99,10 @@ module.exports = {
       code: 'u013',
       message: 'DELETE_USER_FAILED'
     },
+    INVALID_FORM_CONTENT: {
+      code: 'u014',
+      message: 'INVALID_FORM_CONTENT'
+    },
 
     // Related to Player
     GET_PLAYERS_FAILED: {
