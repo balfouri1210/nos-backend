@@ -26,7 +26,7 @@ module.exports.signup = async ({ email, password, username, countryId, birth }) 
     const connection = await pool.getConnection();
 
     try {
-      if (email && password && username && countryId && birth)
+      if (!email || !password || !username || !countryId || !birth)
         throw new Error(errors.INVALID_FORM_CONTENT.message);
 
       const [existingUser] = await connection.query(`SELECT * FROM users WHERE email='${email}'`);
