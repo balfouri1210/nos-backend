@@ -88,3 +88,15 @@ module.exports.playerVoteFake = async (req, res) => {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }
 };
+
+module.exports.opinionVoteFake = async (req, res) => {
+  try {
+    const result = await voteService.opinionVoteFake(
+      req.headers.authorization,
+      req.body
+    );
+    res.send(result);
+  } catch (err) {
+    res.status(400).send(errors[err.message] || defaultServerResponse);
+  }
+};

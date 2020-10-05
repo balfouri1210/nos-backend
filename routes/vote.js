@@ -47,4 +47,11 @@ router.post('/player/fake',
   voteController.playerVoteFake
 );
 
+// Fake
+router.post('/opinion/fake',
+  tokenValidation.validationToken,
+  originValidation.validateOrigin,
+  voteController.opinionVoteFake
+);
+
 module.exports = router;

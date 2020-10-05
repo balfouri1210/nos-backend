@@ -12,7 +12,7 @@ module.exports.opinionVote = async (authorization, { targetAuthorId, targetOpini
 
     try {
       await Promise.all([
-        // Increase player vote count
+        // Increase opinion vote count
         connection.query(`
           UPDATE ${targetOpinion}s SET
           vote_${vote}_count=vote_${vote}_count+1
@@ -212,6 +212,30 @@ module.exports.playerVoteFake = async (authorization, { playerId, vote }) => {
           UPDATE players SET
           vote_${vote}_count=vote_${vote}_count+1
           WHERE id='${playerId}'
+        `),
+      ]);
+
+      return;
+    } finally {
+      connection.release();
+    }
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};
+
+module.exports.opinionVoteFake = async (authorization, { targetAuthorId, targetOpinion, targetOpinionId, vote }) => {
+  try {
+    const connection = await pool.getConnection();
+
+    try {
+      await Promise.all([
+        // Increase opinion vote count
+        connection.query(`
+          UPDATE ${targetOpinion}s SET
+          vote_${vote}_count=vote_${vote}_count+1
+          WHERE id='${targetOpinionId}'
         `),
       ]);
 
