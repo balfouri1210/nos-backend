@@ -35,13 +35,13 @@ module.exports.getTopPlayer = async () => {
   }
 };
 
-module.exports.getPlayers = async ({ previousPlayerIdList, size }) => {
+module.exports.getPlayers = async ({ previousPlayerIdList, count }) => {
   try {
     const connection = await pool.getConnection();
 
     try {
       previousPlayerIdList = previousPlayerIdList || '""';
-      size = size || 20;
+      count = count || 20;
 
       const [players] = await connection.query(`
         SELECT players.*, countries.name as country_name, countries.code as country_code,
@@ -51,7 +51,7 @@ module.exports.getPlayers = async ({ previousPlayerIdList, size }) => {
         LEFT JOIN clubs ON players.club_id = clubs.id
         WHERE players.id NOT IN (${previousPlayerIdList}) AND players.activation='1'
         ORDER BY ${playerScoreSqlGenerator('players')} DESC, rand()
-        LIMIT ${size}
+        LIMIT ${count}
       `);
 
       return players;

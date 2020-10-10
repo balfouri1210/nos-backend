@@ -128,7 +128,7 @@ module.exports.addHistories = async (historyTerm) => {
   }
 };
 
-// 프론트에서 history페이지 player list의 infinite scroll을 제어하기 위함.
+// 프론트에서 history페이지 player list의 총 선수 수를 알기 위함.
 module.exports.getTotalPlayersOfHistory = async ({ historyId }) => {
   try {
     const connection = await pool.getConnection();
@@ -150,10 +150,11 @@ module.exports.getTotalPlayersOfHistory = async ({ historyId }) => {
   }
 };
 
-module.exports.getPlayerHistories = async ({ historyId }, { previousPlayerIdList }) => {
+module.exports.getPlayerHistories = async ({ historyId }, { previousPlayerIdList, count }) => {
   try {
     const connection = await pool.getConnection();
     previousPlayerIdList = previousPlayerIdList || '""';
+    count = count || 20;
 
     try {
       const [playerHistories] = await connection.query(`
@@ -172,7 +173,7 @@ module.exports.getPlayerHistories = async ({ historyId }, { previousPlayerIdList
         WHERE history_id='${historyId}' AND
         players.id NOT IN (${previousPlayerIdList})
         ORDER BY ${playerScoreSqlGenerator('player_histories')} DESC
-        LIMIT 20
+        LIMIT ${count}
       `);
 
       if (!playerHistories) {
@@ -189,7 +190,7 @@ module.exports.getPlayerHistories = async ({ historyId }, { previousPlayerIdList
   }
 };
 
-module.exports.getPlayerCommentsHistoryPreview = async ({historyId}, { playerIdList }) => {
+module.exports.getPlayerCommentsHistoryPreview = async ({historyId}, { playerIdList, count }) => {
   try {
     const connection = await pool.getConnection();
 
@@ -204,7 +205,7 @@ module.exports.getPlayerCommentsHistoryPreview = async ({historyId}, { playerIdL
           LEFT JOIN users ON player_comment_histories.user_id=users.id
           WHERE history_id=${historyId} AND player_id=${playerId}
           ORDER BY (player_comment_histories.vote_up_count - player_comment_histories.vote_down_count) DESC, player_comment_histories.id DESC
-          LIMIT 6)
+          LIMIT ${ count || 3 })
         `);
       });
       query = query.join(' union all ');
