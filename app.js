@@ -44,6 +44,8 @@ app.use('/api/histories', require('./routes/histories'));
 app.use('/api/search', require('./routes/search'));
 app.use('/api/clubs', require('./routes/clubs'));
 
+app.use('/api/meta', require('./routes/meta'));
+
 app.use('/api/admin', require('./routes/admin'));
 
 
