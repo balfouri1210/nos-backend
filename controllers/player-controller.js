@@ -1,11 +1,13 @@
 const playerService = require('../services/player-service');
 const { errors, defaultServerResponse } = require('../constants/index');
+const createLog = require('../config/logger');
 
 module.exports.getTotalPlayerCount = async (req, res) => {
   try {
     const result = await playerService.getTotalPlayerCount();
     res.send(result);
   } catch (err) {
+    console.error(err);
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }
 };
@@ -25,6 +27,7 @@ module.exports.getPlayers = async (req, res) => {
       req.query
     );
     res.send(result);
+    createLog('info', 'Get Players', req);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }

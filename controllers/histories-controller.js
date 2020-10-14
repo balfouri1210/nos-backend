@@ -1,5 +1,6 @@
 const historiesService = require('../services/histories-service');
 const { errors, defaultServerResponse } = require('../constants/index');
+const createLog = require('../config/logger');
 
 module.exports.getLatestHistoryId = async (req, res) => {
   try {
@@ -18,6 +19,7 @@ module.exports.getHistories = async (req, res) => {
       req.query
     );
     res.send(result);
+    createLog('info', 'Get Histories', req);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }
@@ -61,6 +63,7 @@ module.exports.getPlayerHistories = async (req, res) => {
       req.query
     );
     res.send(result);
+    createLog('info', 'Get Playerlist History', req);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }
@@ -86,6 +89,7 @@ module.exports.getPlayerHistory = async (req, res) => {
       req.params
     );
     res.send(result);
+    createLog('info', 'Get Player History', req);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }

@@ -1,10 +1,12 @@
 const authService = require('../services/auth-service');
 const { errors, defaultServerResponse } = require('../constants/index');
+const createLog = require('../config/logger');
 
 module.exports.login = async (req, res) => {
   try {
     const result = await authService.login(req.body);
     res.send(result);
+    createLog('info', `Login: ${req.body.email}`, req);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }
