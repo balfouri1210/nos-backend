@@ -1,5 +1,6 @@
 const replyService = require('../services/reply-service');
 const { errors, defaultServerResponse } = require('../constants/index');
+const createLog = require('../config/logger');
 
 module.exports.getPlayerReplyByparentCommentId = async (req, res) => {
   try {
@@ -21,6 +22,7 @@ module.exports.addPlayerReply = async (req, res) => {
       req.body
     );
     res.send(result);
+    createLog('info', `Add Reply: ${req.body.content}`, req);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }

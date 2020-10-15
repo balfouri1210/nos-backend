@@ -40,19 +40,20 @@ module.exports.getHeavyPlayerById = async (req, res) => {
       req.params
     );
     res.send(result);
+    createLog('info', `Get Player Info: ${req.query.playerName}`, req);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }
 };
 
-module.exports.getPlayersByClub = async (req, res) => {
-  try {
-    const result = await playerService.getPlayersByClub(req.params);
-    res.send(result);
-  } catch (err) {
-    res.status(400).send(errors[err.message] || defaultServerResponse);
-  }
-};
+// module.exports.getPlayersByClub = async (req, res) => {
+//   try {
+//     const result = await playerService.getPlayersByClub(req.params);
+//     res.send(result);
+//   } catch (err) {
+//     res.status(400).send(errors[err.message] || defaultServerResponse);
+//   }
+// };
 
 
 module.exports.increasePlayerHits = async (req, res) => {

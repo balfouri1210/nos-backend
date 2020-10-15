@@ -1,5 +1,6 @@
 const commentService = require('../services/comment-service');
 const { errors, defaultServerResponse } = require('../constants/index');
+const createLog = require('../config/logger');
 
 module.exports.getTotalCommentsCount = async (req, res) => {
   try {
@@ -54,6 +55,7 @@ module.exports.addPlayerComment = async (req, res) => {
       req.body
     );
     res.send(result);
+    createLog('info', `Add Comment: ${req.body.content}`, req);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }
