@@ -1,7 +1,8 @@
 const pool = require('../database/db-connection');
 const { errors, playerScoreSqlGenerator } = require('../constants/index');
+const { first } = require('underscore');
 
-module.exports.searchPlayer = async ({ keyword, clubId, countryId }) => {
+module.exports.searchPlayer = async ({ keyword, countryId, clubId, clubIdList }) => {
   try {
     const connection = await pool.getConnection();
 
@@ -10,10 +11,13 @@ module.exports.searchPlayer = async ({ keyword, clubId, countryId }) => {
       let limitSql = '';
       if (keyword) {
         whereSql = `WHERE known_as LIKE '%${keyword}%' AND players.activation=1`;
-      } else if (clubId) {
-        whereSql = `WHERE club_id='${clubId}' AND players.activation=1`;
       } else if (countryId) {
         whereSql = `WHERE players.country_id='${countryId}' AND players.activation=1`;
+      } else if (clubId) {
+        whereSql = `WHERE club_id='${clubId}' AND players.activation=1`;
+      } else if (clubIdList) {
+        const [firstClubId, secondClubId] = clubIdList.split(',');
+        whereSql = `WHERE (club_id='${firstClubId}' OR club_id='${secondClubId}') AND players.activation=1`;
       } else {
         limitSql = 'LIMIT 50';
       }
@@ -25,7 +29,7 @@ module.exports.searchPlayer = async ({ keyword, clubId, countryId }) => {
         LEFT JOIN clubs ON players.club_id = clubs.id
         LEFT JOIN countries ON players.country_id = countries.id
         ${whereSql}
-        ORDER BY ${playerScoreSqlGenerator('players')} DESC
+        ORDER BY ${playerScoreSqlGenerator('players')} DESC, rand()
         ${limitSql}
       `);
 

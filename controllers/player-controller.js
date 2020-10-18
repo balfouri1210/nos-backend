@@ -46,16 +46,6 @@ module.exports.getHeavyPlayerById = async (req, res) => {
   }
 };
 
-// module.exports.getPlayersByClub = async (req, res) => {
-//   try {
-//     const result = await playerService.getPlayersByClub(req.params);
-//     res.send(result);
-//   } catch (err) {
-//     res.status(400).send(errors[err.message] || defaultServerResponse);
-//   }
-// };
-
-
 module.exports.increasePlayerHits = async (req, res) => {
   try {
     const result = await playerService.increasePlayerHits(

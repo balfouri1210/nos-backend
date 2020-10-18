@@ -25,6 +25,8 @@ const logFormat = printf(info => {
 });
 
 const createLog = function(type, message, req) {
+  if (process.env.STAGE !== 'prod') return;
+
   if (type === 'info') {
     logger.info(message, {
       // 'network.client.ip': req.headers['x-forwarded-for'] || req.connection.remoteAddress,
@@ -67,8 +69,8 @@ const logger = winston.createLogger({
   ]
 });
 
-// Production 환경이 아닌 경우(dev 등) 
-if (process.env.STAGE !== 'prod') {
+// local환경일 경우 콘솔에 출력 
+if (process.env.STAGE === 'local') {
   logger.add(new winston.transports.Console({
     format: winston.format.combine(
       winston.format.colorize(),  // 색깔 넣어서 출력
