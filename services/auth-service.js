@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
+const { fakeUsernames } = require('../constants/fake-usernames');
 
 module.exports.login = async ({ email, password }) => {
   try {
@@ -117,10 +118,12 @@ module.exports.availableUsernameChecker = async ({ username }) => {
     `);
     const user = rows[0];
 
-    if (!user) {
-      return true;
-    } else {
+    if (user) {
       throw new Error(errors.UNAVAILABLE_USERNAME.message);
+    } else if (fakeUsernames.indexOf(username) !== -1) {
+      throw new Error(errors.UNAVAILABLE_USERNAME.message);
+    } else {
+      return true;
     }
   } catch (err) {
     throw new Error(err.message || err);
