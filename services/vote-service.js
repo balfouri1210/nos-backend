@@ -1,8 +1,9 @@
 const pool = require('../database/db-connection');
-const { errors } = require('../constants/index');
+const { errors, constants } = require('../constants/index');
 const voteHistoriesService = require('./vote-histories-service');
 const notificationService = require('./notification-service');
 const { extractUserInfoFromJWT } = require('./auth-service');
+const moment = require('moment');
 
 // OPINION
 module.exports.opinionVote = async (authorization, { targetAuthorId, targetOpinion, targetOpinionId, vote }) => {
@@ -30,8 +31,8 @@ module.exports.opinionVote = async (authorization, { targetAuthorId, targetOpini
 
       if (!votedOpinion) throw new Error(errors.GET_VOTED_OPINION_FAILED.message);
 
-      // Add new notification if vote_up_count is 20, 40, 60 ...
-      if (votedOpinion.vote_up_count > 0) {
+      // Add new notification when opinion is comment
+      if (targetOpinion === 'player_comment' && votedOpinion.vote_up_count > 0) {
         notificationService.addNotification({
           recipientId: targetAuthorId,
           senderId: userId,
@@ -40,6 +41,9 @@ module.exports.opinionVote = async (authorization, { targetAuthorId, targetOpini
           type: 'vote_up',
           content: votedOpinion.vote_up_count
         });
+
+        if (votedOpinion.vote_up_count === constants.hotCommentVoteCriteria)
+          this.registerBestComment(connection, targetOpinionId);
       }
 
       return;
@@ -51,6 +55,22 @@ module.exports.opinionVote = async (authorization, { targetAuthorId, targetOpini
     throw new Error(err.message || err);
   }
 };
+
+module.exports.registerBestComment = async (connection, targetOpinionId) => {
+  try {
+    await connection.query(`
+        UPDATE player_comments SET
+        best_commented_at='${moment(new Date()).utc().format('YYYY-MM-DD HH:mm:ss')}'
+        WHERE id='${targetOpinionId}'
+      `);
+
+    return;
+  } catch (err) {
+    console.error(err);
+    throw new Error(err.message || err);
+  }
+};
+
 
 module.exports.updateOpinionVote = async (authorization, { targetOpinion, targetOpinionId, previousVote, vote }) => {
   try {
@@ -238,6 +258,16 @@ module.exports.opinionVoteFake = async (authorization, { targetAuthorId, targetO
           WHERE id='${targetOpinionId}'
         `),
       ]);
+
+      const votedOpinion = (await connection.query(`
+        SELECT * FROM ${targetOpinion}s
+        WHERE id='${targetOpinionId}'
+      `))[0][0];
+
+      if (!votedOpinion) throw new Error(errors.GET_VOTED_OPINION_FAILED.message);
+
+      if (targetOpinion === 'player_comment' && votedOpinion.vote_up_count === constants.hotCommentVoteCriteria)
+        this.registerBestComment(connection, targetOpinionId);
 
       return;
     } finally {

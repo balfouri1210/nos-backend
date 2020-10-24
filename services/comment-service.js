@@ -167,7 +167,7 @@ module.exports.getPlayerCommentsBySortType = async ({ sortType, commentsPerReque
         query = `
           ${commonQuery}
           WHERE player_comments.vote_up_count >= ${constants.hotCommentVoteCriteria}
-          ORDER BY player_comments.id DESC
+          ORDER BY player_comments.best_commented_at DESC
           LIMIT ${commentsPerRequest}
           OFFSET ${commentsPerRequest * (page - 1)}
         `;
