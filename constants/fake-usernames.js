@@ -85,7 +85,17 @@ module.exports = {
     'nnnmmm',
     'the_normal_one',
     'peeking7',
-    '',
-    '',
+    'dope90',
+    'ninja_ken',
+    'ANDS',
+    'dan',
+    'pubg_pio',
+    'jacob',
+    'icebear007',
+    'rio-lavy',
+    '7000rpm',
+    'jayden',
+    'psychopathy',
+    'cha1331'
   ]
 };
