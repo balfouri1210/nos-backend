@@ -27,7 +27,12 @@ module.exports.getPlayers = async (req, res) => {
       req.query
     );
     res.send(result);
-    createLog('info', 'Get Players', req);
+
+    if (!req.query.previousPlayerIdList) {
+      createLog('info', 'Load Players', req);
+    } else {
+      createLog('info', 'Load more Players', req);
+    }
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }

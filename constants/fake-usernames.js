@@ -64,7 +64,7 @@ module.exports = {
     'moet',
     'Jennifer_swift',
     'kaka_theACmilan',
-    'super_crack',
+    'kml_crack',
     'johnny_cash',
     'freerider',
     'FK16',
@@ -96,6 +96,13 @@ module.exports = {
     '7000rpm',
     'jayden',
     'psychopathy',
-    'cha1331'
+    'cha1331',
+    'cmbbb',
+    'hushman',
+    'eventHorizon',
+    'becky',
+    'potato',
+    'takiyaki',
+    'miller_efc'
   ]
 };

@@ -1,6 +1,7 @@
 const userService = require('../services/user-service');
 const emailService = require('../services/email-service');
 const { errors, defaultServerResponse } = require('../constants/index');
+const createLog = require('../config/logger');
 
 // TEST API
 module.exports.getUserById = async (req, res) => {
@@ -16,6 +17,7 @@ module.exports.signup = async (req, res) => {
   try {
     const result = await userService.signup(req.body);
     res.send(result);
+    createLog('info', `Signup: ${req.body.email}`, req);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }
