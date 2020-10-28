@@ -85,9 +85,9 @@ module.exports.getPlayerCommentsBySortType = async (req, res) => {
     const result = await commentService.getPlayerCommentsBySortType(req.query);
     res.send(result);
 
-    if (req.query.sortType === 'date') {
-      createLog('info', 'Enter Comment Page', req);
-    }
+    // if (req.query.sortType === 'date') {
+    //   createLog('info', 'Enter Comment Page', req);
+    // }
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }
