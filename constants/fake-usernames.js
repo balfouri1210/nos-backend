@@ -103,6 +103,18 @@ module.exports = {
     'becky',
     'potato',
     'takiyaki',
-    'miller_efc'
+    'miller_efc',
+    'theYid',
+    'philipKen',
+    'puerto__hemi',
+    'kenudinho',
+    'barr_sacko',
+    'bartee',
+    'DAVID_PINTZ',
+    'ayan',
+    'abeladio',
+    'aMiN',
+    'StamfordThree',
+    'nacendra'
   ]
 };

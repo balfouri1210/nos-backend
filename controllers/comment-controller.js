@@ -55,6 +55,7 @@ module.exports.addPlayerComment = async (req, res) => {
       req.body
     );
     res.send(result);
+
     createLog('info', `Add Comment: ${req.body.content}`, req);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
@@ -83,6 +84,10 @@ module.exports.getPlayerCommentsBySortType = async (req, res) => {
   try {
     const result = await commentService.getPlayerCommentsBySortType(req.query);
     res.send(result);
+
+    if (req.query.sortType === 'date') {
+      createLog('info', 'Enter Comment Page', req);
+    }
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }
