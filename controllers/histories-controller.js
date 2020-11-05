@@ -31,6 +31,7 @@ module.exports.getHistory = async (req, res) => {
       req.params
     );
     res.send(result);
+    createLog('info', `Get History: ID - ${req.params.historyId}`, req);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }
