@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const moment = require('moment');
-const { fakeUsernames } = require('../constants/fake-usernames');
+let { fakeUsernames } = require('../constants/fake-usernames');
 
 module.exports.login = async ({ email, password }) => {
   try {
@@ -118,9 +118,14 @@ module.exports.availableUsernameChecker = async ({ username }) => {
     `);
     const user = rows[0];
 
+    // 비교를 위해 모든 fakeUsername 소문자로 변경
+    fakeUsernames = fakeUsernames.map(username => {
+      return username.toLowerCase();
+    });
+
     if (user) {
       throw new Error(errors.UNAVAILABLE_USERNAME.message);
-    } else if (fakeUsernames.indexOf(username) !== -1) {
+    } else if (fakeUsernames.indexOf(username.toLowerCase()) !== -1) {
       throw new Error(errors.UNAVAILABLE_USERNAME.message);
     } else {
       return true;
