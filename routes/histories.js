@@ -15,15 +15,15 @@ router.get('/:historyId',
 );
 
 router.post('/',
-  historiesController.addHistories
+  historiesController.addHistory
 );
 
-router.get('/player/total/:historyId',
+router.get('/:historyId/player/total',
   historiesController.getTotalPlayersOfHistory
 );
 
-router.get('/player/:historyId',
-  historiesController.getPlayerHistories
+router.get('/:historyId/player',
+  historiesController.getPlayerListHistory
 );
 
 router.get('/:historyId/player/comments/preview',

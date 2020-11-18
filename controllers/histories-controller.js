@@ -37,9 +37,9 @@ module.exports.getHistory = async (req, res) => {
   }
 };
 
-module.exports.addHistories = async (req, res) => {
+module.exports.addHistory = async (req, res) => {
   try {
-    const result = await historiesService.addHistories();
+    const result = await historiesService.addHistory();
     res.send(result);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
@@ -57,14 +57,14 @@ module.exports.getTotalPlayersOfHistory = async (req, res) => {
   }
 };
 
-module.exports.getPlayerHistories = async (req, res) => {
+module.exports.getPlayerListHistory = async (req, res) => {
   try {
-    const result = await historiesService.getPlayerHistories(
+    const result = await historiesService.getPlayerListHistory(
       req.params,
       req.query
     );
     res.send(result);
-    createLog('info', 'Get Playerlist History', req);
+    createLog('info', 'Get Player List History', req);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
   }

@@ -102,7 +102,7 @@ module.exports.getHistory = async ({ historyId }) => {
   }
 };
 
-module.exports.addHistories = async (historyTerm) => {
+module.exports.addHistory = async (historyTerm) => {
   try {
     const connection = await pool.getConnection();
 
@@ -150,7 +150,7 @@ module.exports.getTotalPlayersOfHistory = async ({ historyId }) => {
   }
 };
 
-module.exports.getPlayerHistories = async ({ historyId }, { previousPlayerIdList, count }) => {
+module.exports.getPlayerListHistory = async ({ historyId }, { previousPlayerIdList, count }) => {
   try {
     const connection = await pool.getConnection();
     previousPlayerIdList = previousPlayerIdList || '""';

@@ -9,10 +9,12 @@ const historyTerm = 7;
 
 // 정기작업
 async function schedulerWorker() {
+  if (process.env.STAGE === 'local') return;
+
   console.log('schedule worker executed!');
 
   try {
-    const insertedHistoryId = await historiesService.addHistories(historyTerm);
+    const insertedHistoryId = await historiesService.addHistory(historyTerm);
 
     await Promise.all([
       playerService.top100PlayersMigrationToHistories(insertedHistoryId),
