@@ -163,6 +163,13 @@ module.exports = {
     'francesco',
     'ronaldheron',
     'tanu78',
-    'BTconnes'
+    'BTconnes',
+    'vandali',
+    'sayeem',
+    'oscar',
+    'sombrero',
+    'DavidMill',
+    'mullins8266',
+    'naffis'
   ]
 };
