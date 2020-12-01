@@ -16,7 +16,7 @@ module.exports.searchPlayer = async ({ keyword, countryId, clubId, clubIdList })
       } else if (clubId) {
         whereSql = `WHERE club_id='${clubId}' AND players.activation=1`;
       } else if (clubIdList) {
-        const [firstClubId, secondClubId] = clubIdList.split('_');
+        const [firstClubId, secondClubId] = clubIdList.split('-');
         whereSql = `WHERE (club_id='${firstClubId}' OR club_id='${secondClubId}') AND players.activation=1`;
       } else {
         limitSql = 'LIMIT 50';

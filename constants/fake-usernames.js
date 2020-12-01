@@ -170,6 +170,21 @@ module.exports = {
     'sombrero',
     'DavidMill',
     'mullins8266',
-    'naffis'
+    'naffis',
+    'dewey',
+    'KuroKen',
+    'meemoh',
+    'change9',
+    'cyu10',
+    'ruddell',
+    'wapman',
+    'kimson',
+    'saltc0d',
+    'Nirani',
+    'unrealTALO',
+    '7li',
+    'SJ24',
+    'FRENTZAS',
+    'saltshere'
   ]
 };
