@@ -1,6 +1,5 @@
 const pool = require('../database/db-connection');
 const { errors, playerScoreSqlGenerator } = require('../constants/index');
-const { first } = require('underscore');
 
 module.exports.searchPlayer = async ({ keyword, countryId, clubId, clubIdList }) => {
   try {

@@ -185,6 +185,19 @@ module.exports = {
     '7li',
     'SJ24',
     'FRENTZAS',
-    'saltshere'
+    'saltshere',
+    'frantio',
+    'alfian',
+    'ryu_gabriel90',
+    'MathewGrey',
+    '_DAZE',
+    'JoshuaKim',
+    'yayaKD',
+    'jd24',
+    'MrLordRok',
+    'vueloper',
+    'Bahruji',
+    'latif',
+    'MarinGlid'
   ]
 };
