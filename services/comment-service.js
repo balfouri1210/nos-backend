@@ -152,18 +152,22 @@ module.exports.getPlayerCommentsBySortType = async ({ sortType, commentsPerReque
       // Query
       let query;
       let commonQuery = `SELECT player_comments.content, player_comments.created_at, player_comments.reply_count, player_comments.vote_up_count,
-        players.id as player_id, players.known_as as player_name, clubs.image as club_image FROM player_comments
+        players.id as player_id, players.known_as as player_name, clubs.image as club_image
+        FROM player_comments
         LEFT JOIN players ON players.id = player_comments.player_id
         LEFT JOIN clubs ON clubs.id = players.club_id`;
 
-      if (sortType === 'date') {
+      switch (sortType) {
+      case 'date':
         query = `
           ${commonQuery}
           ORDER BY player_comments.id DESC
           LIMIT ${commentsPerRequest}
           OFFSET ${commentsPerRequest * (page - 1)}
-            `;
-      } else if (sortType === 'vote') {
+        `;
+        break;
+
+      case 'vote':
         query = `
           ${commonQuery}
           WHERE player_comments.vote_up_count >= ${constants.hotCommentVoteCriteria}
@@ -171,7 +175,9 @@ module.exports.getPlayerCommentsBySortType = async ({ sortType, commentsPerReque
           LIMIT ${commentsPerRequest}
           OFFSET ${commentsPerRequest * (page - 1)}
         `;
+        break;
       }
+
       const [comments] = await connection.query(query);
 
       return comments;
