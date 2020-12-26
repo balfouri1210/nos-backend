@@ -46,9 +46,9 @@ module.exports.addHistory = async (req, res) => {
   }
 };
 
-module.exports.getTotalPlayersOfHistory = async (req, res) => {
+module.exports.getTotalPlayerCountByHistoryId = async (req, res) => {
   try {
-    const result = await historiesService.getTotalPlayersOfHistory(
+    const result = await historiesService.getTotalPlayerCountByHistoryId(
       req.params
     );
     res.send(result);
@@ -96,9 +96,9 @@ module.exports.getPlayerHistory = async (req, res) => {
   }
 };
 
-module.exports.getPlayerCommentsHistories = async (req, res) => {
+module.exports.getPlayerCommentsHistoriesBySortType = async (req, res) => {
   try {
-    const result = await historiesService.getPlayerCommentsHistories(
+    const result = await historiesService.getPlayerCommentsHistoriesBySortType(
       req.params,
       req.query
     );

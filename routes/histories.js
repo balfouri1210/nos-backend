@@ -19,7 +19,7 @@ router.post('/',
 );
 
 router.get('/:historyId/player/total',
-  historiesController.getTotalPlayersOfHistory
+  historiesController.getTotalPlayerCountByHistoryId
 );
 
 router.get('/:historyId/player',
@@ -37,7 +37,7 @@ router.get('/:historyId/player/:playerId',
 );
 
 router.get('/:historyId/player/:playerId/comments',
-  historiesController.getPlayerCommentsHistories
+  historiesController.getPlayerCommentsHistoriesBySortType
 );
 
 router.get('/:historyId/player/:playerId/replies',

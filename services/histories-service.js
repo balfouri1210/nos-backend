@@ -129,7 +129,7 @@ module.exports.addHistory = async (historyTerm) => {
 };
 
 // 프론트에서 history페이지 player list의 총 선수 수를 알기 위함.
-module.exports.getTotalPlayersOfHistory = async ({ historyId }) => {
+module.exports.getTotalPlayerCountByHistoryId = async ({ historyId }) => {
   try {
     const connection = await pool.getConnection();
 
@@ -266,7 +266,7 @@ module.exports.getPlayerHistory = async ({ historyId, playerId }) => {
   }
 };
 
-module.exports.getPlayerCommentsHistories = async (
+module.exports.getPlayerCommentsHistoriesBySortType = async (
   { historyId, playerId },
   { sortType, minId, previousCommentIdList }
   // minId: date 정렬일 때 페이징 처리를 위한 변수

@@ -198,6 +198,8 @@ module.exports = {
     'vueloper',
     'Bahruji',
     'latif',
-    'MarinGlid'
+    'MarinGlid',
+    'kochen',
+    'drolet'
   ]
 };
