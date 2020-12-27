@@ -150,7 +150,7 @@ module.exports.getTotalPlayerCountByHistoryId = async ({ historyId }) => {
   }
 };
 
-module.exports.getPlayerListHistory = async ({ historyId }, { previousPlayerIdList, count }) => {
+module.exports.getPlayerListByHistoryId = async ({ historyId }, { previousPlayerIdList, count }) => {
   try {
     const connection = await pool.getConnection();
     previousPlayerIdList = previousPlayerIdList || '""';
@@ -190,7 +190,7 @@ module.exports.getPlayerListHistory = async ({ historyId }, { previousPlayerIdLi
   }
 };
 
-module.exports.getPlayerCommentsHistoryPreview = async ({historyId}, { playerIdList, count }) => {
+module.exports.getPlayerCommentsHistoryPreviewByHistoryId = async ({historyId}, { playerIdList, count }) => {
   try {
     const connection = await pool.getConnection();
 
@@ -225,7 +225,7 @@ module.exports.getPlayerCommentsHistoryPreview = async ({historyId}, { playerIdL
 
 
 // Player modal 에서 쓰이는 함수들
-module.exports.getPlayerHistory = async ({ historyId, playerId }) => {
+module.exports.getPlayerHistoryByHistoryId = async ({ historyId, playerId }) => {
   try {
     const connection = await pool.getConnection();
 
@@ -313,7 +313,7 @@ module.exports.getPlayerCommentsHistoriesBySortType = async (
   }
 };
 
-module.exports.getPlayerRepliesHistories = async (
+module.exports.getPlayerReplyHistoriesByHistoryId = async (
   { historyId },
   { maxId, parentCommentId }
 ) => {

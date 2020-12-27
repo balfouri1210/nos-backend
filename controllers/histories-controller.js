@@ -57,9 +57,9 @@ module.exports.getTotalPlayerCountByHistoryId = async (req, res) => {
   }
 };
 
-module.exports.getPlayerListHistory = async (req, res) => {
+module.exports.getPlayerListByHistoryId = async (req, res) => {
   try {
-    const result = await historiesService.getPlayerListHistory(
+    const result = await historiesService.getPlayerListByHistoryId(
       req.params,
       req.query
     );
@@ -70,9 +70,9 @@ module.exports.getPlayerListHistory = async (req, res) => {
   }
 };
 
-module.exports.getPlayerCommentsHistoryPreview = async (req, res) => {
+module.exports.getPlayerCommentsHistoryPreviewByHistoryId = async (req, res) => {
   try {
-    const result = await historiesService.getPlayerCommentsHistoryPreview(
+    const result = await historiesService.getPlayerCommentsHistoryPreviewByHistoryId(
       req.params,
       req.query
     );
@@ -84,9 +84,9 @@ module.exports.getPlayerCommentsHistoryPreview = async (req, res) => {
 
 
 // History페이지 player-modal 에서 필요
-module.exports.getPlayerHistory = async (req, res) => {
+module.exports.getPlayerHistoryByHistoryId = async (req, res) => {
   try {
-    const result = await historiesService.getPlayerHistory(
+    const result = await historiesService.getPlayerHistoryByHistoryId(
       req.params
     );
     res.send(result);
@@ -108,9 +108,9 @@ module.exports.getPlayerCommentsHistoriesBySortType = async (req, res) => {
   }
 };
 
-module.exports.getPlayerRepliesHistories = async (req, res) => {
+module.exports.getPlayerReplyHistoriesByHistoryId = async (req, res) => {
   try {
-    const result = await historiesService.getPlayerRepliesHistories(
+    const result = await historiesService.getPlayerReplyHistoriesByHistoryId(
       req.params,
       req.query
     );

@@ -23,17 +23,17 @@ router.get('/:historyId/player/total',
 );
 
 router.get('/:historyId/player',
-  historiesController.getPlayerListHistory
+  historiesController.getPlayerListByHistoryId
 );
 
 router.get('/:historyId/player/comments/preview',
-  historiesController.getPlayerCommentsHistoryPreview
+  historiesController.getPlayerCommentsHistoryPreviewByHistoryId
 );
 
 
 // History페이지 player-modal 에서 필요
 router.get('/:historyId/player/:playerId',
-  historiesController.getPlayerHistory
+  historiesController.getPlayerHistoryByHistoryId
 );
 
 router.get('/:historyId/player/:playerId/comments',
@@ -41,7 +41,7 @@ router.get('/:historyId/player/:playerId/comments',
 );
 
 router.get('/:historyId/player/:playerId/replies',
-  historiesController.getPlayerRepliesHistories
+  historiesController.getPlayerReplyHistoriesByHistoryId
 );
 
 
