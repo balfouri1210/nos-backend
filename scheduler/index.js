@@ -2,8 +2,8 @@ const schedule = require('node-schedule');
 const commentService = require('../services/comment-service');
 const replyService = require('../services/reply-service');
 const playerService = require('../services/player-service');
-const historiesService = require('../services/histories-service');
-const voteHistoriesService = require('../services/vote-histories-service');
+const historyService = require('../services/history-service');
+const voteHistoryService = require('../services/vote-history-service');
 const notificationService = require('../services/notification-service');
 const historyTerm = 7;
 
@@ -14,7 +14,7 @@ async function schedulerWorker() {
   console.log('schedule worker executed!');
 
   try {
-    const insertedHistoryId = await historiesService.addHistory(historyTerm);
+    const insertedHistoryId = await historyService.addHistory(historyTerm);
 
     await Promise.all([
       playerService.top100PlayersMigrationToHistories(insertedHistoryId),
@@ -27,9 +27,9 @@ async function schedulerWorker() {
       commentService.emptyPlayerComments(),
       replyService.emptyPlayerReplies(),
 
-      voteHistoriesService.deleteAllOpinionVoteHistory('player_comment'),
-      voteHistoriesService.deleteAllOpinionVoteHistory('player_reply'),
-      voteHistoriesService.deletePlayerVoteHistory(),
+      voteHistoryService.deleteAllOpinionVoteHistory('player_comment'),
+      voteHistoryService.deleteAllOpinionVoteHistory('player_reply'),
+      voteHistoryService.deletePlayerVoteHistory(),
 
       notificationService.emptyNotifications()
     ]);

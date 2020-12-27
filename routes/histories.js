@@ -1,47 +1,47 @@
 const express = require('express');
 const router = express.Router();
-const historiesController = require('../controllers/histories-controller');
+const historyController = require('../controllers/history-controller');
 
 router.get('/latest',
-  historiesController.getLatestHistoryId
+  historyController.getLatestHistoryId
 );
 
 router.get('/',
-  historiesController.getHistories
+  historyController.getHistories
 );
 
 router.get('/:historyId',
-  historiesController.getHistory,
+  historyController.getHistory,
 );
 
 router.post('/',
-  historiesController.addHistory
+  historyController.addHistory
 );
 
 router.get('/:historyId/player/total',
-  historiesController.getTotalPlayerCountByHistoryId
+  historyController.getTotalPlayerCountByHistoryId
 );
 
 router.get('/:historyId/player',
-  historiesController.getPlayerListByHistoryId
+  historyController.getPlayerListByHistoryId
 );
 
 router.get('/:historyId/player/comments/preview',
-  historiesController.getPlayerCommentsHistoryPreviewByHistoryId
+  historyController.getPlayerCommentsHistoryPreviewByHistoryId
 );
 
 
 // History페이지 player-modal 에서 필요
 router.get('/:historyId/player/:playerId',
-  historiesController.getPlayerHistoryByHistoryId
+  historyController.getPlayerHistoryByHistoryId
 );
 
 router.get('/:historyId/player/:playerId/comments',
-  historiesController.getPlayerCommentsHistoriesBySortType
+  historyController.getPlayerCommentsHistoriesBySortType
 );
 
 router.get('/:historyId/player/:playerId/replies',
-  historiesController.getPlayerReplyHistoriesByHistoryId
+  historyController.getPlayerReplyHistoriesByHistoryId
 );
 
 

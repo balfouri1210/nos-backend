@@ -1,6 +1,6 @@
 const pool = require('../database/db-connection');
 const { errors, constants } = require('../constants/index');
-const voteHistoriesService = require('./vote-histories-service');
+const voteHistoryService = require('./vote-history-service');
 const notificationService = require('./notification-service');
 const { extractUserInfoFromJWT } = require('./auth-service');
 const moment = require('moment');
@@ -21,7 +21,7 @@ module.exports.opinionVote = async (authorization, { targetAuthorId, targetOpini
         `),
 
         // Register vote history
-        voteHistoriesService.registerOpinionVoteHistory({ targetOpinion, targetOpinionId, userId, vote }),
+        voteHistoryService.registerOpinionVoteHistory({ targetOpinion, targetOpinionId, userId, vote }),
       ]);
 
       const votedOpinion = (await connection.query(`
@@ -88,7 +88,7 @@ module.exports.updateOpinionVote = async (authorization, { targetOpinion, target
         `),
 
         // 리액션 기록 업데이트
-        voteHistoriesService.updateOpinionVoteHistory({ userId, targetOpinion, targetOpinionId, vote })
+        voteHistoryService.updateOpinionVoteHistory({ userId, targetOpinion, targetOpinionId, vote })
       ]);
 
       return;
@@ -116,7 +116,7 @@ module.exports.cancelOpinionVote = async (authorization, { targetOpinion, target
         `),
 
         // Delete vote history
-        voteHistoriesService.deleteOpinionVoteHistory({ targetOpinion, targetOpinionId, userId })
+        voteHistoryService.deleteOpinionVoteHistory({ targetOpinion, targetOpinionId, userId })
       ]);
 
       return;
@@ -147,7 +147,7 @@ module.exports.playerVote = async (authorization, { playerId, vote }) => {
         `),
 
         // 리액션 기록 등록
-        voteHistoriesService.registerPlayerVoteHistory({ playerId, userId, vote })
+        voteHistoryService.registerPlayerVoteHistory({ playerId, userId, vote })
       ]);
 
       return;
@@ -176,7 +176,7 @@ module.exports.updatePlayerVote = async (authorization, { playerId, previousVote
         `),
 
         // 리액션 기록 업데이트
-        voteHistoriesService.updatePlayerVoteHistory({ playerId, userId, vote })
+        voteHistoryService.updatePlayerVoteHistory({ playerId, userId, vote })
       ]);
 
       return;
@@ -204,7 +204,7 @@ module.exports.cancelPlayerVote = async (authorization, { playerId, vote }) => {
         `),
 
         // 리액션 기록 삭제
-        voteHistoriesService.deletePlayerVoteHistory({ playerId, userId })
+        voteHistoryService.deletePlayerVoteHistory({ playerId, userId })
       ]);
 
       return;

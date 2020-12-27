@@ -1,6 +1,6 @@
 const pool = require('../database/db-connection');
 const { errors } = require('../constants/index');
-const voteHistoriesService = require('./vote-histories-service');
+const voteHistoryService = require('./vote-history-service');
 const notificationService = require('./notification-service');
 const { extractUserInfoFromJWT } = require('./auth-service');
 
@@ -27,7 +27,7 @@ module.exports.getPlayerReplyByparentCommentId = async (
     const { userId } = extractUserInfoFromJWT(authorization);
 
     if (userId !== 'null') {
-      const replyVoteHistories = await voteHistoriesService.getOpinionVoteHistoriesByUserId({
+      const replyVoteHistories = await voteHistoryService.getOpinionVoteHistoriesByUserId({
         targetOpinion: 'player_reply',
         userId
       });

@@ -36,7 +36,7 @@ app.use('/api/users', require('./routes/users'));
 app.use('/api/players', require('./routes/players'));
 app.use('/api/comments', require('./routes/comments'));
 app.use('/api/replies', require('./routes/replies'));
-app.use('/api/vote', require('./routes/vote'));
+app.use('/api/vote', require('./routes/votes'));
 app.use('/api/vote-histories', require('./routes/vote-histories'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/report', require('./routes/report'));

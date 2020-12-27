@@ -7,16 +7,19 @@ const originValidation = require('../middleware/origin-validation');
 // Opinion
 router.post('/opinion',
   tokenValidation.validationToken,
+  originValidation.validateOrigin,
   voteController.opinionVote
 );
 
 router.put('/opinion',
   tokenValidation.validationToken,
+  originValidation.validateOrigin,
   voteController.updateOpinionVote
 );
 
 router.delete('/opinion',
   tokenValidation.validationToken,
+  originValidation.validateOrigin,
   voteController.cancelOpinionVote
 );
 

@@ -1,10 +1,10 @@
-const historiesService = require('../services/histories-service');
+const historyService = require('../services/history-service');
 const { errors, defaultServerResponse } = require('../constants/index');
 const createLog = require('../config/logger');
 
 module.exports.getLatestHistoryId = async (req, res) => {
   try {
-    const result = await historiesService.getLatestHistoryId(
+    const result = await historyService.getLatestHistoryId(
       req.query
     );
     res.send(result);
@@ -15,7 +15,7 @@ module.exports.getLatestHistoryId = async (req, res) => {
 
 module.exports.getHistories = async (req, res) => {
   try {
-    const result = await historiesService.getHistories(
+    const result = await historyService.getHistories(
       req.query
     );
     res.send(result);
@@ -27,7 +27,7 @@ module.exports.getHistories = async (req, res) => {
 
 module.exports.getHistory = async (req, res) => {
   try {
-    const result = await historiesService.getHistory(
+    const result = await historyService.getHistory(
       req.params
     );
     res.send(result);
@@ -39,7 +39,7 @@ module.exports.getHistory = async (req, res) => {
 
 module.exports.addHistory = async (req, res) => {
   try {
-    const result = await historiesService.addHistory();
+    const result = await historyService.addHistory();
     res.send(result);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
@@ -48,7 +48,7 @@ module.exports.addHistory = async (req, res) => {
 
 module.exports.getTotalPlayerCountByHistoryId = async (req, res) => {
   try {
-    const result = await historiesService.getTotalPlayerCountByHistoryId(
+    const result = await historyService.getTotalPlayerCountByHistoryId(
       req.params
     );
     res.send(result);
@@ -59,7 +59,7 @@ module.exports.getTotalPlayerCountByHistoryId = async (req, res) => {
 
 module.exports.getPlayerListByHistoryId = async (req, res) => {
   try {
-    const result = await historiesService.getPlayerListByHistoryId(
+    const result = await historyService.getPlayerListByHistoryId(
       req.params,
       req.query
     );
@@ -72,7 +72,7 @@ module.exports.getPlayerListByHistoryId = async (req, res) => {
 
 module.exports.getPlayerCommentsHistoryPreviewByHistoryId = async (req, res) => {
   try {
-    const result = await historiesService.getPlayerCommentsHistoryPreviewByHistoryId(
+    const result = await historyService.getPlayerCommentsHistoryPreviewByHistoryId(
       req.params,
       req.query
     );
@@ -86,7 +86,7 @@ module.exports.getPlayerCommentsHistoryPreviewByHistoryId = async (req, res) => 
 // History페이지 player-modal 에서 필요
 module.exports.getPlayerHistoryByHistoryId = async (req, res) => {
   try {
-    const result = await historiesService.getPlayerHistoryByHistoryId(
+    const result = await historyService.getPlayerHistoryByHistoryId(
       req.params
     );
     res.send(result);
@@ -98,7 +98,7 @@ module.exports.getPlayerHistoryByHistoryId = async (req, res) => {
 
 module.exports.getPlayerCommentsHistoriesBySortType = async (req, res) => {
   try {
-    const result = await historiesService.getPlayerCommentsHistoriesBySortType(
+    const result = await historyService.getPlayerCommentsHistoriesBySortType(
       req.params,
       req.query
     );
@@ -110,7 +110,7 @@ module.exports.getPlayerCommentsHistoriesBySortType = async (req, res) => {
 
 module.exports.getPlayerReplyHistoriesByHistoryId = async (req, res) => {
   try {
-    const result = await historiesService.getPlayerReplyHistoriesByHistoryId(
+    const result = await historyService.getPlayerReplyHistoriesByHistoryId(
       req.params,
       req.query
     );
