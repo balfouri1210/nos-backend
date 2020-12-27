@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const historyController = require('../controllers/history-controller');
+const historyController = require('../controllers/history/history-controller');
 
 router.get('/latest',
   historyController.getLatestHistoryId
@@ -37,7 +37,7 @@ router.get('/:historyId/player/:playerId',
 );
 
 router.get('/:historyId/player/:playerId/comments',
-  historyController.getPlayerCommentsHistoriesBySortType
+  historyController.getPlayerCommentsHistoriesByPlayerId
 );
 
 router.get('/:historyId/player/:playerId/replies',
