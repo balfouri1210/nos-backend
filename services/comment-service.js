@@ -144,7 +144,7 @@ module.exports.getPlayerCommentsPreview = async ({ playerIdList, count }) => {
   }
 };
 
-module.exports.getPlayerCommentsBySortType = async ({ sortType, commentsPerRequest, page }) => {
+module.exports.getWholePlayerComments = async ({ sortType, commentsPerRequest, page }) => {
   try {
     const connection = await pool.getConnection();
 
@@ -319,8 +319,8 @@ module.exports.commentMigrationToHistories = async (historyId) => {
     try {
       await connection.query(`
         INSERT INTO player_comment_histories 
-        (history_id, id, user_id, player_id, content, vote_up_count, vote_down_count, reply_count, created_at, updated_at, fake_username)
-        SELECT ${historyId}, id, user_id, player_id, content, vote_up_count, vote_down_count, reply_count, created_at, updated_at, fake_username
+        (history_id, id, user_id, player_id, content, vote_up_count, vote_down_count, reply_count, created_at, updated_at, best_commented_at, fake_username)
+        SELECT ${historyId}, id, user_id, player_id, content, vote_up_count, vote_down_count, reply_count, created_at, updated_at, best_commented_at, fake_username
         FROM player_comments
       `);
 

@@ -20,7 +20,7 @@ router.get('/preview/player',
 );
 
 router.get('/player',
-  commentController.getPlayerCommentsBySortType
+  commentController.getWholePlayerComments
 );
 
 router.post('/player',

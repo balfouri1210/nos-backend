@@ -80,9 +80,9 @@ module.exports.deletePlayerComment = async (req, res) => {
   }
 };
 
-module.exports.getPlayerCommentsBySortType = async (req, res) => {
+module.exports.getWholePlayerComments = async (req, res) => {
   try {
-    const result = await commentService.getPlayerCommentsBySortType(req.query);
+    const result = await commentService.getWholePlayerComments(req.query);
     res.send(result);
   } catch (err) {
     res.status(400).send(errors[err.message] || defaultServerResponse);
