@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const historyController = require('../controllers/history/history-controller');
 
+// HISTORY
 router.get('/latest',
   historyController.getLatestHistoryId
 );
@@ -26,20 +27,32 @@ router.get('/:historyId/player',
   historyController.getPlayerListByHistoryId
 );
 
-router.get('/:historyId/player/comments/preview',
-  historyController.getPlayerCommentsHistoryPreviewByHistoryId
+
+// COMMENT
+router.get('/:historyId/player/comments/count',
+  historyController.getTotalCommentsHistoryCount
 );
 
+router.get('/:historyId/player/comments',
+  historyController.getWholePlayerCommentsHistoryByHistoryId
+);
 
-// History페이지 player-modal 에서 필요
-router.get('/:historyId/player/:playerId',
-  historyController.getPlayerHistoryByHistoryId
+router.get('/:historyId/player/comments/preview',
+  historyController.getPlayerCommentsHistoryPreviewByHistoryId
 );
 
 router.get('/:historyId/player/:playerId/comments',
   historyController.getPlayerCommentsHistoriesByPlayerId
 );
 
+
+// PLAYER
+router.get('/:historyId/player/:playerId',
+  historyController.getPlayerHistoryByHistoryId
+);
+
+
+// REPLY
 router.get('/:historyId/player/:playerId/replies',
   historyController.getPlayerReplyHistoriesByHistoryId
 );

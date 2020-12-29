@@ -5,6 +5,7 @@ const replyService = require('../../services/history/reply-service');
 const { errors, defaultServerResponse } = require('../../constants/index');
 const createLog = require('../../config/logger');
 
+// HISTORY
 module.exports.getLatestHistoryId = async (req, res) => {
   try {
     const result = await historyService.getLatestHistoryId(
@@ -50,6 +51,7 @@ module.exports.addHistory = async (req, res) => {
 };
 
 
+// PLAYER
 module.exports.getTotalPlayerCountByHistoryId = async (req, res) => {
   try {
     const result = await playerService.getTotalPlayerCountByHistoryId(
@@ -74,7 +76,6 @@ module.exports.getPlayerListByHistoryId = async (req, res) => {
   }
 };
 
-// History페이지 player-modal 에서 필요
 module.exports.getPlayerHistoryByHistoryId = async (req, res) => {
   try {
     const result = await playerService.getPlayerHistoryByHistoryId(
@@ -87,6 +88,30 @@ module.exports.getPlayerHistoryByHistoryId = async (req, res) => {
   }
 };
 
+
+// COMMENT
+module.exports.getTotalCommentsHistoryCount = async (req, res) => {
+  try {
+    const result = await commentService.getTotalCommentsHistoryCount(
+      req.params
+    );
+    res.send(result);
+  } catch (err) {
+    res.status(400).send(errors[err.message] || defaultServerResponse);
+  }
+};
+
+module.exports.getWholePlayerCommentsHistoryByHistoryId = async (req, res) => {
+  try {
+    const result = await commentService.getWholePlayerCommentsHistoryByHistoryId(
+      req.params,
+      req.query
+    );
+    res.send(result);
+  } catch (err) {
+    res.status(400).send(errors[err.message] || defaultServerResponse);
+  }
+};
 
 module.exports.getPlayerCommentsHistoryPreviewByHistoryId = async (req, res) => {
   try {
@@ -112,6 +137,8 @@ module.exports.getPlayerCommentsHistoriesByPlayerId = async (req, res) => {
   }
 };
 
+
+// REPLY
 module.exports.getPlayerReplyHistoriesByHistoryId = async (req, res) => {
   try {
     const result = await replyService.getPlayerReplyHistoriesByHistoryId(
