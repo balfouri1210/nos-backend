@@ -32,24 +32,28 @@ module.exports.getPlayerCommentsHistoryPreviewByHistoryId = async ({historyId}, 
     const connection = await pool.getConnection();
 
     try {
-      playerIdList = playerIdList.split(',');
-      let query = [];
-
-      playerIdList.forEach(playerId => {
-        query.push(`
-          (SELECT player_comment_histories.*, users.username
-          FROM player_comment_histories
-          LEFT JOIN users ON player_comment_histories.user_id=users.id
-          WHERE history_id=${historyId} AND player_id=${playerId}
-          ORDER BY (player_comment_histories.vote_up_count - player_comment_histories.vote_down_count) DESC, player_comment_histories.id DESC
-          LIMIT ${ count || 3 })
-        `);
-      });
-      query = query.join(' union all ');
-
-      const [playerCommentsHistories] = await connection.query(query);
-
-      return playerCommentsHistories;
+      if (playerIdList) {
+        playerIdList = playerIdList.split(',');
+        let query = [];
+  
+        playerIdList.forEach(playerId => {
+          query.push(`
+            (SELECT player_comment_histories.*, users.username
+            FROM player_comment_histories
+            LEFT JOIN users ON player_comment_histories.user_id=users.id
+            WHERE history_id=${historyId} AND player_id=${playerId}
+            ORDER BY (player_comment_histories.vote_up_count - player_comment_histories.vote_down_count) DESC, player_comment_histories.id DESC
+            LIMIT ${ count || 3 })
+          `);
+        });
+        query = query.join(' union all ');
+  
+        const [playerCommentsHistories] = await connection.query(query);
+  
+        return playerCommentsHistories;
+      } else {
+        return 'No player id list';
+      }
     } finally {
       connection.release();
     }
