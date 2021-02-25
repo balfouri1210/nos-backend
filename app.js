@@ -13,7 +13,7 @@ app.use(Sentry.Handlers.requestHandler());
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    'http://192.168.219.105:3000',
+    'http://192.168.219.100:3000',
     'http://192.168.0.15:3000',
     'https://907degrees.com',
     'https://dev.907degrees.com',
@@ -31,6 +31,7 @@ app.use(express.urlencoded({ extended: true }));
 
 
 // Routes
+// For client
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/users', require('./routes/users'));
 app.use('/api/players', require('./routes/players'));
@@ -43,9 +44,11 @@ app.use('/api/report', require('./routes/report'));
 app.use('/api/histories', require('./routes/histories'));
 app.use('/api/search', require('./routes/search'));
 app.use('/api/clubs', require('./routes/clubs'));
+app.use('/api/clubs', require('./routes/clubs'));
 
 app.use('/api/meta', require('./routes/meta'));
 
+// For admin client
 app.use('/api/admin', require('./routes/admin'));
 
 

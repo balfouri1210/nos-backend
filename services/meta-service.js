@@ -6,8 +6,6 @@ const domino = require('domino');
 const fetch = require('node-fetch');
 
 module.exports.getMetadataFromUrl = async ({ url }) => {
-  console.log(url);
-
   try {
     // Meta Crawling 
     const response = await fetch(url);

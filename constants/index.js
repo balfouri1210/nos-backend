@@ -43,7 +43,8 @@ module.exports = {
       code: 'not_allowed_origin',
       message: 'NOT_ALLOWED_ORIGIN'
     },
-    
+
+
     // Related to User
     UNAVAILABLE_EMAIL: {
       code: 'u001',
@@ -103,6 +104,7 @@ module.exports = {
       code: 'u014',
       message: 'INVALID_FORM_CONTENT'
     },
+
 
     // Related to Player
     GET_PLAYERS_FAILED: {
@@ -166,6 +168,7 @@ module.exports = {
       message: 'MUTATE_PLAYER_COMMENT_COUNT_FAILED'
     },
 
+
     // Related to Authentication
     TOKEN_MISSING: {
       code: 'a001',
@@ -175,6 +178,7 @@ module.exports = {
       code: 'a002',
       message: 'INVALID_TOKEN'
     },
+
 
     // Related to Email
     EMAIL_FAILED_SIGNUP: {
@@ -190,6 +194,7 @@ module.exports = {
       message: 'EMAIL_FAILED_PASSWORD_RESET'
     },
 
+
     // Related to Opinion
     UPDATE_OPINION_VOTE_FAILED: {
       code: 'o001',
@@ -199,6 +204,7 @@ module.exports = {
       code: 'o002',
       message: 'GET_VOTED_OPINION_FAILED'
     },
+
 
     // Related to Comment
     GET_COMMENT_FAILED: {
@@ -226,6 +232,7 @@ module.exports = {
       message: 'NO_COMMENT_CONTENT'
     },
 
+
     // Related to Reply
     GET_REPLY_FAILED: {
       code: 'r001',
@@ -243,6 +250,7 @@ module.exports = {
       code: 'r004',
       message: 'DELETE_REPLY_FAILED'
     },
+
 
     // Related to Vote history
     GET_VOTE_HISTORIES_FAILED: {
@@ -262,6 +270,7 @@ module.exports = {
       message: 'UPDATE_VOTE_HISTORY_FAILED'
     },
 
+
     // Related to Notification
     ADD_NOTIFICATION_FAILED: {
       code: 'n001',
@@ -271,6 +280,7 @@ module.exports = {
       code: 'n002',
       messagE: 'GET_NOTIFICATION_FAILED'
     },
+
 
     // Related to History
     REGISTER_HISTORY_FAILED: {
@@ -294,6 +304,7 @@ module.exports = {
       message: 'GET_LATEST_HISTORY_ID_FAILED'
     },
 
+
     // Related to Report
     // r001, r002.. 는 reply가 사용중
     CREATE_REPORT_FAIL: {
@@ -301,11 +312,13 @@ module.exports = {
       message: 'CREATE_REPORT_FAIL'
     },
 
+
     // Related to Search
     SEARCH_PLAYER_FAILED: {
       code: 's001',
       message: 'SEARCH_PLAYER_FAILED'
     },
+
 
     // Related to Club
     GET_CLUBS_FAILED: {
@@ -316,6 +329,11 @@ module.exports = {
     UPDATE_CLUB_FAILED: {
       code: 'club002',
       message: 'UPDATE_CLUB_FAILED'
+    },
+
+    GET_CLUB_STANDINGS_FAILED: {
+      code: 'club003',
+      message: 'GET_CLUB_STANDINGS_FAILED'
     }
   }
 };
