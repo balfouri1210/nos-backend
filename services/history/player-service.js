@@ -45,7 +45,7 @@ module.exports.getPlayerListByHistoryId = async ({ historyId }, { previousPlayer
         LEFT JOIN clubs ON players.club_id = clubs.id
         WHERE history_id='${historyId}' AND
         players.id NOT IN (${previousPlayerIdList})
-        ORDER BY ${playerScoreSqlGenerator('player_histories')} DESC
+        ORDER BY player_histories.id
         LIMIT ${count}
       `);
 
