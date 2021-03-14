@@ -151,7 +151,7 @@ module.exports.getWholePlayerComments = async ({ sortType, commentsPerRequest, p
     try {
       // Query
       let query;
-      let commonQuery = `SELECT player_comments.content, player_comments.created_at, player_comments.reply_count, player_comments.vote_up_count,
+      let commonQuery = `SELECT user_id, player_comments.content, player_comments.created_at, player_comments.reply_count, player_comments.vote_up_count,
         players.id as player_id, players.known_as as player_name, clubs.image as club_image
         FROM player_comments
         LEFT JOIN players ON players.id = player_comments.player_id
