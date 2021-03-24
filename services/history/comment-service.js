@@ -73,7 +73,7 @@ module.exports.getWholePlayerCommentsHistoryByHistoryId = async (
     try {
       // Query
       let query;
-      const commonQuery = `SELECT player_comment_histories.content, player_comment_histories.created_at,
+      const commonQuery = `SELECT user_id, player_comment_histories.content, player_comment_histories.created_at,
         player_comment_histories.reply_count, player_comment_histories.vote_up_count,
         players.id as player_id, players.known_as as player_name, clubs.image as club_image
         FROM player_comment_histories
